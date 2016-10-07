@@ -34,7 +34,24 @@ class Post(models.Model):
     
     
     def get_idKey(self):
-        return self.idKey
+        return self.idKey()
+
+
+class Author(models.Model):
+    idKey=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
+    first_name=models.CharField(max_length=20)
+    last_name=models.CharField(max_length=20)
     
+    email=models.EmailField()
+    password
     
+    url=model.URLField()
+    
+    friends=models.ManyToManyField(Author)
                 
+
+class Comment(models.Model):
+    idKey=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
+    
+    post=models.ForeignKey(Post,on_delete=models.CASCADE)
+    
