@@ -33,4 +33,8 @@ class Post(models.Model):
     publish_time=models.DateTimeField(auto_now=True)
     
     
+    def get_idKey(self):
+        return self.idKey
+    
+    
                 
