@@ -2,6 +2,14 @@
 
 This is a temporary README for a group project of CMPUT404.
 
+## Setting up
+### Backend
+> cd c404WebProject
+> virtualenv venv  
+> source venv/bin/activate  
+> pip install -r requirements.txt 
+> python manage.py runserver
+
 #### Authors
 `Alice Wu, Josh (Ji Hwan) Kim, Kevin Tang, Philip Lam, and Xuping Fang`
 
