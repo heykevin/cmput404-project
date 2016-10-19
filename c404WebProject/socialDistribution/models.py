@@ -4,27 +4,14 @@ from .utils import ListField
 import uuid
 
 # Create your models here.
-class Snippet(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=100, blank=True, default='')
-    content = models.TextField()
-
-    class Meta:
-        ordering = ('created',)
 
 class Author(models.Model):
     user = models.OneToOneField(User)
     id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    first_name=models.CharField(max_length=20)
-    last_name=models.CharField(max_length=20)
-    git=models.CharField(max_length=35)
-    bio=models.TextField()
-    email=models.EmailField()
+    git=models.CharField(max_length=35, blank=True, null=True)
+    bio=models.TextField(blank=True, null=True)
     url=models.URLField()
-    friends=models.ManyToManyField("self")
-
-    def __str__(self):
-        return self.first_name+" "+self.last_name
+    friends=models.ManyToManyField("self", blank=True)
 
     def get_idKey(self):
         return self.idKey
@@ -72,9 +59,3 @@ class Comment(models.Model):
     post=models.ForeignKey(Post, on_delete=models.CASCADE)
     author=models.ForeignKey(Author, on_delete=models.CASCADE)
     publish_time=models.DateTimeField(auto_now=True)
-
-class TagForPost(models.Model):
-    tag=models.CharField(max_length=20)
-
-    def __str__(self):
-        return self.tag
