@@ -5,6 +5,6 @@ urlpatterns = [
     # Examples:
     # url(r'^$', 'c404WebProject.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-    url(r'^', include('socialDistribution.urls')),
+    url(r'^', include('web_api.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]
