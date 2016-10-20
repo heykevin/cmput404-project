@@ -7,7 +7,7 @@ This is a temporary README for a group project of CMPUT404.
 > cd c404WebProject  
 > virtualenv venv  
 > source venv/bin/activate  
-> pip install -r requirements.txt 
+> pip install -r requirements.txt  
 > python manage.py runserver
 
 ### Backend
