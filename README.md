@@ -10,6 +10,14 @@ This is a temporary README for a group project of CMPUT404.
 > pip install -r requirements.txt 
 > python manage.py runserver
 
+### Backend
+Requires NodeJS 4.0.0 and above
+> cd c404WebProject
+> cd client
+> npm install
+> npm start
+visit localhost:8080 when bundle is built
+
 #### Authors
 `Alice Wu, Josh (Ji Hwan) Kim, Kevin Tang, Philip Lam, and Xuping Fang`
 
