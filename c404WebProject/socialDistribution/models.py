@@ -21,7 +21,7 @@ class Author(models.Model):
 
     def get_url(self):
         return self.url
-
+        
 
 class Post(models.Model):
     id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

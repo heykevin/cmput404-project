@@ -24,3 +24,21 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ('id','bio', 'displayName', 'url', 'git',
           'first_name', 'last_name', 'email')
+
+class FriendsWithSerializer(serializers.ModelSerializer):
+
+    authors = serializers.SerializerMethodField('getFriends')
+
+    class Meta:
+        model = Author
+        fields = ['authors']
+
+    def getFriends(self, obj):
+        print obj
+        query = obj.friends.all().values('id')
+        print query
+        res = []
+        for item in query:
+            print item
+            res.append(item.values()[0])
+        return res
