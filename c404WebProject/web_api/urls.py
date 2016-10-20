@@ -14,6 +14,8 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
     
     url(r'^', include(router.urls)),
-
+    
+    url(r'^posts/(?P<pk>[^/.]+)/$',views.PostView.as_view()),
+    url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
     url(r'^friends/(?P<pk>[^/.]+)/$', views.FriendsWith.as_view()),
 ]
