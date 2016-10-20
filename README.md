@@ -4,7 +4,7 @@ This is a temporary README for a group project of CMPUT404.
 
 ## Setting up
 ### Backend
-> cd c404WebProject
+> cd c404WebProject  
 > virtualenv venv  
 > source venv/bin/activate  
 > pip install -r requirements.txt 
