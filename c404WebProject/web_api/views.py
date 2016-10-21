@@ -55,6 +55,18 @@ class FriendsWith(APIView):
         queryset = Author.objects.get(id=pk)
         serializer = FriendsWithSerializer(queryset)
         return Response(serializer.data)
+    
+    def post(self,request,pk,format=None):
+        friend_list=FriendsWithSerializer(Author.objects.get(id=pk)).getFriends(Author.objects.get(id=pk))
+        request_list=request.data
+        match_list=[]
+        
+        for friend_id in friend_list:
+            for request_id in request_list:
+                if(str(friend_id)==str(request_id)):
+                    match_list.append(request_id)
+        
+        return Response(match_list)
 
 class FriendCheck(APIView):
     
