@@ -18,4 +18,5 @@ urlpatterns = [
     url(r'^posts/(?P<pk>[^/.]+)/$',views.PostView.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
     url(r'^friends/(?P<pk>[^/.]+)/$', views.FriendsWith.as_view()),
+    url(r'^friends/(?P<id1>[^/.]+)/(?P<id2>[^/.]+)/$', views.FriendCheck.as_view()),
 ]
