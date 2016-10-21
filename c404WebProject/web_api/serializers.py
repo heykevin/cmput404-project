@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-
+from rest_framework.decorators import detail_route
 from .models import Author, Post, Comment
 
 class UserSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email')
@@ -26,14 +27,22 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 class AuthorSerializer(serializers.ModelSerializer):
     displayName = serializers.CharField(source='user.username')
-    first_name = serializers.CharField(source='user.first_name')
-    last_name = serializers.CharField(source='user.last_name')
-    email = serializers.CharField(source='user.email')
     
+    user=UserSerializer()
+    
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        user_object = User.objects.create(**user_data)
+        
+        author = Author.objects.create(user=user_object, **validated_data)
+        author.save()
+        
+        return author
+        
+       
     class Meta:
         model = Author
-        fields = ('id','bio', 'displayName', 'url', 'git',
-          'first_name', 'last_name', 'email')
+        fields = ('id', 'user', 'displayName', 'bio', 'url', 'git')
 
 class FriendsWithSerializer(serializers.ModelSerializer):
 
