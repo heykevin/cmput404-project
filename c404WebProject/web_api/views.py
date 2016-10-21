@@ -46,6 +46,19 @@ class PostView(APIView):
         serializer = PostSerializer(queryset)
         return Response(serializer.data)
 
+    """
+    def post(self, request, format=None):
+        
+        this will POST author's post
+
+
+    """
+
+# postview set
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
 class CommentView(APIView):
         
     def get(self,request,pk,format=None):

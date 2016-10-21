@@ -8,6 +8,9 @@ router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 router.register(r'author', views.AuthorViewSet)
 
+# adding router for public post
+router.register(r'posts', views.PostViewSet)
+
 urlpatterns = [
     # Examples:
     # url(r'^$', 'c404WebProject.views.home', name='home'),
