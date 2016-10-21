@@ -49,32 +49,24 @@ class PostView(APIView):
 '''
 
 # postview set
-class PostViewSet(viewsets.ModelViewSet):
+class PostViewSet(viewsets.ModelViewSet):    
+    # shows all authors post lists
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
-    # will get post from specific author id
-    def get_post(self):
-        pass
+    # get specific post from an author
+    def get(self, reuqest, pk, format=None):
+        queryset = Post.objects.get(id=pk)
+        serializer_class = PostSerializer(queryset)
+        return Response(serailzer.data)
 
-    '''
-    get method, it will get specific method from 
-    post method, it will create a post from the author
-    note to self, add permission to check if user is author
-    '''
-
-    @detail_route(methods=['get', 'post'])
     def post(self, request):
-        if request.method = "POST":
-            return self.new_post(request)
-        # request method is GET
-        return Response(self.get_post())
-    
-    def new_post(self):
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         pass
-
-
-
 
 class CommentView(APIView):
         
