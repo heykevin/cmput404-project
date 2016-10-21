@@ -16,7 +16,7 @@ class AuthorServiceTestCase(TestCase):
             },
             "displayName": "AbramHindle",
             "bio": "",
-            "url": "https://github.com/abramhindle",
+            "url": "http://softwareprocess.es/static/SoftwareProcess.es.html",
             "git": "https://github.com/abramhindle"
         })
         
