@@ -27,9 +27,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     
-    
-    @detail_route(methods=['post'])
-    def create_author(self,request):
+    def post(self,request):
         serializer = AuthorSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
