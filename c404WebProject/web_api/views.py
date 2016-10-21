@@ -24,9 +24,13 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
 
 class AuthorViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for viewing and creating author instances.
+    """    
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     
+    # Function handles POST request when creating an author.
     def post(self,request):
         serializer = AuthorSerializer(data=request.data)
         if serializer.is_valid():
@@ -43,19 +47,30 @@ class PostView(APIView):
         return Response(serializer.data)
 
 class CommentView(APIView):
-    
+        
     def get(self,request,pk,format=None):
         queryset = Comment.objects.get(id=pk)
         serializer = CommentSerializer(queryset)
         return Response(serializer.data)
 
 class FriendsWith(APIView):
+    """
+    APIView used for friend relations between authors.
+    """ 
     
+    # Returns a single author's friend list.
+    # Request url: r'^friends/(?P<pk>[^/.]+)/$'
+    # Request data: None
+    # Response data: author with id=pk's friend list
     def get(self,request,pk,format=None):
         queryset = Author.objects.get(id=pk)
         serializer = FriendsWithSerializer(queryset)
         return Response(serializer.data)
     
+    # Response the request of ask if anyone in the list is a friend.
+    # Request url: r'^friends/(?P<pk>[^/.]+)/$'
+    # Request data: a list of id
+    # Response data: a list of id which mathes the id in the friend list of the author which id=pk 
     def post(self,request,pk,format=None):
         friend_list=FriendsWithSerializer(Author.objects.get(id=pk)).getFriends(Author.objects.get(id=pk))
         request_list=request.data
@@ -69,7 +84,13 @@ class FriendsWith(APIView):
         return Response(match_list)
 
 class FriendCheck(APIView):
+    """
+    APIview used for checking if two authors is friend.
+    """     
     
+    # Request url: r'^friends/(?P<id1>[^/.]+)/(?P<id2>[^/.]+)/$'
+    # Request data: None
+    # Response data: true if author with id1 and id2 are friend, false otherwise. 
     def get(self,request,id1,id2,format=None):
         obj1 = Author.objects.get(id=id1)
         obj2 = Author.objects.get(id=id2)

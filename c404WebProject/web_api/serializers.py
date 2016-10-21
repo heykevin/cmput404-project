@@ -26,10 +26,13 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name')
 
 class AuthorSerializer(serializers.ModelSerializer):
+    """
+    Serializer used for doing author profile related operations.
+    """     
     displayName = serializers.CharField(source='user.username')
+    user=UserSerializer()                                                   # Need to be created as User is a nest object of Author.
     
-    user=UserSerializer()
-    
+    # Returns an author object with user object as an field after extracting data from json.
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user_object = User.objects.create(**user_data)
@@ -45,13 +48,17 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'displayName', 'bio', 'url', 'git')
 
 class FriendsWithSerializer(serializers.ModelSerializer):
-
+    """
+    Serializer used for doing friend related operations.
+    """ 
+            
     authors = serializers.SerializerMethodField('getFriends')
 
     class Meta:
         model = Author
         fields = ['authors']
 
+    # Returns a list of friend's id for an author.
     def getFriends(self, obj):
         print obj
         query = obj.friends.all().values('id')
