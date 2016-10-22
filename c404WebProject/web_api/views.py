@@ -60,7 +60,7 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer_class = PostSerializer(queryset)
         return Response(serailzer.data)
 
-    def post(self, request):
+    def post(self,request):
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -70,7 +70,8 @@ class PostViewSet(viewsets.ModelViewSet):
 class CommentView(APIView):
         
     def get(self,request,pk,format=None):
-        queryset = Comment.objects.get(id=pk)
+        post = Post.objects.get(id=pk)
+        queryset = Comment.objects.filter(post=post)
         serializer = CommentSerializer(queryset)
         return Response(serializer.data)
 
