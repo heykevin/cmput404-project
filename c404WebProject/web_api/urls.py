@@ -1,6 +1,7 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers
+from rest_framework_jwt.views import obtain_jwt_token
 import views
 
 router = routers.DefaultRouter()
@@ -21,4 +22,13 @@ urlpatterns = [
     url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
     url(r'^friends/(?P<pk>[^/.]+)/$', views.FriendsWith.as_view()),                      # Used for get the list of friends id or check the if an author is a friend of another author.
     url(r'^friends/(?P<id1>[^/.]+)/(?P<id2>[^/.]+)/$', views.FriendCheck.as_view()),     # Used for check 2 author is friend.
+    
+    # /login/ endpoint using the Rest Framework JWT library view
+    # Request (form-data):
+    #     username (string): username of account
+    #     password (string): password of account
+    # Response:
+    #     token (63 bit encoded string)
+    #     author object of current user
+    url(r'^login/', obtain_jwt_token),
 ]

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import datetime
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -73,6 +74,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'c404WebProject.wsgi.application'
 
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'web_api.auth.login_response'
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
