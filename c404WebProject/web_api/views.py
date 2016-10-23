@@ -104,7 +104,9 @@ class FriendsWith(APIView):
     def get(self, request, pk, format=None):
         queryset = Author.objects.get(id=pk)
         serializer = FriendsWithSerializer(queryset)
-        return Response(serializer.data)
+        res=serializer.data
+        res['query']='friends'
+        return Response(res)
     
     """
     POST /friend/<authorID>
