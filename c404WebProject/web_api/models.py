@@ -7,11 +7,11 @@ import uuid
 
 class Author(models.Model):
     user = models.OneToOneField(User)
-    id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    github_username=models.CharField(max_length=35, blank=True, null=True)
-    bio=models.TextField(blank=True, null=True)
-    host=models.URLField()
-    friends=models.ManyToManyField("self", blank=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    github_username = models.CharField(max_length=35, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    host = models.URLField()
+    friends = models.ManyToManyField("self", blank=True)
 
     def get_idKey(self):
         return self.idKey
@@ -26,11 +26,11 @@ class Author(models.Model):
         return self.user.first_name
 
 class Post(models.Model):
-    id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title=models.CharField(max_length=500)
-    content=models.TextField()
-    tag=ListField(blank=True, default=[])
-    author=models.ForeignKey(Author, on_delete=models.CASCADE)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=500)
+    content = models.TextField()
+    tag = ListField(blank=True, default=[])
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
     public="1"
     local="2"
@@ -57,8 +57,8 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    content=models.TextField(default="")
-    post=models.ForeignKey(Post, on_delete=models.CASCADE)
-    author=models.ForeignKey(Author, on_delete=models.CASCADE)
-    publish_time=models.DateTimeField(auto_now=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    content = models.TextField(default="")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    publish_time = models.DateTimeField(auto_now=True)

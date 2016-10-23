@@ -49,8 +49,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     # # Returns an author object with user object as an field after extracting data from json.
     def create(self, validated_data):
         user_data = validated_data.pop('user')
-        user_object = User.objects.create(**user_data)
-        
+        user_object = User.objects.create_user(**user_data)
         author = Author.objects.create(user=user_object, **validated_data)
         author.save()
         

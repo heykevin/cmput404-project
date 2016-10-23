@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^friends/(?P<id1>[^/.]+)/(?P<id2>[^/.]+)/$', views.FriendCheck.as_view()),     # Used for check 2 author is friend.
     
     # /login/ endpoint using the Rest Framework JWT library view
-    # Request (form-data):
+    # Request:
     #     username (string): username of account
     #     password (string): password of account
     # Response:
