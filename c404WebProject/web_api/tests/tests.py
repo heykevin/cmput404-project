@@ -23,20 +23,40 @@ class AuthorServiceTestCase(APITestCase):
         self.assertEqual(Author.objects.all()[0].user.username, 'Ahindle')
 
     def test_get_author(self):
-        self.author = createAuthor(self)
+        self.author = createAuthor(self,0)
 
         response = self.client.get('/author/%s/' % self.author.id, {
         }, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK, response)
-        self.assertEqual(getAuthor(self)['username'], response.data['displayName'])
+        self.assertEqual(getAuthor(self,0)['username'], response.data['displayName'])
         self.assertEqual(str(self.author.id), response.data['id'])
 
+class FriendServiceTestCase(APITestCase):
+    
+    def test_friend_check_false(self):
+        self.author1 = createAuthor(self,0)
+	self.author2 = createAuthor(self,1)
+	
+        response = self.client.get('/friends/%s/%s/' % (self.author1.id, self.author2.id), {
+	}, format='json')
+	
+	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+	self.assertEqual(str(self.author1.id), response.data['authors'][0])
+	self.assertEqual(str(self.author2.id), response.data['authors'][1])
+	self.assertEqual(False, response.data['friends'])
+	
+	self.author1.friends.add(self.author2.id)
+	response = self.client.get('/friends/%s/%s/' % (self.author1.id, self.author2.id), {
+	}, format='json')	
+	self.assertEqual(True, response.data['friends'])
+        
+        
 
 class LoginTestCase(APITestCase):
     
     def setUp(self):
-        self.author = createAuthor(self)
+        self.author = createAuthor(self,0)
 
     def test_success_login(self):
         response = self.client.post('/login/', {
