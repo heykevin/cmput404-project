@@ -62,7 +62,26 @@ class FriendServiceTestCase(APITestCase):
 	
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
 	self.assertEqual("friends", response.data['query'])
-	self.assertEqual(str(self.author2.id), str(response.data['authors'][0]))        
+	self.assertEqual(self.author2.id, response.data['authors'][0])
+    
+    def test_get_friend_list(self):
+	self.author1 = createAuthor(self,0)
+	self.author2 = createAuthor(self,1)
+	self.author3 = createAuthor(self,2)
+	
+	self.author1.friends.add(self.author2.id)
+	
+	response = self.client.post('/friends/%s/' % (self.author1.id), {
+	    "query" : "friends",
+	    "author" : self.author1.id,
+	    "authors" : [self.author2.id, self.author3.id]
+	}, format='json')
+	
+	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+	self.assertEqual("friends", response.data['query'])
+	self.assertEqual(str(self.author1.id), str(response.data['author']))
+	self.assertEqual(1, len(response.data['authors']))
+	self.assertEqual(str(self.author2.id), str(response.data['authors'][0]))
 
 class LoginTestCase(APITestCase):
     

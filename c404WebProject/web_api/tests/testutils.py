@@ -17,6 +17,13 @@ USER_LIST = [
         "last_name": "Campbell",
         "email": "joshua2@ualberta.ca",
         'password': 'coolcats'
+    },
+    {
+        'username': "Eddie",
+        "first_name": "Eddie",
+        "last_name": "Antonio Santos",
+        "email": "easantos@ualberta.ca",
+        'password': 'cooldogs'
     }    
 ]
 
@@ -30,7 +37,12 @@ AUTHOR_LIST = [
         'github_username': 'coolcats',
         'bio': 'very cool',
         'host': 'www.coolcats.ca'
-    }    
+    },
+    {
+        'github_username': 'cooldogs',
+        'bio': 'very very cool',
+        'host': 'www.cooldogs.ca'
+    }        
 ]
 
 def createAuthor(self, index):
