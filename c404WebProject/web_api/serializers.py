@@ -7,8 +7,13 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email')
-
+        fields = ('username', 'first_name', 'last_name', 'email', 'password')
+        extra_kwargs = {
+            'password': {
+                'write_only': True
+            },
+        }
+        
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -30,9 +35,18 @@ class AuthorSerializer(serializers.ModelSerializer):
     Serializer used for doing author profile related operations.
     """     
     displayName = serializers.CharField(source='user.username')
-    user=UserSerializer()                                                   # Need to be created as User is a nest object of Author.
-    
-    # Returns an author object with user object as an field after extracting data from json.
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name') 
+    email = serializers.CharField(source='user.email') 
+    password = serializers.CharField(source='user.password', write_only=True) 
+
+    class Meta:
+        model = Author
+        fields = ('id', 'displayName', 'password', 'first_name', 'last_name', 
+                  'email', 'bio', 'host', 'github_username', 'friends')
+
+    # # Need to be created as User is a nest object of Author.
+    # # Returns an author object with user object as an field after extracting data from json.
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user_object = User.objects.create(**user_data)
@@ -41,11 +55,6 @@ class AuthorSerializer(serializers.ModelSerializer):
         author.save()
         
         return author
-        
-       
-    class Meta:
-        model = Author
-        fields = ('id', 'user', 'displayName', 'bio', 'url', 'git')
 
 class FriendsWithSerializer(serializers.ModelSerializer):
     """
@@ -60,11 +69,8 @@ class FriendsWithSerializer(serializers.ModelSerializer):
 
     # Returns a list of friend's id for an author.
     def getFriends(self, obj):
-        print obj
         query = obj.friends.all().values('id')
-        print query
         res = []
         for item in query:
-            print item
             res.append(item.values()[0])
         return res

@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'c404WebProject.wsgi.application'
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'web_api.auth.login_response'
+    'JWT_PAYLOAD_HANDLER': 'web_api.auth.generate_token'
 }
 
 # Database

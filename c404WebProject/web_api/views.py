@@ -26,14 +26,34 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
 
 class AuthorViewSet(viewsets.ModelViewSet):
-    """
-    A viewset for viewing and creating author instances.
-    """    
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    
-    # Function handles POST request when creating an author.
-    def post(self,request):
+
+    """
+    POST /author/
+    Request:
+        displayname (string)
+        password (string)
+        first_name (string)
+        password (string)
+        email (string)
+        bio (string)
+        host (string)
+        github_username (string)
+        friends (list)
+    Response:
+        displayname (string)
+        password (string)
+        first_name (string)
+        password (string)
+        email (string)
+        bio (string)
+        host (string)
+        github_username (string)
+        friends (list)
+        id (UUID)
+    """    
+    def post(self, request):
         serializer = AuthorSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -47,9 +67,7 @@ class PostView(APIView):
         queryset = Post.objects.get(id=pk)
         serializer = PostSerializer(queryset)
         return Response(serializer.data)
-
 '''
-
 # postview set
 class PostViewSet(viewsets.ModelViewSet):    
     # shows all authors post lists
@@ -57,7 +75,7 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
 
     # get specific post from an author
-    def get(self, reuqest, pk, format=None):
+    def get(self, request, pk, format=None):
         queryset = Post.objects.get(id=pk)
         serializer_class = PostSerializer(queryset)
         return Response(serailzer.data)
@@ -81,69 +99,57 @@ class FriendsWith(APIView):
     """
     GET /friends/<authorID>
     Response:
-        friends (list): containing friend list of author
+        authors (list): containing friend list of author
     """ 
-    
-    # Returns a single author's friend list.
-    # Request url: r'^friends/(?P<pk>[^/.]+)/$'
-    # Request data: None
-    # Response data: author with id=pk's friend list
     def get(self, request, pk, format=None):
         queryset = Author.objects.get(id=pk)
         serializer = FriendsWithSerializer(queryset)
         return Response(serializer.data)
     
-    # Response the request of ask if anyone in the list is a friend.
-    # Request url: r'^friends/(?P<pk>[^/.]+)/$'
-    # Request data: a list of id
-    # Response data: a list of id which mathes the id in the friend list of the author which id=pk 
+    """
+    POST /friend/<authorID>
+    Request:
+        query (string): "friends"
+        author (string): id of current author
+        authors (list): list of authors to check friendship
+    Response:
+        query (string): "friends"
+        author (string): id of current author
+        authors (list): list of authors that are friends
+    """
     def post(self, request, pk, format=None):
-        friend_list=FriendsWithSerializer(Author.objects.get(id=pk)).getFriends(Author.objects.get(id=pk))
-        request_list=request.data
-        match_list=[]
-        
-        for friend_id in friend_list:
-            for request_id in request_list:
-                if(str(friend_id)==str(request_id)):
-                    match_list.append(request_id)
-        
-        return Response(match_list)
+        friend_queryset = Author.objects.get(id=request.data['author']).friends.all()
+        request_list = request.data['authors']
+        match_list = []
+        for friend in request_list:
+            if friend_queryset.filter(id=friend).exists():
+                match_list.append(friend)
+
+        res = dict()
+        res['authors'] = match_list
+        res['author'] = request.data['author']
+        res['query'] = 'friends'
+        return Response(res)
 
 class FriendCheck(APIView):
     """
-    APIview used for checking if two authors is friend.
-    """     
-
-    # Request url: r'^friends/(?P<id1>[^/.]+)/(?P<id2>[^/.]+)/$'
-    # Request data: None
-    # Response data: true if author with id1 and id2 are friend, false otherwise. 
+    GET /friends/<authorID1>/<authorID2>
+    Response: 
+        query (string): "friends"
+        authors (string): ids of checked authors
+        friends (bool): true iff friends
+    """
     def get(self, request, id1, id2, format=None):
-        obj1 = Author.objects.get(id=id1)
-        obj2 = Author.objects.get(id=id2)
-        list1 = obj1.friends.all().values('id')
-        list2 = obj2.friends.all().values('id')
+        try:
+            queryset1 = Author.objects.get(id=id1)
+            queryset2 = Author.objects.get(id=id2)
+        except Author.DoesNotExist:
+            return Response('', 404)
 
-        left_side_check=right_side_check=False
-
-        for item in list1:
-            if str(item.values()[0])==str(id2):
-                left_side_check=True
-                break
-        
-        for item in list2:
-            if str(item.values()[0])==str(id1):
-                right_side_check=True
-                break        
-        
-        if(left_side_check and right_side_check):
-            return Response(True)
-        
-        return Response(False)
-
-class Login(APIView):
-    def get(self, request, format=None):
-        print json.dumps(request.user)
-        # login(request, request.user)
-        # author = Author.objects.get(user=request.user)
-        # print author
-        return Response(True)
+        list1 = [str(id['id']) for id in queryset1.friends.all().values('id')]
+        list2 = [str(id['id']) for id in queryset2.friends.all().values('id')]
+        res = dict()
+        res['authors'] = [id1, id2]
+        res['query'] = "friends"
+        res['friends'] = (id1 in list2 and id2 in list1)
+        return Response(res)

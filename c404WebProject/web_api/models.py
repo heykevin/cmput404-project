@@ -8,9 +8,9 @@ import uuid
 class Author(models.Model):
     user = models.OneToOneField(User)
     id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    git=models.CharField(max_length=35, blank=True, null=True)
+    github_username=models.CharField(max_length=35, blank=True, null=True)
     bio=models.TextField(blank=True, null=True)
-    url=models.URLField()
+    host=models.URLField()
     friends=models.ManyToManyField("self", blank=True)
 
     def get_idKey(self):
@@ -58,7 +58,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    content=models.TextField()
+    content=models.TextField(default="")
     post=models.ForeignKey(Post, on_delete=models.CASCADE)
     author=models.ForeignKey(Author, on_delete=models.CASCADE)
     publish_time=models.DateTimeField(auto_now=True)
