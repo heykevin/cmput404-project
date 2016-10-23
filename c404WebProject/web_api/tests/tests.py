@@ -34,7 +34,7 @@ class AuthorServiceTestCase(APITestCase):
 
 class FriendServiceTestCase(APITestCase):
     
-    def test_friend_check_false(self):
+    def test_friend_check(self):
         self.author1 = createAuthor(self,0)
 	self.author2 = createAuthor(self,1)
 	
