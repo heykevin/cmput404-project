@@ -5,10 +5,16 @@ export default class ApiPosts {
     static getPosts(action) {
         console.log("posts api");
         const defaultPageSize = 10;
-        let posts = [], response;
-        // mock data below
-        return [
+        let query, post = [];
+        // if the method is author, then it'll be /author/posts or author/{author_id}/posts
+        if (action.method == "author") {
+            query = action.authorId ? "/author/" + action.authorId + "/posts" : "/author/posts";
+        } else {
+            query = action.postId ? "/posts/" + action.postId + "/posts" : "/posts";
+            query += action.comments ? "/comments" : "";
+        }
 
+        const data = [
             {
 				id: 1,
                 title: "GTAV Script",
@@ -16,7 +22,7 @@ export default class ApiPosts {
                 author: "RockStar",
                 content: "No content",
                 dateTime: "02/09/2014",
-				origin: "https://www.google.com",
+				origin: "/post/1",
             }, {
 				id: 2,
                 title: "Cinnamon Peeler",
@@ -28,7 +34,7 @@ export default class ApiPosts {
                     "through markets/without the profession of my fingers/" +
                     "floating over you.",
                 dateTime: "01/01/1989",
-				origin: "https://www.google.com",
+				origin: "/post/2",
 
             }, {
 				id: 3,
@@ -38,26 +44,18 @@ export default class ApiPosts {
                 author: "Homer",
                 content: "Oh Goddess of Inspiration, help me sing of wily Odysseus, that master of schemes",
                 dateTime: "02/28/1300",
-				origin: "https://www.google.com",
+				origin: "/post/3",
             },
         ];
 
-        // FALL THROUGH BY DESIGN
-        // switch (action.visibility) {
-        //     case "PUBLIC":
-        //         // query = /posts?visibility=PUBLIC
-        //
-        //     case "FRIENDS":
-        //         // query += visibility in query ? query += "+FRIENDS" : /posts?visibility="FRIENDS"
-        //
-        //     case "PRIVATE":
-        //         query += PRIVATE if visibility is defined otherwise only get private
-        //     case "FOAF":
-        //
-        //     default:
-        //     ADD paginationQuery if query is defined otherwise get public posts
-		//
-        // }
+        // Add pagination query here.
+
+        // mock data return mechanism
+        if (action.postId) {
+            return [data[action.postId-1]];
+        } else {
+            return data;
+        }
 
 		// HANDLE RESPONSE
         // return fetch(query).then((res) => {
@@ -77,5 +75,9 @@ export default class ApiPosts {
         //     console.log(posts);
         //     return posts;
         // });
+    }
+
+    static savePost(action) {
+        console.log("api - save post")
     }
 }

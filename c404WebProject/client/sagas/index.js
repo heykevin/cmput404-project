@@ -2,7 +2,7 @@ import { takeLatest } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
 
 import { usersFetchList, usersAdd, usersEdit, usersDelete } from './users';
-import { postsGetPosts } from './posts';
+import { postsGetPosts, postsSavePost } from './posts';
 import { authLogin, authSignup, authLogout } from './auth';
 
 /**
@@ -15,6 +15,7 @@ export function* sagas() {
         fork(takeLatest, 'usersEdit', usersEdit),
         fork(takeLatest, 'usersDelete', usersDelete),
         fork(takeLatest, 'postsGetPosts', postsGetPosts),
+        fork(takeLatest, 'postsSavePost', postsSavePost),
         fork(takeLatest, 'authLogin', authLogin),
         fork(takeLatest, 'authSignup', authSignup),
         fork(takeLatest, 'authLogout', authLogout),

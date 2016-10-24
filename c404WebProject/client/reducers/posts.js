@@ -14,4 +14,9 @@ class reducerClass
         new_state.list = action.posts;
         return new_state;
     }
+
+    static savePostsSuccess(new_state, aciton)
+    {
+        return new_state;
+    }
 }

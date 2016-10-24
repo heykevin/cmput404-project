@@ -29,6 +29,18 @@ export class Menu extends React.Component
                             <Glyphicon glyph="user"/>
                         </NavItem>
                     </LinkContainer>
+                    <LinkContainer to="/myposts">
+                        <NavItem className="nav-item float-right">
+                            My posts
+                            <Glyphicon glyph="list"/>
+                        </NavItem>
+                    </LinkContainer>
+                    <LinkContainer to="/friends">
+                        <NavItem className="nav-item float-right">
+                            Friends
+                            <Glyphicon glyph="globe"/>
+                        </NavItem>
+                    </LinkContainer>
                     <LinkContainer to="/newpost">
                         <NavItem className="nav-item float-right">
                             Add Post

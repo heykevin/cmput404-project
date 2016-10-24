@@ -10,7 +10,7 @@ export default class Dashboard extends React.Component
         return(
             <div className="page-home">
                 <span>MATHA FUCKING DASHBOARD</span>
-                <PostList visibility="['PUBLIC','FOAF','FRIENDS','PRIVATE']"/>
+                <PostList method="author"/>
             </div>
         );
     }

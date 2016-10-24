@@ -28,6 +28,7 @@
   "author": "Kevin Tang",
   "license": "",
   "dependencies": {
+    "react-markdown-editor": "0.4.0",
     "react": "^15.3.2",
     "react-bootstrap": "^0.30.3",
     "react-dom": "^15.3.2",

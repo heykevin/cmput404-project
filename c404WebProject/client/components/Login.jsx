@@ -9,7 +9,6 @@ export class Login extends React.Component
     constructor(props)
     {
         super(props);
-
         this.state = {
             status: 0,
             passwordValidation: this.props.passwordValidation | {}
@@ -28,7 +27,7 @@ export class Login extends React.Component
     }
 
     loginRequest(username, password) {
-        console.log("trying to log in with username: " + username + "password: " + password);
+        console.log("trying to logt in with username: " + username + "password: " + password);
         this.props.dispatch({type: 'authLogin', username: username, password: password});
     }
 }

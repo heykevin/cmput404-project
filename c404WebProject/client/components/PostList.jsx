@@ -1,7 +1,7 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
-import { ProgressBar, List, Pagination, ListGroup } from 'react-bootstrap';
+import {connect} from 'react-redux';
+import {push} from 'react-router-redux';
+import {ProgressBar, List, Pagination, ListGroup} from 'react-bootstrap';
 
 import PostListElement from './PostListElement.jsx';
 
@@ -11,16 +11,11 @@ export class PostList extends React.Component
     {
         super(props);
         this.state = {
-            posts: [],
+            posts: []
         }
 
-        // when we don't have any posts, update the state with the users list taken from the api
-        if (this.props.posts.length == 0) {
-            console.log("constructor -- posts")
-            this.props.dispatch({type: 'postsGetPosts', visibility: this.props.visibility});
-        }
-
-        // bind <this> to the event method
+        // posts can be retrieve by either author/{AUTHOR_ID}/posts or posts
+        this.props.dispatch({type: 'postsGetPosts', method: this.props.method, authorId: this.props.authorId});
         this.changePage = this.changePage.bind(this);
     }
 
@@ -36,37 +31,28 @@ export class PostList extends React.Component
         // render
         if (this.props.posts.length) {
             // show the list of users
-            return(
+            return (
                 <div>
                     <ListGroup>
                         {this.props.posts.map((post, index) => {
                             if (index >= start_offset && start_count < per_page) {
                                 start_count++;
-                                return (
-                                    <PostListElement key={post.id} id={post.id}/>
-                                );
+                                return (<PostListElement key={post.id} id={post.id} view="preview"/>);
                             }
                         })}
                     </ListGroup>
-                    <Pagination className="users-pagination pull-right" bsSize="medium" maxButtons={10} first last next prev
-                        boundaryLinks items={pages} activePage={current_page} onSelect={this.changePage}/>
+                    <Pagination className="users-pagination pull-right" bsSize="medium" maxButtons={10} first last next prev boundaryLinks items={pages} activePage={current_page} onSelect={this.changePage}/>
                 </div>
             );
         } else {
             // show the loading state
-            return(
-                <ProgressBar active now={100}/>
-            );
+            return (<ProgressBar active now={100}/>);
         }
     }
 
-    /**
-     * Change the page lists' current page
-     */
     changePage(page)
     {
-        this.props.dispatch(push('/?visibility=' + this.props.visibility
-            + '&page=' + page ));
+        this.props.dispatch(push('/page=' + page));
     }
 }
 
@@ -77,7 +63,7 @@ function mapStateToProps(state) {
 
     return {
         posts: state.posts.list || [],
-        page: Number(state.routing.locationBeforeTransitions.query.page) || 1,
+        page: Number(state.routing.locationBeforeTransitions.query.page) || 1
     };
 }
 export default connect(mapStateToProps)(PostList);

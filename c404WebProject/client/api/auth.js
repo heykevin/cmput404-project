@@ -7,10 +7,10 @@ export default class ApiAuth
     {
         let response = [];
 
-		// Mock
-		return {
-			status: 1
-		}
+        // Mock
+        return {
+            status: (action.username === "alice" && action.password === "123456")
+        }
     }
 
 	static signup(action)

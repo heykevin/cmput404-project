@@ -13,7 +13,7 @@ export function* authLogin(action) {
 
     // call the api to log in
     console.log("saga -- auth Login")
-    const response = yield call(ApiAuth.login);
+    const response = yield call(ApiAuth.login, action);
 
     // dispatch the success action with the log in response attached
     yield put({
@@ -27,7 +27,7 @@ export function* authLogin(action) {
 export function* authSignup(action) {
 
     console.log("saga -- auth Sign up")
-    const response = yield call(ApiAuth.signup);
+    const response = yield call(ApiAuth.signup, action);
     setAuthAndRedirectDashboard();
     yield put({
         type: 'auth.getResponseSuccess',

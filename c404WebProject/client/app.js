@@ -15,7 +15,10 @@ import UserEdit from './pages/UserEdit.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
+import PostEditor from './components/PostEditor.jsx';
+
 import Dashboard from './pages/Dashboard.jsx';
+import Post from './pages/Post.jsx';
 
 // create the store
 const sagaMiddleware = createSagaMiddleware();
@@ -53,6 +56,10 @@ function checkAuth(nextState, replace) {
 }
 
 // render the main component
+// Move             <Router path="/newpost" component={PostEditor}/>
+//            <Route path="/dashboard" component={Dashboard}/>
+// into             <Route onEnter={checkAuth}></Route>
+// Once we've got a solid log in flow
 ReactDOM.render(
     <Provider store={store}>
     <Router history={history}>
@@ -60,9 +67,10 @@ ReactDOM.render(
             <IndexRoute component={Home}/>
             <Route path="/login" component={Login}/>
             <Route path="/signup" component={Signup}/>
-            <Route onEnter={checkAuth}>
-                <Route path="/dashboard" component={Dashboard}/>
-            </Route>
+            <Router path="/newpost" component={PostEditor}/>
+            <Route path="/dashboard" component={Dashboard}/>
+            <Route path="/post/*" component={Post}/>
+            <Route onEnter={checkAuth}></Route>
             <Route path="*" component={NotFound}/>
         </Route>
     </Router>
