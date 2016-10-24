@@ -1,21 +1,89 @@
-.footer {
-  text-align: center;
+#app {
+    background: #337ab7;
+    height: 100vh;
 }
 
-.nav {
-  margin: 30px 0 20px 0;
-}
+.container {
+    height: 100%;
 
-.users-pagination {
-  margin-top: 0;
-}
+    .list-group {
+        line-height: 2em;
 
-.page-user-edit form {
-  width: 500px;
-  margin-top: 40px;
-}
+        h4 {
+            padding: 8px;
+            background: #337ab7;
+            color: white;
+            font-weight: bolder;
+            border-radius: 5px;
+            margin-bottom: 0 !important;
+        }
 
-.progress {
-  margin: 10px auto;
-  width: 300px;
+        .post-info {
+            text-align: right;
+            padding-right: 5px;
+            background: #eee;
+            border-radius: 5px;
+        }
+
+        .post-description {
+            padding-top: 15px;
+            padding-left: 40px;
+        }
+
+        .post-content {
+            padding-top: 15px;
+            padding-left: 40px;
+        }
+    }
+
+    .form-group {
+        padding-bottom: 10px;
+    }
+
+    .glyphicon {
+        padding-left: 5px;
+    }
+
+    .auth-form {
+        margin: auto;
+        width: 50%;
+        background: white;
+        padding: 50px 50px 20px 50px;
+        border-radius: 15px;
+    }
+
+    .footer {
+        text-align: center;
+    }
+
+    .nav {
+        margin: 30px 0 40px;
+        padding: 8px;
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    .users-pagination {
+        margin-top: 0;
+        background: white;
+        padding: 10px;
+    }
+
+    .page-user-edit form {
+        width: 500px;
+        margin-top: 40px;
+    }
+
+    .progress {
+        margin: 10px auto;
+        width: 300px;
+    }
+
+    .float-right {
+        float: right !important;
+    }
+
+    .center {
+        align-items: center;
+    }
 }
