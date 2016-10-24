@@ -120,6 +120,9 @@ class FriendsWith(APIView):
         authors (list): list of authors that are friends
     """
     def post(self, request, pk, format=None):
+        if request.data['query'] != 'friends':
+            return Response("Incorrect request field: 'query' field should be 'friends'.", status.HTTP_400_BAD_REQUEST)
+        
         friend_queryset = Author.objects.get(id=request.data['author']).friends.all()
         request_list = request.data['authors']
         match_list = []

@@ -72,6 +72,11 @@ class FriendServiceTestCase(APITestCase):
 	self.author1.friends.add(self.author2.id)
 	
 	response = self.client.post('/friends/%s/' % (self.author1.id), {
+	    "query" : "abc",
+	}, format='json')
+	self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response)
+	
+	response = self.client.post('/friends/%s/' % (self.author1.id), {
 	    "query" : "friends",
 	    "author" : self.author1.id,
 	    "authors" : [self.author2.id, self.author3.id]
