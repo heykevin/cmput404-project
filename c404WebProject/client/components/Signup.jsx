@@ -33,6 +33,7 @@ export class Signup extends React.Component
 
     signupRequest(username, password) {
         console.log("trying to sign up with username: " + username + "password: " + password);
+        this.props.dispatch({type: "authSignup", username: username, password: password});
     }
 }
 

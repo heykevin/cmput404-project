@@ -6,9 +6,11 @@ export default class Dashboard extends React.Component
 {
     render()
     {
+        // Need to add SERVERONLY to
         return(
             <div className="page-home">
-                <PostList visibility = "PUBLIC"/>
+                <span>MATHA FUCKING DASHBOARD</span>
+                <PostList visibility="['PUBLIC','FOAF','FRIENDS','PRIVATE']"/>
             </div>
         );
     }

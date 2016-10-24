@@ -8,7 +8,7 @@ export default class Home extends React.Component
     {
         return(
             <div className="page-home">
-                <PostList visibility = "PUBLIC"/>
+                <PostList visibility = "['PUBLIC']"/>
             </div>
         );
     }

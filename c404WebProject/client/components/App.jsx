@@ -3,15 +3,14 @@ import { connect } from 'react-redux';
 
 import Menu from './Menu.jsx';
 
-export class App extends React.Component
+export default class App extends React.Component
 {
     render()
     {
         return (
             <div className="container">
                 <div className="row">
-                    <Menu loggedIn={this.props.loggedIn}
-                        currentlySending={this.props.currentlySending}
+                    <Menu
                         history={this.props.history}
                         dispatch={this.props.dispatch}
                         location={this.props.location}/>
@@ -23,11 +22,3 @@ export class App extends React.Component
         );
     }
 }
-
-function mapStateToProps(state) {
-    return {
-        loggedIn: state.loggedIn,
-        currentlySending: state.loggedIn
-    };
-}
-export default connect(mapStateToProps)(App);

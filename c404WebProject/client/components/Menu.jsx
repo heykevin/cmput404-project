@@ -8,37 +8,37 @@ export class Menu extends React.Component
     constructor(props)
     {
         super(props);
-        this.logout = this.logout.bind(this);
-        this.clearError = this.clearError.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
     }
 
     render()
     {
-        if (this.props.loggedIn) {
+        if (Number(sessionStorage.loggedIn)) {
             return (
-                <Nav bsStyle="pills" onSelect={handleSelect}>
-                    <IndexLinkContainer to="/">
-                        <NavItem className="nav-item">
-                            Hello World Blog
-                        </NavItem>
-                    </IndexLinkContainer>
-                    <LinkContainer to="/dashboard">
-                        <NavItem className="nav-item float-right" eventKey={"dashboard"}>
-                            Dashboard
-                            <Glyphicon glyph="dashboard"/>
-                        </NavItem>
-                    </LinkContainer>
+                <Nav bsStyle="pills" onSelect={this.handleSelect}>
+                    <NavItem className="nav-item">
+                        Hello World Blog
+                    </NavItem>
+                    <NavItem className="nav-item float-right" eventKey={"logOut"}>
+                        Log Out
+                        <Glyphicon glyph="log-out"/>
+                    </NavItem>
                     <LinkContainer to="/profile">
-                        <NavItem className="nav-item float-right" eventKey={"profile"}>
+                        <NavItem className="nav-item float-right">
                             Profile
                             <Glyphicon glyph="user"/>
                         </NavItem>
                     </LinkContainer>
-                    <LinkContainer to="/">
-                        <NavItem className="nav-item float-right" eventKey={"logOut"}>
-                            Log Out
-                            <Glyphicon glyph="log-out"/>
+                    <LinkContainer to="/newpost">
+                        <NavItem className="nav-item float-right">
+                            Add Post
+                            <Glyphicon glyph="plus-sign"/>
+                        </NavItem>
+                    </LinkContainer>
+                    <LinkContainer to="/dashboard">
+                        <NavItem className="nav-item float-right">
+                            Dashboard
+                            <Glyphicon glyph="dashboard"/>
                         </NavItem>
                     </LinkContainer>
                 </Nav>
@@ -51,16 +51,16 @@ export class Menu extends React.Component
                             Hello World Blog
                         </NavItem>
                     </IndexLinkContainer>
-                    <LinkContainer to="/login">
-                        <NavItem className="nav-item float-right" eventKey={"logIn"}>
-                            Log In
-                            <Glyphicon glyph="log-in"/>
-                        </NavItem>
-                    </LinkContainer>
                     <LinkContainer to="/signup">
-                        <NavItem className="nav-item float-right" eventKey={"signUp"}>
+                        <NavItem className="nav-item float-right">
                             Sign Up
                             <Glyphicon glyph="plus"/>
+                        </NavItem>
+                    </LinkContainer>
+                    <LinkContainer to="/login">
+                        <NavItem className="nav-item float-right">
+                            Log In
+                            <Glyphicon glyph="log-in"/>
                         </NavItem>
                     </LinkContainer>
                 </Nav>
@@ -70,32 +70,12 @@ export class Menu extends React.Component
 
     handleSelect(key) {
         switch (key) {
-            case "logIn":
-
-                break;
-            case "signUp":
-
-                break;
             case "logOut":
-
-                break;
-            case "dashboard":
-
-                break;
-            case "profile":
-
+                this.props.dispatch({type: "authLogout"});
                 break;
             default:
 
         }
-    }
-
-    logout() {
-        this.props.dispatch(logout())
-    }
-
-    clearError() {
-        this.props.dispatch(clearError())
     }
 }
 

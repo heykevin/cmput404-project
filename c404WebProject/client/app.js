@@ -28,12 +28,8 @@ const history = syncHistoryWithStore(browserHistory, store);
 sagaMiddleware.run(sagas);
 
 function checkAuth(nextState, replace) {
-    let {loggedIn} = store.getState();
 
-    store.dispatch(clearError());
-    console.log("Checking Auth: " + {
-        loggedIn
-    });
+    let loggedIn = Number(sessionStorage.loggedIn);
     // Check if the path isn't dashboard. That way we can apply specific logic to
     // display/render the path we want to
     if (nextState.location.pathname !== '/dashboard') {

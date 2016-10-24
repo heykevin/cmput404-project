@@ -11,7 +11,7 @@ export const reducers = combineReducers({
     posts: posts,
     auth: auth,
     routing: routerReducer,
-    form: formReducer,
+    form: formReducer
 });
 
 export function reducerCall(state, action, reducerClass) {
@@ -24,6 +24,10 @@ export function reducerCall(state, action, reducerClass) {
             return name;
         }
     });
+
+    if (action.type === "setAuth") {
+        return {state, loggedIn:1};
+    }
 
     // check if the action method exists in the static class
     if (methods.find(x => x === method)) {

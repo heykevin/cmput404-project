@@ -42,27 +42,25 @@ export default class ApiPosts {
             },
         ];
 
+        // FALL THROUGH BY DESIGN
         // switch (action.visibility) {
         //     case "PUBLIC":
-        //         // GET /posts + paginationQuery
-        //         break;
+        //         // query = /posts?visibility=PUBLIC
+        //
         //     case "FRIENDS":
-        //         // GEt /posts?visibility=FRIENDS + paginationQuery
-        //         break;
+        //         // query += visibility in query ? query += "+FRIENDS" : /posts?visibility="FRIENDS"
+        //
         //     case "PRIVATE":
-        //         // GET /posts?visibility=PRIVATE + paginationQuery
-        //         break;
+        //         query += PRIVATE if visibility is defined otherwise only get private
         //     case "FOAF":
-        //         // GEt /posts?visibility=FOAF + paginationQuery
-        //         break;
+        //
         //     default:
-        //         console.log("No visibility is defined, will get public posts only");
-        //         // get /posts
+        //     ADD paginationQuery if query is defined otherwise get public posts
 		//
         // }
 
 		// HANDLE RESPONSE
-        // return fetch('/posts').then((res) => {
+        // return fetch(query).then((res) => {
         //     return res.json();
         // }).then((postsObj) => {
         //     console.log(postsObj.posts);
