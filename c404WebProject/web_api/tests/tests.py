@@ -1,6 +1,8 @@
 from django.test import TestCase
-from rest_framework.test import APITestCase, APIClient
+import base64
+from rest_framework.test import APITestCase
 from rest_framework import status
+from requests.auth import HTTPBasicAuth
 from testutils import check201, createAuthor, getAuthor
 from ..models import Author, User
 
@@ -94,20 +96,13 @@ class LoginTestCase(APITestCase):
         self.author = createAuthor(self,0)
 
     def test_success_login(self):
-        response = self.client.post('/login/', {
-            'username': 'Ahindle',
-            'password': 'coolbears'
-            }, format='json'
-        )
-
+        self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
+        response = self.client.post('/login/')
         self.assertEqual(response.status_code, status.HTTP_200_OK, response)
-        self.assertTrue(response.data['token'])
+        self.assertTrue(response.data['author'])
 
     def test_fail_login(self):
-        response = self.client.post('/login/', {
-            'username': 'Ahindle',
-            'password': 'wrongpass'
-            }, format='json'
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response)
-        self.assertTrue(response.data['non_field_errors'] == ['Unable to login with provided credentials.'])
+        self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:wrongpass'))
+        response = self.client.post('/login/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED, response)
+        self.assertTrue(response.data['detail'] == 'Invalid username/password.')

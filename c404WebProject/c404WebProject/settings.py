@@ -72,12 +72,14 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'c404WebProject.wsgi.application'
-
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
-    'JWT_PAYLOAD_HANDLER': 'web_api.auth.generate_token'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+    ) 
 }
+
+
+WSGI_APPLICATION = 'c404WebProject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

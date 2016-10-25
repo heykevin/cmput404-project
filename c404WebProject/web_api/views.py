@@ -1,14 +1,15 @@
 from django.http import HttpResponse
+from django.contrib.auth import login, logout
+from django.contrib.auth.models import User, Group
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import BasicAuthentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
-from django.contrib.auth.models import User, Group
 from .models import Author, Post
 from serializers import *
 import json
@@ -138,7 +139,7 @@ class FriendsWith(APIView):
 
 class FriendCheck(APIView):
     """
-    GET /friends/<authorID1>/<authorID2>
+    GET /friend/<authorID1>/<authorID2>
     Response: 
         query (string): "friends"
         authors (string): ids of checked authors
@@ -158,3 +159,20 @@ class FriendCheck(APIView):
         res['query'] = "friends"
         res['friends'] = (id1 in list2 and id2 in list1)
         return Response(res)
+
+class Login(APIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated,)
+    """
+    POST /login
+    Request:
+        encoded login (string): base64 encoded username:password
+    Response: 
+        author (object): author of corresponding user
+    """
+    def post(self, request):
+        if request.user.is_authenticated() is False:
+            login(request, request.user)
+        author = Author.objects.get(user=request.user)
+        serializer = AuthorSerializer(author)
+        return Response({'author': serializer.data})
