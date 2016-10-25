@@ -7,16 +7,16 @@ export default function posts(state = {}, action) {
 class reducerClass
 {
 
-    static getPostsSuccess(new_state, action)
+    static getPostsResolved(new_state, action)
     {
-        console.log("posts reducer and following new state: ");
-        console.dir(new_state);
         new_state.list = action.posts;
         return new_state;
     }
 
-    static savePostsSuccess(new_state, aciton)
+    static savePostsResolved(new_state, aciton)
     {
+        new_state.response = action.response;
+        new_state.postData = action.postData;
         return new_state;
     }
 }

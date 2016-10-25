@@ -11,12 +11,21 @@ export function* postsGetPosts(action) {
 
     // dispatch the success action with the posts attached
     yield put({
-        type: 'posts.getPostsSuccess',
+        type: 'posts.getPostsResolved',
         posts: posts,
     });
 }
 
 export function* postsSavePost(action) {
     console.log("sage -- save post");
-    const response = yield call(ApiPosts.savePost);
+    const response = yield call(ApiPosts.savePost, action);
+
+    // dispatch success action with response and also action.postData in
+    // case the response indicates a save failure and we need to restore
+    // the user's data
+    yield put({
+        type: 'posts.savePostResolved',
+        response: response,
+        postData: action.postData
+    });
 }

@@ -78,6 +78,9 @@ export default class ApiPosts {
     }
 
     static savePost(action) {
-        console.log("api - save post")
+        console.log("api - save post");
+        return {
+            status: 201
+        }
     }
 }

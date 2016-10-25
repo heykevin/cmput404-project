@@ -35,7 +35,7 @@ export class PostEditor extends React.Component {
                         <FormControl id="description" type="text" label="Description" placeholder="Description" required={true} onChange={this.onDescriptionChange}/>
                     </FormGroup>
                     <FormGroup>
-                        <MarkdownEditor id="content" initialContent="Content" iconsSet="font-awesome" onContentChange={this.onChange}/>
+                        <MarkdownEditor id="content" initialContent="" iconsSet="font-awesome" onContentChange={this.onChange}/>
                     </FormGroup>
                     <FormGroup>
                         <Button className="post-editor-save" type="submit" disabled={this.state.disableButton}>
@@ -52,15 +52,17 @@ export class PostEditor extends React.Component {
         let data = {
             title: this.state.title,
             description: this.state.description,
-            content: this.state.content
+            content: this.state.content,
+            // author:
+            // categories:
+            // dateTime:
+            // visibility:
         };
-        console.dir(data);
         this.props.dispatch({type: "postsSavePost", postData: data});
     }
 
     onChange(content)
     {
-        console.log(content);
         this.setState({
             content: content,
             disableButton: !this.getButtonAvailability()
@@ -69,7 +71,6 @@ export class PostEditor extends React.Component {
 
     onTitleChange(event)
     {
-        console.log("title: ", event.target.value);
         this.setState({
             title: event.target.value,
             disableButton: !this.getButtonAvailability()
@@ -78,7 +79,6 @@ export class PostEditor extends React.Component {
 
     onDescriptionChange(event)
     {
-        console.log("description: ", event.target.value);
         this.setState({
             description: event.target.value,
             disableButton: !this.getButtonAvailability()
@@ -86,7 +86,7 @@ export class PostEditor extends React.Component {
     }
 
     getButtonAvailability() {
-        return this.state.title.length > 0 && this.state.description.length > 0 && (this.state.content.length > 0 && this.state.content !== "Content");
+        return this.state.title.length > 0 && this.state.description.length > 0 && this.state.content.length > 0;
     }
 }
 
