@@ -4,7 +4,6 @@ from django.contrib.auth.models import User, Group
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BasicAuthentication
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 from rest_framework import status
