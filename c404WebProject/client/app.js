@@ -19,6 +19,7 @@ import PostEditor from './components/PostEditor.jsx';
 
 import Dashboard from './pages/Dashboard.jsx';
 import Post from './pages/Post.jsx';
+import MyPosts from './pages/MyPosts.jsx';
 
 // create the store
 const sagaMiddleware = createSagaMiddleware();
@@ -69,6 +70,7 @@ ReactDOM.render(
             <Route path="/signup" component={Signup}/>
             <Router path="/newpost" component={PostEditor}/>
             <Route path="/dashboard" component={Dashboard}/>
+            <Route path="/myposts" component={MyPosts}/>
             <Route path="/post/*" component={Post}/>
             <Route onEnter={checkAuth}></Route>
             <Route path="*" component={NotFound}/>

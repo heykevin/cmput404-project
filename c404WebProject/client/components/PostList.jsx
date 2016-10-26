@@ -11,7 +11,8 @@ export class PostList extends React.Component
     {
         super(props);
         this.state = {
-            posts: []
+            posts: [],
+            unresolved: false
         }
 
         // posts can be retrieve by either author/{AUTHOR_ID}/posts or posts
@@ -37,16 +38,23 @@ export class PostList extends React.Component
                         {this.props.posts.map((post, index) => {
                             if (index >= start_offset && start_count < per_page) {
                                 start_count++;
-                                return (<PostListElement key={post.id} id={post.id} view="preview"/>);
+                                return (<PostListElement key={post.id} id={post.id} preview={true} canEdit={this.props.canEdit}/>);
                             }
                         })}
                     </ListGroup>
                     <Pagination className="users-pagination pull-right" bsSize="medium" maxButtons={10} first last next prev boundaryLinks items={pages} activePage={current_page} onSelect={this.changePage}/>
                 </div>
             );
-        } else {
+        } else if (this.state.unresolved) {
             // show the loading state
             return (<ProgressBar active now={100}/>);
+        } else {
+            return (
+                <div className="no-posts">
+                    You currently do not have any posts available to read. <br/>
+                    Click <a href="/newpost">Add Post</a> to make a new post!
+                </div>
+            );
         }
     }
 
@@ -63,7 +71,8 @@ function mapStateToProps(state) {
 
     return {
         posts: state.posts.list || [],
-        page: Number(state.routing.locationBeforeTransitions.query.page) || 1
+        page: Number(state.routing.locationBeforeTransitions.query.page) || 1,
+        resolved: state.posts.resolved || false
     };
 }
 export default connect(mapStateToProps)(PostList);

@@ -29,3 +29,13 @@ export function* postsSavePost(action) {
         postData: action.postData
     });
 }
+
+export function* postsDeletePost(action) {
+    console.log("sage -- delete post");
+    const response = yield call(ApiPosts.deletePost, action);
+
+    yield put({
+        type: 'posts.deletePostResolved',
+        response: response
+    });
+}

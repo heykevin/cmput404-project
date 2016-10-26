@@ -3,6 +3,36 @@
     height: 100vh;
 }
 
+.visible {
+    display: block;
+}
+
+.invisible {
+    display: none;
+}
+
+.float-right {
+    float: right !important;
+}
+
+.center {
+    align-items: center;
+}
+
+.modal-content {
+    width: 80%;
+    margin: auto;
+
+    .btn-default {
+        float: left;
+        width: 20%;
+    }
+
+    .btn-primary {
+        width: 20%;
+    }
+}
+
 .container {
     height: 100%;
     min-width: 1100px;
@@ -10,7 +40,7 @@
     .post-editor {
         width: 100%;
         margin: auto;
-        background: lightblue;
+        background: #eee;
         border-radius: 20px;
 
         .form-group {
@@ -24,16 +54,31 @@
         float: right;
     }
 
+    .no-posts {
+        background: white;
+        padding-top: 2em;
+        padding-bottom: 2em;
+        text-align: center;
+        width: 30%;
+        margin: 5em auto;
+        border-radius: 13px;
+    }
+
     .list-group {
         line-height: 2em;
 
-        h4 {
+        .post-title {
             padding: 8px;
             background: #337ab7;
             color: white;
             font-weight: bolder;
             border-radius: 5px;
             margin-bottom: 0 !important;
+
+            .post-title-font {
+                font-size: 1.25em;
+                color: white;
+            }
         }
 
         .post-info {
@@ -95,13 +140,5 @@
     .progress {
         margin: 10px auto;
         width: 300px;
-    }
-
-    .float-right {
-        float: right !important;
-    }
-
-    .center {
-        align-items: center;
     }
 }

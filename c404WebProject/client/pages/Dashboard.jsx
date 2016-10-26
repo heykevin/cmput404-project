@@ -6,11 +6,11 @@ export default class Dashboard extends React.Component
 {
     render()
     {
-        // Need to add SERVERONLY to
+        // http://service/author/posts
         return(
             <div className="page-home">
                 <span>MATHA FUCKING DASHBOARD</span>
-                <PostList method="author"/>
+                <PostList method="author" canEdit={false}/>
             </div>
         );
     }

@@ -6,10 +6,7 @@ export default class Home extends React.Component
 {
     render()
     {
-        return(
-            <div className="list-group">
-                <PostList method="author" authorId={this.props.authorId}/>
-            </div>
-        );
+        // http://service/author/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
+        return (<PostList method="author" preview={true} canEdit={true} authorId={this.props.authorId}/>);
     }
 }
