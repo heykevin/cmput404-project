@@ -1,0 +1,39 @@
+[
+{
+    "fields": {
+        "bio": "Dogs are so cool!",
+        "host": "http://cooldogs.com",
+        "friends": [],
+        "user": 9,
+        "github_username": "cooldogs"
+    },
+    "model": "web_api.author",
+    "pk": "0eea0ea0-fca3-48e2-bdaa-eca622557811"
+},
+{
+    "fields": {
+        "bio": "Cats are so cool!",
+        "host": "http://coolcats.com",
+        "friends": [
+            "f4884d19-383e-4fbd-b64c-eb9a7a86c45f"
+        ],
+        "user": 8,
+        "github_username": "coolcats"
+    },
+    "model": "web_api.author",
+    "pk": "6a0c3342-0c68-434f-b497-6a9d10b12efe"
+},
+{
+    "fields": {
+        "bio": "Bears are so cool.",
+        "host": "http://coolbears.com",
+        "friends": [
+            "6a0c3342-0c68-434f-b497-6a9d10b12efe"
+        ],
+        "user": 7,
+        "github_username": "coolbears"
+    },
+    "model": "web_api.author",
+    "pk": "f4884d19-383e-4fbd-b64c-eb9a7a86c45f"
+}
+]
