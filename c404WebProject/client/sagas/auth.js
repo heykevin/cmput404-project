@@ -10,18 +10,21 @@ import ApiAuth from '../api/auth';
 
 
 export function* authLogin(action) {
-
     // call the api to log in
-    console.log("saga -- auth Login")
-    const response = yield call(ApiAuth.login, action);
-
-    // dispatch the success action with the log in response attached
-    yield put({
-        type: 'auth.getResponseSuccess',
-        response: response
-    });
-
-    setAuthAndRedirectDashboard();
+    console.log("saga -- auth Login");
+    try {
+        const author = yield call(ApiAuth.login, action);
+        console.log('success');
+        yield put({
+            type: 'auth.loginSuccess',
+            author: author
+        });
+    } catch(error) {
+        yield put({
+            type: 'auth.loginFailure',
+            error: error
+        });
+    }
 }
 
 export function* authSignup(action) {

@@ -8,11 +8,17 @@ export default function auth(state = {}, action) {
 class reducerClass
 {
 
-    static getResponseSuccess(new_state, action)
-    {
+    static loginSuccess(new_state, action) {
         console.log("auth reducer and following new state: ");
+        new_state = action.author;
         console.dir(new_state);
-        new_state.status = action.response.status;
+        return new_state;
+    }
+
+    static loginFailure(new_state, action) {
+        console.log("Login failed");
+        new_state = action.author;
+        console.dir(new_state);
         return new_state;
     }
 }

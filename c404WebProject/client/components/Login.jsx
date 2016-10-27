@@ -1,11 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Modal, Button, FormGroup, FormControl} from 'react-bootstrap';
-
+import { Modal, Button, FormGroup, FormControl, InputGroup, Col, PageHeader, Form } from 'react-bootstrap';
+import { Field, reduxForm } from 'redux-form'
 import InfoForm from './InfoForm.jsx';
 
-export class Login extends React.Component
-{
+export class Login extends React.Component {
     constructor(props)
     {
         super(props);
@@ -13,24 +12,72 @@ export class Login extends React.Component
             status: 0,
             passwordValidation: this.props.passwordValidation | {}
         }
-        this.loginRequest = this.loginRequest.bind(this);
+        this.formSubmit = this.formSubmit.bind(this);
     }
 
-    render()
-    {
+    render() {
         return (
             <div className="auth-form">
-                <InfoForm onSubmit={this.loginRequest} passwordValidation={this.props.passwordValidation} buttonText="Log In"/>
+                <PageHeader> Login </PageHeader>
+                <Form horizontal onSubmit={this.props.handleSubmit(this.formSubmit)}>
+                    <Field name="username" component={AuthorLoginName} />
+                    <Field name="password" component={AuthorLoginPass} />
+                    <FormGroup>
+                        <Button type="submit"> Login </Button>
+                    </FormGroup>
+                </Form>
             </div>
         );
 
     }
 
-    loginRequest(username, password) {
-        console.log("trying to logt in with username: " + username + "password: " + password);
-        this.props.dispatch({type: 'authLogin', username: username, password: password});
+    formSubmit(form) {
+        console.log(form);
+        this.props.dispatch({
+            type: "authLogin",
+            username: form.username,
+            password: form.password
+        });
     }
 }
+
+class AuthorLoginName extends React.Component {
+    render() {
+        return (
+            <FormGroup>
+                <Col sm={2}>Username</Col>
+                <InputGroup>
+                    <FormControl {...this.props.input} id="username" type="text" />
+                </InputGroup>
+            </FormGroup>
+        );
+    }
+}
+
+class AuthorLoginPass extends React.Component {
+    render() {
+        return (
+            <FormGroup>
+                <Col sm={2}>Password</Col>
+                    <InputGroup>
+                        <FormControl {...this.props.input} id="password" type="password" placeholder="password"/>
+                    </InputGroup>
+            </FormGroup>
+        )
+    }
+}
+
+const validate = (values) => {
+    const errors = {};
+    console.log("validate");
+    console.log(values);
+    return errors;
+}
+
+const LoginForm = reduxForm({
+    form: 'login',
+    validate: validate
+})(Login);
 
 // export the connected class
 function mapStateToProps(state) {
@@ -46,4 +93,4 @@ function mapStateToProps(state) {
         }
     };
 }
-export default connect(mapStateToProps)(Login);
+export default connect(mapStateToProps)(LoginForm);
