@@ -16,7 +16,7 @@ export default class ApiAuth
         console.log('LoginAPI');
         const encodedLogin = window.btoa(`${action.username}:${action.password}`)
         // TODO: Create config.js with paths and urls
-        return fetch('http://192.168.33.10:8000/login/', {
+        return fetch('http://localhost:8000/login/', {
             method: 'POST',
             headers: {
                 'Authorization': `Basic ${encodedLogin}`
@@ -24,7 +24,10 @@ export default class ApiAuth
         }).then((response) => {
             return ApiAuth.handleErrors(response);
         }).then((author) => {
-            return author;
+            return {
+                author,
+                token: encodedLogin
+            };
         })
     }
     

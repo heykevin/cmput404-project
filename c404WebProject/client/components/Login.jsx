@@ -9,16 +9,18 @@ export class Login extends React.Component {
     {
         super(props);
         this.state = {
-            status: 0,
-            passwordValidation: this.props.passwordValidation | {}
+            attempt: false,
+            status: false
         }
         this.formSubmit = this.formSubmit.bind(this);
     }
 
     render() {
+        console.log("redner", this.state);
         return (
             <div className="auth-form">
                 <PageHeader> Login </PageHeader>
+                {!this.state.status && this.state.attempt ? "Username/Password Invalid" : null}
                 <Form horizontal onSubmit={this.props.handleSubmit(this.formSubmit)}>
                     <Field name="username" component={AuthorLoginName} />
                     <Field name="password" component={AuthorLoginPass} />
@@ -82,15 +84,10 @@ const LoginForm = reduxForm({
 // export the connected class
 function mapStateToProps(state) {
     return {
-        status: state.auth.status,
-        passwordValidation: {
-            status: state.auth.passwordStatus,
-            errMsg: state.auth.passwordErrMsg
-        },
-        usernameValidation: {
-            status: state.auth.usernameStatus,
-            errMsg: state.auth.usernameErrMsg
-        }
-    };
+        status: state.login,
+        attempt: state.attempt,
+        error: state.error
+    }
 }
+
 export default connect(mapStateToProps)(LoginForm);

@@ -13,7 +13,7 @@ export class Menu extends React.Component
 
     render()
     {
-        if (Number(sessionStorage.loggedIn)) {
+        if (sessionStorage.token) {
             return (
                 <Nav bsStyle="pills" onSelect={this.handleSelect}>
                     <NavItem className="nav-item">

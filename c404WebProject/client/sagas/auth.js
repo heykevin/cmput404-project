@@ -1,25 +1,24 @@
-import {
-    call,
-    put
-} from 'redux-saga/effects';
-import {
-    browserHistory
-} from 'react-router';
+import {call, put} from 'redux-saga/effects';
+import { browserHistory } from 'react-router';
 
 import ApiAuth from '../api/auth';
 
 
 export function* authLogin(action) {
     // call the api to log in
-    console.log("saga -- auth Login");
     try {
-        const author = yield call(ApiAuth.login, action);
-        console.log('success');
+        const response = yield call(ApiAuth.login, action);
+        // console.log('sagas success', response);
+        // Setting auth and redirect to dashboard
         yield put({
             type: 'auth.loginSuccess',
-            author: author
+            author
         });
+        sessionStorage.setItem("token", response.token);
+        sessionStorage.setItem("author", response.author);
+        browserHistory.push('/dashboard');
     } catch(error) {
+        console.log("Saga caught login error", error);
         yield put({
             type: 'auth.loginFailure',
             error: error
@@ -48,9 +47,4 @@ export function* authLogout(action) {
         response: response
     });
     browserHistory.push('/');
-}
-
-function setAuthAndRedirectDashboard() {
-    sessionStorage.setItem("loggedIn", 1);
-    browserHistory.push('/dashboard'); // Go to dashboard page
 }
