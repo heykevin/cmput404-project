@@ -28,6 +28,9 @@ class Author(models.Model):
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=500)
+    source = models.CharField(max_length=150)
+    origin = models.CharField(max_length=150)
+    description = models.CharField(max_length = 50)
     content = models.TextField()
     tag = ListField(blank=True, default=[])
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
