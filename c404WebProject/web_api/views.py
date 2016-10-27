@@ -123,23 +123,37 @@ class PostViewSet(viewsets.ModelViewSet):
         '''
         # should I assign them post id? how does it get handled
 
-        # check if it is author
+        # check if it is author??
+        '''
         if serializer['query'] != 'author':
             return Response('you are not an author', status=status.HTTP_400_BAD_REQUEST)
+        '''
 
-        elif serializer['query'] == 'author':
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # validate all criteria??
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    '''
+    Note to self, to do
+    add privacy
+    add delete
+    '''
+
 
 class CommentView(APIView):
+
+    # GET comment from specific post_id
+
 
     def get(self, request, pk, format=None):
         post = Post.objects.get(id=pk)
         queryset = Comment.objects.filter(post=post)
         serializer = CommentSerializer(queryset)
         return Response(serializer.data)
+
 
 class FriendsWith(APIView):
     """
