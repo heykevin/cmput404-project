@@ -71,21 +71,43 @@ class PostView(APIView):
 # postview set
 class PostViewSet(viewsets.ModelViewSet):    
     # shows all authors post lists
+    #
+    # GET /author
+    #
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
     # get specific post from an author
+    #
+    # GET /author/<authorID>
+    #
     def get(self, request, pk, format=None):
         queryset = Post.objects.get(id=pk)
         serializer_class = PostSerializer(queryset)
         return Response(serailzer.data)
 
+    # POST post by an author
+    #
+    # POST
+    #
     def post(self,request):
         serializer = PostSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        '''
+        POST serializer has
+        id, title, content, tag, author
+        '''
+        # should I assign them post id? how does it get handled
+
+        # check if it is author
+        if serializer['query'] != 'author':
+            return Response('you are not an author', status=status.HTTP_400_BAD_REQUEST)
+
+        elif serializer['query'] == 'author':
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentView(APIView):
 
