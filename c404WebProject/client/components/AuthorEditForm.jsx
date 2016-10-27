@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
     Form,
     FormGroup,
@@ -10,56 +11,55 @@ import {
 export class AuthorEditForm extends React.Component
 {
 
-    constructor()
+    constructor(props)
     {
-        super();
+        super(props);
         this.state = {
             firstName: 'Tom',
             lastName: 'Lee',
             github: 'Tom.git',
             bios: 'Likes tea'
         }
+        this.onSubmit = this.onSubmit.bind(this);
         this.handleFirstNameChange = this.handleFirstNameChange.bind(this);
-        this.handleLamNameChange = this.handleLamNameChange.bind(this);
+        this.handleLastNameChange = this.handleLastNameChange.bind(this);
         this.handleGithubChange = this.handleGithubChange.bind(this);
         this.handleBiosChange = this.handleBiosChange.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
     }
 
     onSubmit(event) {
         console.log("AuthorEditForm onSubmit", this.state.firstName, this.state.lastName, this.state.github, this.state.bios);
         console.log('test');
-        this.props.onSubmit("this sucks");
-        this.props.dispatch({type: "updateAuthor"})
+        this.props.dispatch({firstName: this.state.firstName,
+            lastName: this.state.lastName,
+            github: this.state.github,
+            bios: this.state.bios
+        });
         // this.onSubmit(this.state.firstName, this.state.lastName);
     }
 
     handleFirstNameChange(event) {
+        console.log(this.state.firstName + " changed to " + event.target.value);
         let firstName = event.target.value;
         this.setState({firstName: firstName});
-        console.log(this.props.firstname);
     }
 
     handleLastNameChange(event) {
         let lastName = event.target.value;
         this.setState({lastName: lastName});
-        console.log(this.props.lastname);
     }
 
     handleGithubChange(event) {
         let github = event.target.value;
         this.setState({github: github});
-        console.log(this.props.github);
     }
 
     handleBiosChange(event) {
         let bios = event.target.value;
         this.setState({bios: bios});
-        console.log(this.props.bios);
     }
 
-    render()
-    {
+    render() {
         // Need to add SERVERONLY to
         return (
             <div className="author-edit-form">
@@ -103,4 +103,21 @@ export class AuthorEditForm extends React.Component
 }
 
 //connects
-// export default connect(mapStateToProps)(AUthorEditForm);
+
+// export the connected class
+function mapStateToProps(state, props) {
+    // set the form data
+    let form_data = {
+        firstName: state.firstName,
+        lastName: state.lastName,
+        github: state.github,
+        bios: state.bios
+    };
+
+
+    // pass the state values
+    return {
+        form_data,
+    };
+}
+export default connect(mapStateToProps)(AuthorEditForm);
