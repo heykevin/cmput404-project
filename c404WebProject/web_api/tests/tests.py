@@ -63,6 +63,31 @@ class AuthorServiceTestCase(APITestCase):
 	self.assertEqual(updated_user.last_name, "Bears")
 	self.assertEqual(updated_user.email, "cool.bears@ualberta.ca")
 	self.assertEqual(updated_user.password, "a1b2c3d4")
+
+class FriendRequestTestCase(APITestCase):
+    
+    def test_send_request(self):
+	self.sender = createAuthor(self,0)
+	self.receiver = createAuthor(self,1)	
+	
+	response = self.client.post('/friendrequest/', {
+	    "query" : "friendrequest",
+	    "author" : {
+	        "id" : self.sender.id,
+	        "host" : self.sender.host,
+	        "displayName" : self.sender.user.username,
+	        },	
+	    "friend": {
+	        "id" : self.receiver.id,
+	        "host" : self.receiver.host,
+	        "displayName" : self.receiver.user.username,
+	        "url" : self.receiver.host+"author/"+str(self.receiver.id)
+	    }
+	}, format='json')
+	
+	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+	self.assertTrue(Author.objects.get(id=self.receiver.id).friend_request_received.all().filter(id=self.sender.id).exists())
+	self.assertTrue(Author.objects.get(id=self.sender.id).friend_request_sent.all().filter(id=self.receiver.id).exists())
 	
 
 class FriendServiceTestCase(APITestCase):

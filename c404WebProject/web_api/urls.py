@@ -26,4 +26,6 @@ urlpatterns = [
     url(r'^login/', views.Login.as_view()),
     # Used for updating author profile.
     url(r'^author/(?P<pk>[^/.]+)/$', views.UpdateProfile.as_view()),
+    # Used for sending friend requests.
+    url(r'^friendrequest/$', views.FriendRequestView.as_view()),    
 ]

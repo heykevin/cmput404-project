@@ -12,6 +12,9 @@ class Author(models.Model):
     bio = models.TextField(blank=True, null=True)
     host = models.URLField()
     friends = models.ManyToManyField("self", blank=True)
+    
+    friend_request_received = models.ManyToManyField('self', related_name='friend_request_received', blank=True)
+    friend_request_sent = models.ManyToManyField('self', related_name='friend_request_sent', blank=True)        
 
     def get_idKey(self):
         return self.idKey
