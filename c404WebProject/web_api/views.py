@@ -63,12 +63,26 @@ class AuthorViewSet(viewsets.ModelViewSet):
 class UpdateProfile(APIView):
     serializer_class = AuthorSerializer
     
+    '''
+    Request:
+        displayname (string)
+        password (string)
+        first_name (string)
+        password (string)
+        email (string)
+        bio (string)
+        host (string)
+        github_username (string)
+        friends (list)
+    Response:
+        "Author profile updated."
+    '''
     def put(self, request, pk):
         authorObj = Author.objects.get(id=pk)
         serializer = AuthorSerializer(authorObj, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response("Updated", status=status.HTTP_200_OK)
+            return Response("Author profile updated.", status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 '''   
 class PostView(APIView):

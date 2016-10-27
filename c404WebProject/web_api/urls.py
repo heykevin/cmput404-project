@@ -17,12 +17,13 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
     
     url(r'^', include(router.urls)),
-    # specific post
+    # Specific post
     url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
-     # Used for get the list of friends id or check the if an author is a friend of another author.
+    # Used for get the list of friends id or check the if an author is a friend of another author.
     url(r'^friends/(?P<pk>[^/.]+)/$', views.FriendsWith.as_view()),                     
     # Used for check 2 author is friend.
     url(r'^friends/(?P<id1>[^/.]+)/(?P<id2>[^/.]+)/$', views.FriendCheck.as_view()),
     url(r'^login/', views.Login.as_view()),
+    # Used for updating author profile.
     url(r'^author/(?P<pk>[^/.]+)/$', views.UpdateProfile.as_view()),
 ]

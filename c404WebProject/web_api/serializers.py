@@ -54,6 +54,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         author.save()
         return author
     
+    # For updating author profile, need extract user form it and handle the nested object as well.
     def update(self, author, validated_data):
         user_data = validated_data.pop('user')
         user = author.user
