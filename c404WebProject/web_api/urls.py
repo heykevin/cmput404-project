@@ -24,4 +24,5 @@ urlpatterns = [
     # Used for check 2 author is friend.
     url(r'^friends/(?P<id1>[^/.]+)/(?P<id2>[^/.]+)/$', views.FriendCheck.as_view()),
     url(r'^login/', views.Login.as_view()),
+    url(r'^author/(?P<pk>[^/.]+)/$', views.UpdateProfile.as_view()),
 ]

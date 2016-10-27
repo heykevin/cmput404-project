@@ -58,8 +58,18 @@ class AuthorViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class UpdateProfile(APIView):
+    serializer_class = AuthorSerializer
+    
+    def put(self, request, pk):
+        authorObj = Author.objects.get(id=pk)
+        serializer = AuthorSerializer(authorObj, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Updated", status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 '''   
 class PostView(APIView):
     
@@ -160,7 +170,7 @@ class FriendsWith(APIView):
 
 class FriendCheck(APIView):
     """
-    GET /friend/<authorID1>/<authorID2>
+    GET /friends/<authorID1>/<authorID2>
     Response: 
         query (string): "friends"
         authors (string): ids of checked authors

@@ -33,6 +33,37 @@ class AuthorServiceTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response)
         self.assertEqual(getAuthor(self,0)['username'], response.data['displayName'])
         self.assertEqual(str(self.author.id), response.data['id'])
+	
+    def test_update_author_profile(self):
+	
+	self.author = createAuthor(self,0)
+	
+	response = self.client.put('/author/%s/' % self.author.id, {
+	    "displayName": "CoolBears",
+	    "first_name": "Cool",
+	    "last_name": "Bears",
+	    "email": "cool.bears@ualberta.ca",
+	    "bio": "I am a cool bear!",
+	    "host": "http://coolbears.com/mostCoolBear/",
+	    "github_username": "https://github.com/coolbear",
+	    "password": "a1b2c3d4"
+	}, format='json')	
+	
+	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+	
+	updated_author = Author.objects.get(id=self.author.id)
+	updated_user = updated_author.user
+	
+	self.assertEqual(updated_author.bio, "I am a cool bear!")
+	self.assertEqual(updated_author.host, "http://coolbears.com/mostCoolBear/")
+	self.assertEqual(updated_author.github_username, "https://github.com/coolbear")
+	
+	self.assertEqual(updated_user.username, "CoolBears")
+	self.assertEqual(updated_user.first_name, "Cool")
+	self.assertEqual(updated_user.last_name, "Bears")
+	self.assertEqual(updated_user.email, "cool.bears@ualberta.ca")
+	self.assertEqual(updated_user.password, "a1b2c3d4")
+	
 
 class FriendServiceTestCase(APITestCase):
     
