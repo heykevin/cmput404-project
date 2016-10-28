@@ -89,6 +89,25 @@ class FriendRequestTestCase(APITestCase):
 	self.assertTrue(Author.objects.get(id=self.receiver.id).friend_request_received.all().filter(id=self.sender.id).exists())
 	self.assertTrue(Author.objects.get(id=self.sender.id).friend_request_sent.all().filter(id=self.receiver.id).exists())
 	
+    def test_response_request(self):
+	self.sender = createAuthor(self,0)
+	self.receiver = createAuthor(self,1)	
+		
+	response = self.client.post('/friendrequest/', {
+	    "query" : "friendrequest",
+	    "author" : {
+	        "id" : self.sender.id,
+	        "host" : self.sender.host,
+	        "displayName" : self.sender.user.username,
+	        },	
+	    "friend": {
+	        "id" : self.receiver.id,
+	        "host" : self.receiver.host,
+	        "displayName" : self.receiver.user.username,
+	        "url" : self.receiver.host+"author/"+str(self.receiver.id)
+	    }
+	}, format='json')	
+	
 
 class FriendServiceTestCase(APITestCase):
     

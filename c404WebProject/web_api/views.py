@@ -190,22 +190,33 @@ class FriendsWith(APIView):
 
 class FriendRequestView(APIView):
     
-    def post(self, request):
-        if request.data['query'] != 'friendrequest':
-            return Response("Incorrect request field: 'query' field should be 'friendrequest'.", status.HTTP_400_BAD_REQUEST)
-        
-        senderObj = Author.objects.get(id=request.data['author']["id"])
+    # Handles the request creation
+    def post_request(self, request_data):
         
         # This only works with local author at this time.
-        receiverObj = Author.objects.get(id=request.data['friend']["id"])
-        
+        senderObj = Author.objects.get(id=request_data['author']["id"])
+        receiverObj = Author.objects.get(id=request_data['friend']["id"])
+                
+        if senderObj.friends.all().filter(id=receiverObj.id).exists() or receiverObj.friends.all().filter(id=senderObj.id).exists():
+            return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
+                
         senderObj.friend_request_sent.add(receiverObj)
         receiverObj.friend_request_received.add(senderObj)
-        
+                
         senderObj.save()
         receiverObj.save()
-        
+                
         return Response("Friend request created.", status.HTTP_200_OK)
+    
+    def post_response(self, request_data):
+        
+        
+    
+    def post(self, request):
+        if request.data['query'] == 'friendrequest':
+            return self.post_request(request.data)
+        elif request.data['query'] == 'friendresponse':
+            pass
 
 class FriendCheck(APIView):
     """
