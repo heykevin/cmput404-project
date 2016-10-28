@@ -98,6 +98,7 @@ class PostViewSet(viewsets.ModelViewSet):
     #
     # GET /posts
     #
+
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
@@ -123,8 +124,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
     '''
     Note to self, to do
-    add visibility -> private, public, friends, severonly, friendsOfFriends
-    add delete
     '''
     def delete(self, request, pk, format=None):
         # find the query set
@@ -138,7 +137,6 @@ class PostViewSet(viewsets.ModelViewSet):
 class CommentView(APIView):
 
     # GET comment from specific post_id
-
 
     def get(self, request, pk, format=None):
         post = Post.objects.get(id=pk)

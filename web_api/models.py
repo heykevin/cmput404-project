@@ -29,21 +29,29 @@ class Author(models.Model):
         return self.user.first_name
 
 class Post(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, on_delete=models.CASCADE)
     title = models.CharField(max_length=500)
     source = models.CharField(max_length=150)
     origin = models.CharField(max_length=150)
     description = models.CharField(max_length = 50)
     content = models.TextField()
-    tag = ListField(blank=True, default=[])
+    category = ListField(blank=True, default=[])
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
-    public="1"
-    local="2"
-    foaf="3"
-    local_friends="4"
-    list_of_friends="5"
-    private="6"
+    text_plain="text/plain"
+    text_markdown="text/markdown"
+
+    content_type=(
+        (text_plain, 'text/plain'),
+        (text_markdown, 'text/markdown')
+    )
+
+    public="PUBLIC"
+    local="SERVERONLY"
+    foaf="FOAF"
+    local_friends="SERVERONLY"
+    list_of_friends="FRIENDS"
+    private="PRIVATE"
 
     visibility_choice=(
         (public, 'Public'),
@@ -54,12 +62,17 @@ class Post(models.Model):
         (private, 'Myself only')
     )
 
-    visibility=models.CharField(max_length=1, choices=visibility_choice, default=public)
+    visibility=models.CharField(max_length=10, choices=visibility_choice, default=public)
 
     publish_time=models.DateTimeField(auto_now=True)
 
+    content_type=models.CharField(max_length=15, choices=visibility_choice, default=text_plain)
+
     def get_idKey(self):
         return self.idKey()
+
+    def get_count(self):
+        return self.objects.count()
 
 
 class Comment(models.Model):
