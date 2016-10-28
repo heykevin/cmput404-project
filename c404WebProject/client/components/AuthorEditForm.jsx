@@ -14,12 +14,16 @@ export class AuthorEditForm extends React.Component
     constructor(props)
     {
         super(props);
-        this.state = {
-            firstName: 'Tom',
-            lastName: 'Lee',
-            github: 'Tom.git',
-            bios: 'Likes tea'
-        }
+        // currentState = getState();
+        // if (currentState === NULL || undefined){
+            console.log("Default information");
+            this.state = {
+                firstName: 'Tom',
+                lastName: 'Lee',
+                github: 'Tom.git',
+                bios: 'Likes tea'
+            }
+        // }
         this.onSubmit = this.onSubmit.bind(this);
         this.handleFirstNameChange = this.handleFirstNameChange.bind(this);
         this.handleLastNameChange = this.handleLastNameChange.bind(this);
@@ -30,7 +34,8 @@ export class AuthorEditForm extends React.Component
     onSubmit(event) {
         console.log("AuthorEditForm onSubmit", this.state.firstName, this.state.lastName, this.state.github, this.state.bios);
         console.log('test');
-        this.props.dispatch({firstName: this.state.firstName,
+        this.props.dispatch({
+            firstName: this.state.firstName,
             lastName: this.state.lastName,
             github: this.state.github,
             bios: this.state.bios
@@ -106,6 +111,9 @@ export class AuthorEditForm extends React.Component
 
 // export the connected class
 function mapStateToProps(state, props) {
+
+    console.log("state" + state);
+    console.log("props" + props);
     // set the form data
     let form_data = {
         firstName: state.firstName,
