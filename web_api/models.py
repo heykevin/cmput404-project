@@ -29,7 +29,7 @@ class Author(models.Model):
         return self.user.first_name
 
 class Post(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, on_delete=models.CASCADE)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=500)
     source = models.CharField(max_length=150)
     origin = models.CharField(max_length=150)
