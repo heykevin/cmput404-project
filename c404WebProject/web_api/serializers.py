@@ -35,10 +35,10 @@ class AuthorSerializer(serializers.ModelSerializer):
     Serializer used for doing author profile related operations.
     """     
     displayName = serializers.CharField(source='user.username')
-    first_name = serializers.CharField(source='user.first_name')
-    last_name = serializers.CharField(source='user.last_name') 
-    email = serializers.CharField(source='user.email') 
-    password = serializers.CharField(source='user.password', write_only=True) 
+    first_name = serializers.CharField(source='user.first_name', allow_blank=True, required=False)
+    last_name = serializers.CharField(source='user.last_name', allow_blank=True, required=False) 
+    email = serializers.CharField(source='user.email', allow_blank=True, required=False) 
+    password = serializers.CharField(source='user.password', write_only=True)
 
     class Meta:
         model = Author
