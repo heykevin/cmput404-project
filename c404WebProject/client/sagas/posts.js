@@ -39,3 +39,13 @@ export function* postsDeletePost(action) {
         response: response
     });
 }
+
+export function* postsEditPostRedirect(action) {
+    console.log("sage -- edit post");
+    browserHistory.push("/posteditor");
+    yield put({
+        type: 'posts.redirectToEditor',
+        id: action.id,
+        isEditMode: true
+    });
+}

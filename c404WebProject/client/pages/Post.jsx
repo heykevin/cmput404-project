@@ -17,13 +17,13 @@ export class Post extends React.Component
         this.state = {
             posts: []
         }
-        
+
         if (pathElements.length > 0 && pathElements[0]) {
             id = pathElements[0];
             comments = pathElements.length > 1 && pathElements[1].toLowerCase() === "comments"
                 ? true
                 : false;
-            this.props.dispatch({type: 'postsGetPosts', method: "post", postId: Number(id), comments: comments});
+            this.props.dispatch({type: 'postsGetPosts', method: "post", postId: id, comments: comments});
         } else {
 
             // needs to be improved once we find a way to properly record log in session data

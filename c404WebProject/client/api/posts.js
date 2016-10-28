@@ -3,15 +3,18 @@
  */
  const data = [
      {
-         id: 1,
+         id: "DI-1",
          title: "GTAV Script",
          description: "Parental Advisory | Explicity Conetnt",
          author: "RockStar",
          content: "No content",
          dateTime: "02/09/2014",
          origin: "/post/1",
+         visibility: "PUBLIC",
+         isMarkdownContent: false
+
      }, {
-         id: 2,
+         id: "DI-2",
          title: "Cinnamon Peeler",
          description: "A smelly worker loves his wifey or fiancée",
          author: "Michael Ondaatje",
@@ -22,9 +25,11 @@
              "floating over you.",
          dateTime: "01/01/1989",
          origin: "/post/2",
+         visibility: "PUBLIC",
+         isMarkdownContent: true
 
      }, {
-         id: 3,
+         id: "DI-3",
          title: "Odyssey",
          description: "The Odyssey is Homer's epic of Odysseus' 10-year " +
              "struggle to return home after the Trojan War. ",
@@ -32,6 +37,8 @@
          content: "Oh Goddess of Inspiration, help me sing of wily Odysseus, that master of schemes",
          dateTime: "02/28/1300",
          origin: "/post/3",
+         visibility: "PUBLIC",
+         isMarkdownContent: true
      },
  ];
 
@@ -52,7 +59,11 @@ export default class ApiPosts {
 
         // mock data return mechanism
         if (action.postId) {
-            return [data[action.postId-1]];
+            for (const post of data) {
+                if (post.id === action.postId) {
+                    return [post];
+                }
+            }
         } else {
             return data;
         }
@@ -79,6 +90,8 @@ export default class ApiPosts {
 
     static savePost(action) {
         console.log("api - save post");
+        // add Authorization
+        // refer to auth.js
         return {
             status: 201
         }

@@ -56,4 +56,24 @@ class reducerClass
         return new_state;
     }
 
+    static redirectToEditor(new_state, action)
+    {
+        const posts = new_state.list;
+        new_state.isEditMode = true;
+
+        if (posts) {
+            for (const post of posts) {
+                if (post.id === action.id) {
+                    new_state.postInEdit = post;
+                    new_state.shouldRequestPost = false;
+                    return new_state;
+                }
+            }
+        }
+
+        new_state.id = action.id;
+        new_state.shouldRequestPost = true;
+        new_state.resolved = false;
+        return new_state;
+    }
 }

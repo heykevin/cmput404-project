@@ -57,7 +57,7 @@ function checkAuth(nextState, replace) {
 }
 
 // render the main component
-// Move             <Router path="/newpost" component={PostEditor}/>
+// Move             <Router path="/posteditor" component={PostEditor}/>
 //            <Route path="/dashboard" component={Dashboard}/>
 // into             <Route onEnter={checkAuth}></Route>
 // Once we've got a solid log in flow
@@ -68,7 +68,7 @@ ReactDOM.render(
             <IndexRoute component={Home}/>
             <Route path="/login" component={Login}/>
             <Route path="/signup" component={Signup}/>
-            <Router path="/newpost" component={PostEditor}/>
+            <Router path="/posteditor" component={PostEditor}/>
             <Route path="/dashboard" component={Dashboard}/>
             <Route path="/myposts" component={MyPosts}/>
             <Route path="/post/*" component={Post}/>
