@@ -11,7 +11,7 @@ class reducerClass {
         // console.log(action);
         // console.log("login reducer success ");
         // console.dir(new_state);
-        new_state = action.author;
+        new_state = action.response.author;
         new_state.login = true;
         new_state.attempt = true;
         return new_state;

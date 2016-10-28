@@ -23,14 +23,14 @@ export default class ApiAuth
             }
         }).then((response) => {
             return ApiAuth.handleErrors(response);
-        }).then((author) => {
+        }).then((response) => {
             return {
-                author,
+                response: response,
                 token: encodedLogin
             };
         })
     }
-    
+
 
 	static signup(action)
 	{
@@ -45,7 +45,7 @@ export default class ApiAuth
     static logout(action)
     {
         let response = [];
-
+        sessionStorage.clear();
         // Mock
         return {
             status: 0
