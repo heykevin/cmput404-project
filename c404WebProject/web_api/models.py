@@ -62,7 +62,7 @@ class Post(models.Model):
         (private, 'Myself only')
     )
 
-    visibility=models.CharField(max_length=10, choices=visibility_choice, default=public)
+    visibility=models.CharField(max_length=20, choices=visibility_choice, default=public)
 
     publish_time=models.DateTimeField(auto_now=True)
 
@@ -71,8 +71,10 @@ class Post(models.Model):
     def get_idKey(self):
         return self.idKey()
 
+    '''
     def get_count(self):
         return self.objects.count()
+    '''
 
 
 class Comment(models.Model):
