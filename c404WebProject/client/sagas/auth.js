@@ -12,7 +12,7 @@ export function* authLogin(action) {
         // Setting auth and redirect to dashboard
         yield put({
             type: 'auth.loginSuccess',
-            response: response
+            response: response.response
         });
         sessionStorage.setItem("token", response.token);
         sessionStorage.setItem("author", response.author);
