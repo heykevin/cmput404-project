@@ -209,8 +209,7 @@ class FriendRequestView(APIView):
         return Response("Friend request created.", status.HTTP_200_OK)
     
     def post_response(self, request_data):
-        
-        
+        pass
     
     def post(self, request):
         if request.data['query'] == 'friendrequest':
