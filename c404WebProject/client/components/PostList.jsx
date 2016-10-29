@@ -52,7 +52,7 @@ export class PostList extends React.Component
             return (
                 <div className="no-posts">
                     You currently do not have any posts available to read. <br/>
-                    Click <a href="/posteditor">Add Post</a> to make a new post!
+                    Click <a href="/addpost">Add Post</a> to make a new post!
                 </div>
             );
         }

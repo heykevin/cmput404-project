@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {MarkdownEditor, MarkdownEditorContentStore} from 'react-markdown-editor';
 import {Form, FormGroup, FormControl, ControlLabel, Button, Nav, NavItem, ProgressBar} from 'react-bootstrap';
 
-export class PostEditor extends React.Component {
+export default class PostForm extends React.Component {
 
     constructor(props)
     {
@@ -31,11 +31,7 @@ export class PostEditor extends React.Component {
 
     render()
     {
-        if (this.props.shouldRequestPost && this.props.resolved === false && this.props.id) {
-            this.props.dispatch({type: 'postsGetPosts', method: "post", postId: this.props.id, comments: false});
-            return (<ProgressBar active now={100}/>);
-        }
-
+		console.dir(this.props);
         return (
             <div className="post-editor">
                 <Nav bsStyle="pills" onSelect={this.handleSelect}>
@@ -163,7 +159,7 @@ export class PostEditor extends React.Component {
     }
 
     getEditorMode() {
-        return this.state.editorModeOverride ? this.state.isMarkdownContent : this.props.isMarkdownContent;
+        return this.state.editorModeOverride ? this.state.isMarkdownContent : this.props.post.isMarkdownContent;
     }
 
     isButtonDisabled() {
@@ -174,35 +170,3 @@ export class PostEditor extends React.Component {
         }
     }
 }
-
-function composeState(post, isEditMode) {
-    return {
-        post: post,
-        disableButton: !isEditMode,
-        isEditMode: isEditMode,
-        resolved: isEditMode
-    };
-}
-
-function mapStateToProps(state) {
-    if (!state.posts.isEditMode) {
-        return composeState({
-            title: "",
-            description: "",
-            content: "",
-            visibility: "PUBLIC",
-        }, false);
-    }
-
-    if (state.posts.shouldRequestPost === false) {
-        return composeState(state.posts.postInEdit, true);
-    } else if (state.posts.shouldRequestPost && state.posts.resolved) {
-        return composeState(state.posts.list[0], true);
-    } else if (state.posts.shouldRequestPost && !state.posts.resolved ) {
-        return {
-            id: state.posts.id,
-            resolved: false
-        };
-    }
-}
-export default connect(mapStateToProps)(PostEditor);

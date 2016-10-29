@@ -41,7 +41,7 @@ export class Menu extends React.Component
                             <Glyphicon glyph="globe"/>
                         </NavItem>
                     </LinkContainer>
-                    <LinkContainer to="/posteditor">
+                    <LinkContainer to="/addpost">
                         <NavItem className="nav-item float-right">
                             Add Post
                             <Glyphicon glyph="plus-sign"/>
