@@ -1,5 +1,9 @@
-import { browserHistory } from 'react-router';
-import { reducerCall } from './index';
+import {
+    browserHistory
+} from 'react-router';
+import {
+    reducerCall
+} from './index';
 
 
 export default function auth(state = {}, action) {
@@ -23,6 +27,24 @@ class reducerClass {
         console.log('error', action);
         new_state.login = false;
         new_state.attempt = true;
+        new_state.error = action;
+        console.dir(new_state);
+        return new_state;
+    }
+
+    static signupSuccess(new_state, action) {
+        new_state = action.response;
+        new_state.login = true;
+        // new_state.attempt = true;
+
+        console.dir(action);
+        console.dir(new_state);
+        return new_state;
+    }
+
+    static signupFailure(new_state, action) {
+        console.log('error', action);
+        new_state.login = false;
         new_state.error = action;
         console.dir(new_state);
         return new_state;

@@ -26,10 +26,8 @@ export class PostListElement extends React.Component
         }
         // render
         return (
-            <ListGroupItem data-id={post.id} >
-                <div className="post-title">
-                    <span className="post-title-font">{post.title}</span>
-                    <div className={this.props.canEdit ? "visible float-right" : "invisible"}>
+                <ListGroupItem data-id={post.id}>
+                    <div className={this.props.canEdit ? "visible float-right buttons" : "invisible"}>
                         <Button bsSize="xsmall" data-id={post.id}
                             onClick={this.redirectToEditor}>
                             Edit <Glyphicon glyph="edit"/>
@@ -39,20 +37,24 @@ export class PostListElement extends React.Component
                             Delete <Glyphicon glyph="remove-circle"/>
                         </Button>
                     </div>
-                </div>
-                <div className="post-info" href={href}>
-                    <span>Posted by <strong>{post.author}</strong> on {post.dateTime}</span>
-                </div>
-                <div className="post-description" href={href}>
-                    {post.description}
-                </div>
-                <div className={this.props.preview ? "invisible" : "visible post-content"} href={href}>
-                    // TODO: This content will need a rendering function that shows content
-                    // as markdown or simpletext
-                    {post.content}
-                </div>
-                <PostDelete/>
-            </ListGroupItem>
+                    <a href={href}>
+                        <div className="post-title">
+                            <span className="post-title-font">{post.title}</span>
+                        </div>
+                        <div className="post-info">
+                            <span>Posted by <strong>{post.author}</strong> on {post.dateTime}</span>
+                        </div>
+                        <div className="post-description">
+                            {post.description}
+                        </div>
+                        <div className={this.props.preview ? "invisible" : "visible post-content"}>
+                            // TODO: This content will need a rendering function that shows content
+                            // as markdown or simpletext
+                            {post.content}
+                        </div>
+                    </a>
+                    <PostDelete/>
+                </ListGroupItem>
         );
     }
 

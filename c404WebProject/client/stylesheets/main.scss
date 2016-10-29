@@ -1,6 +1,8 @@
 #app {
     background: #337ab7;
     height: 100vh;
+    width: 100%;
+    min-width: 1200px;
 }
 
 .visible {
@@ -78,6 +80,19 @@
     .list-group {
         line-height: 2em;
 
+        a, a:active, a:hover, a:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .buttons {
+            margin: 0.5%;
+
+            button {
+                margin-right: 4px;
+            }
+        }
+
         .post-title {
             padding: 8px;
             background: #337ab7;
@@ -91,9 +106,6 @@
                 color: white;
             }
 
-            button {
-                margin-right: 4px;
-            }
         }
 
         .post-info {

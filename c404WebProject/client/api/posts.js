@@ -9,7 +9,7 @@
          author: "RockStar",
          content: "No content",
          dateTime: "02/09/2014",
-         origin: "/post/1",
+         origin: "/post/DI-1",
          visibility: "PUBLIC",
          isMarkdownContent: false
 
@@ -24,7 +24,7 @@
              "through markets/without the profession of my fingers/" +
              "floating over you.",
          dateTime: "01/01/1989",
-         origin: "/post/2",
+         origin: "/post/DI-2",
          visibility: "PUBLIC",
          isMarkdownContent: true
 
@@ -36,7 +36,7 @@
          author: "Homer",
          content: "Oh Goddess of Inspiration, help me sing of wily Odysseus, that master of schemes",
          dateTime: "02/28/1300",
-         origin: "/post/3",
+         origin: "/post/DI-3",
          visibility: "PUBLIC",
          isMarkdownContent: true
      },

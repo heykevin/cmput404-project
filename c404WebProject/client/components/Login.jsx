@@ -2,7 +2,6 @@ import React from 'react';
 import {connect} from 'react-redux';
 import { Modal, Button, FormGroup, FormControl, InputGroup, Col, PageHeader, Form } from 'react-bootstrap';
 import { Field, reduxForm } from 'redux-form'
-import InfoForm from './InfoForm.jsx';
 
 export class Login extends React.Component {
     constructor(props)

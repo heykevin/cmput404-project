@@ -1,54 +1,92 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Modal, Button, FormGroup, FormControl} from 'react-bootstrap';
+import { Modal, Button, FormGroup, FormControl, InputGroup, Col, PageHeader, Form } from 'react-bootstrap';
+import { Field, reduxForm } from 'redux-form'
 
-import InfoForm from './InfoForm.jsx';
-
-export class Signup extends React.Component
-{
+export class Signup extends React.Component {
     constructor(props)
     {
         super(props);
-
         this.state = {
-            passwordValidation: this.props.passwordValidation | {},
-            usernameValidation: this.props.usernameValidation | {},
-            submitting: false
+            attempt: false,
+            status: false
         }
-        this.signupRequest = this.signupRequest.bind(this);
+        this.formSubmit = this.formSubmit.bind(this);
     }
 
-    render()
-    {
+    render() {
+        console.log("redner", this.state);
         return (
             <div className="auth-form">
-                <InfoForm
-                    onSubmit={this.signupRequest}
-                    passwordValidation={this.props.passwordValidation}
-                    usernameValidation={this.props.usernameValidation}
-                    buttonText="Sign Up"/>
+                <PageHeader> signup </PageHeader>
+                {!this.state.status && this.state.attempt ? "Username/Password Invalid" : null}
+                <Form horizontal onSubmit={this.props.handleSubmit(this.formSubmit)}>
+                    <Field name="username" component={AuthorsignupName} />
+                    <Field name="password" component={AuthorsignupPass} />
+                    <FormGroup>
+                        <Button type="submit"> signup </Button>
+                    </FormGroup>
+                </Form>
             </div>
         );
+
     }
 
-    signupRequest(username, password) {
-        console.log("trying to sign up with username: " + username + "password: " + password);
-        this.props.dispatch({type: "authSignup", username: username, password: password});
+    formSubmit(form) {
+        console.log(form);
+        this.props.dispatch({
+            type: "authSignup",
+            username: form.username,
+            password: form.password
+        });
     }
 }
+
+class AuthorsignupName extends React.Component {
+    render() {
+        return (
+            <FormGroup>
+                <Col sm={2}>Username</Col>
+                <InputGroup>
+                    <FormControl {...this.props.input} id="username" type="text" />
+                </InputGroup>
+            </FormGroup>
+        );
+    }
+}
+
+class AuthorsignupPass extends React.Component {
+    render() {
+        return (
+            <FormGroup>
+                <Col sm={2}>Password</Col>
+                    <InputGroup>
+                        <FormControl {...this.props.input} id="password" type="password" placeholder="password"/>
+                    </InputGroup>
+            </FormGroup>
+        )
+    }
+}
+
+const validate = (values) => {
+    const errors = {};
+    console.log("validate");
+    console.log(values);
+    return errors;
+}
+
+const signupForm = reduxForm({
+    form: 'signup',
+    validate: validate
+})(Signup);
 
 // export the connected class
 function mapStateToProps(state) {
     return {
-        submitting: state.submitting,
-        passwordValidation: {
-            status: state.passwordStatus,
-            errMsg: state.passwordErrMsg
-        },
-        usernameValidation: {
-            status: state.usernameStatus,
-            errMsg: state.usernameErrMsg
-        }
-    };
+        status: state.signup,
+        attempt: state.attempt,
+        error: state.error
+    }
 }
-export default connect(mapStateToProps)(Signup);
+
+export default connect(mapStateToProps)(signupForm);

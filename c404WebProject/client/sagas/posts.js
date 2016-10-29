@@ -1,5 +1,5 @@
 import { call, put } from 'redux-saga/effects';
-
+import { browserHistory } from 'react-router';
 import ApiPosts from '../api/posts';
 
 export function* postsGetPosts(action) {

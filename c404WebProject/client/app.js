@@ -34,7 +34,7 @@ sagaMiddleware.run(sagas);
 
 function checkAuth(nextState, replace) {
 
-    let loggedIn = Number(sessionStorage.loggedIn);
+    let loggedIn = sessionStorage.token;
     // Check if the path isn't dashboard. That way we can apply specific logic to
     // display/render the path we want to
     if (nextState.location.pathname !== '/dashboard') {

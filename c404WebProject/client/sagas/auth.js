@@ -3,6 +3,11 @@ import { browserHistory } from 'react-router';
 
 import ApiAuth from '../api/auth';
 
+function setAuthAndRedirect(token, author) {
+    sessionStorage.setItem("token", token);
+    sessionStorage.setItem("author", JSON.stringify(author));
+    browserHistory.push('/dashboard');
+}
 
 export function* authLogin(action) {
     // call the api to log in
@@ -14,10 +19,8 @@ export function* authLogin(action) {
             type: 'auth.loginSuccess',
             response: response.response
         });
-        sessionStorage.setItem("token", response.token);
-        sessionStorage.setItem("author", response.author);
-        browserHistory.push('/dashboard');
-    } catch(error) {
+        setAuthAndRedirect(response.token, response.response.author);
+    } catch (error) {
         console.log("Saga caught login error", error);
         yield put({
             type: 'auth.loginFailure',
@@ -28,13 +31,20 @@ export function* authLogin(action) {
 
 export function* authSignup(action) {
 
-    console.log("saga -- auth Sign up")
-    const response = yield call(ApiAuth.signup, action);
-    setAuthAndRedirectDashboard();
-    yield put({
-        type: 'auth.getResponseSuccess',
-        response: response
-    });
+    try {
+        const response = yield call(ApiAuth.signup, action);
+        yield put({
+            type: 'auth.signupSuccess',
+            response: response.author
+        });
+        setAuthAndRedirect(response.token, response.author);
+    } catch (error) {
+        console.log("Saga caught signup error", error);
+        yield put({
+            type: 'auth.signupFailure',
+            error: error
+        });
+    }
 }
 
 export function* authLogout(action) {
