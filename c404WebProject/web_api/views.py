@@ -220,13 +220,26 @@ class FriendRequestView(APIView):
     def post_response(self, request_data):
         senderObj = Author.objects.get(id=request_data['author']["id"])
         receiverObj = Author.objects.get(id=request_data['friend']["id"])
+        accepted = request_data["accepted"]
+        
+        senderObj.friend_request_sent.remove(receiverObj)
+        receiverObj.friend_request_received.remove(senderObj)
+        
+        if accepted:
+            senderObj.friends.add(receiverObj)
+            return Response("Friend added.", status.HTTP_200_OK)
+        
+        return Response("Friend request declined.", status.HTTP_200_OK)
+        
         
     
     def post(self, request):
         if request.data['query'] == 'friendrequest':
             return self.post_request(request.data)
         elif request.data['query'] == 'friendresponse':
-            return self.post_reponse(request.data)
+            return self.post_response(request.data)
+        else:
+            return Response("Bad request header.", status.HTTP_400_BAD_REQUEST)
 
 class FriendCheck(APIView):
     """
