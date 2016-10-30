@@ -34,7 +34,7 @@ export class PostList extends React.Component
             // show the list of users
             return (
                 <div>
-                    <ListGroup>
+                    <ListGroup className="post-group">
                         {this.props.posts.map((post, index) => {
                             if (index >= start_offset && start_count < per_page) {
                                 start_count++;

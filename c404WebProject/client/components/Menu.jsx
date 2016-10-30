@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Nav, NavItem, Glyphicon} from 'react-bootstrap';
 import {IndexLinkContainer, LinkContainer} from 'react-router-bootstrap';
+import Utils from '../utils/utils.js'
 
 export class Menu extends React.Component
 {
@@ -13,11 +14,13 @@ export class Menu extends React.Component
 
     render()
     {
-        if (sessionStorage.token) {
+        if (Utils.getToken()) {
+            const author = Utils.getAuthor(),
+                authorName = author && author.displayName ? author.displayName : "my friend";
             return (
                 <Nav bsStyle="pills" onSelect={this.handleSelect}>
                     <NavItem className="nav-item">
-                        Hello World Blog
+                        Hello, {authorName}!
                     </NavItem>
                     <NavItem className="nav-item float-right" eventKey={"logOut"}>
                         Log Out

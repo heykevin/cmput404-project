@@ -37,7 +37,7 @@ export class PostListElement extends React.Component
                             Delete <Glyphicon glyph="remove-circle"/>
                         </Button>
                     </div>
-                    <a href={href}>
+                    <a href={href} className="post-body">
                         <div className="post-title">
                             <span className="post-title-font">{post.title}</span>
                         </div>

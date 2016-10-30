@@ -5,11 +5,13 @@ import { reducer as formReducer } from 'redux-form';
 import users from './users';
 import posts from './posts';
 import auth from './auth';
+import git from './git';
 
 export const reducers = combineReducers({
     users: users,
     posts: posts,
     auth: auth,
+    git: git,
     routing: routerReducer,
     form: formReducer
 });
