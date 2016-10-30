@@ -196,10 +196,19 @@ class FriendRequestView(APIView):
         # This only works with local author at this time.
         senderObj = Author.objects.get(id=request_data['author']["id"])
         receiverObj = Author.objects.get(id=request_data['friend']["id"])
-                
+        
+        # Handle the case which sender and receiver are already friends.        
         if senderObj.friends.all().filter(id=receiverObj.id).exists() or receiverObj.friends.all().filter(id=senderObj.id).exists():
             return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
-                
+        
+        # Handle the case which sender already sent the request.
+        if senderObj.friend_request_sent.all().filter(id=receiverObj.id).exists() or receiverObj.friend_request_received.all().filter(id=senderObj.id).exists():
+            return Response("The friend request has already been sent.", status.HTTP_400_BAD_REQUEST)
+        
+        # Handle the case which reciver already sent the request to the sender.
+        if senderObj.friend_request_received.all().filter(id=receiverObj.id).exists() or receiverObj.friend_request_sent.all().filter(id=senderObj.id).exists():
+            return Response("The friend request has already been sent by receiver.", status.HTTP_400_BAD_REQUEST)        
+        
         senderObj.friend_request_sent.add(receiverObj)
         receiverObj.friend_request_received.add(senderObj)
                 
@@ -209,13 +218,15 @@ class FriendRequestView(APIView):
         return Response("Friend request created.", status.HTTP_200_OK)
     
     def post_response(self, request_data):
-        pass
+        senderObj = Author.objects.get(id=request_data['author']["id"])
+        receiverObj = Author.objects.get(id=request_data['friend']["id"])
+        
     
     def post(self, request):
         if request.data['query'] == 'friendrequest':
             return self.post_request(request.data)
         elif request.data['query'] == 'friendresponse':
-            pass
+            return self.post_reponse(request.data)
 
 class FriendCheck(APIView):
     """
