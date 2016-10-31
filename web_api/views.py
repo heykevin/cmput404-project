@@ -211,8 +211,8 @@ class FriendRequestView(APIView):
         senderObj.friend_request_sent.add(receiverObj)
         receiverObj.friend_request_received.add(senderObj)
                 
-        senderObj.save()
-        receiverObj.save()
+        # senderObj.save()
+        # receiverObj.save()
                 
         return Response("Friend request created.", status.HTTP_200_OK)
     
@@ -229,7 +229,16 @@ class FriendRequestView(APIView):
             return Response("Friend added.", status.HTTP_200_OK)
         
         return Response("Friend request declined.", status.HTTP_200_OK)
+    
+    def unfriend(self, request_data):
+        senderObj = Author.objects.get(id=request_data['author']["id"])
+        receiverObj = Author.objects.get(id=request_data['friend']["id"])        
         
+        if Author.objects.get(id=receiverObj.id).friends.all().filter(id=senderObj.id).exists()==False:
+            return Response("Not friends.", status.HTTP_400_BAD_REQUEST)
+        
+        senderObj.friends.remove(receiverObj)
+        return Response("Unfriend done.", status.HTTP_200_OK)
         
     
     def post(self, request):
@@ -237,6 +246,8 @@ class FriendRequestView(APIView):
             return self.post_request(request.data)
         elif request.data['query'] == 'friendresponse':
             return self.post_response(request.data)
+        elif request.data['query'] == 'unfriend':
+            return self.unfriend(request.data)
         else:
             return Response("Bad request header.", status.HTTP_400_BAD_REQUEST)
 
