@@ -6,12 +6,11 @@
  * MIT License
  * http://opensource.org/licenses/MIT
  */
- 
+
 import React from 'react';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
 import {ProgressBar, List, ListGroup} from 'react-bootstrap';
-import ReactMustache from 'react-mustache';
 import { GithubStreamEvent, GitLink } from './GithubStreamEvent.jsx';
 import Utils from '../utils/utils.js'
 
@@ -38,7 +37,7 @@ export class GithubStream extends React.Component
 
         // render
 		if (!this.state.hasGitStream) {
-            return (<ReactMustache template={templates.NoActivity}/>);
+            return (<div></div>);
 		}
 
         if (this.props.events.length && this.props.user) {
