@@ -30,6 +30,18 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ('url', 'name')
 
+class SubAuthorSerializer(serializers.ModelSerializer):
+    
+    displayName = serializers.CharField(source='user.username')
+    first_name = serializers.CharField(source='user.first_name', allow_blank=True, required=False)
+    last_name = serializers.CharField(source='user.last_name', allow_blank=True, required=False) 
+    email = serializers.CharField(source='user.email', allow_blank=True, required=False) 
+
+    class Meta:
+        model = Author
+        fields = ('id', 'displayName', 'first_name', 'last_name', 
+                  'email', 'bio', 'host', 'github_username')
+
 class AuthorSerializer(serializers.ModelSerializer):
     """
     Serializer used for doing author profile related operations.
@@ -39,6 +51,8 @@ class AuthorSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source='user.last_name', allow_blank=True, required=False) 
     email = serializers.CharField(source='user.email', allow_blank=True, required=False) 
     password = serializers.CharField(source='user.password', write_only=True)
+
+    friends = SubAuthorSerializer(many=True, required=False)
 
     class Meta:
         model = Author

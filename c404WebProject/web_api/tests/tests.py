@@ -25,14 +25,20 @@ class AuthorServiceTestCase(APITestCase):
         self.assertEqual(Author.objects.all()[0].user.username, 'Ahindle')
 
     def test_get_author(self):
-        self.author = createAuthor(self,0)
+        self.author1 = createAuthor(self,0)
+	self.author2 = createAuthor(self,1)
+	self.author3 = createAuthor(self,2)
+	self.author1.friends.add(self.author2)
+	self.author1.friends.add(self.author3)
 
-        response = self.client.get('/author/%s/' % self.author.id, {
+        response = self.client.get('/author/%s/' % self.author1.id, {
         }, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK, response)
         self.assertEqual(getAuthor(self,0)['username'], response.data['displayName'])
-        self.assertEqual(str(self.author.id), response.data['id'])
+        self.assertEqual(str(self.author1.id), response.data['id'])
+	self.assertEqual(str(self.author2.id), response.data['friends'][0]['id'])
+	self.assertEqual(str(self.author3.id), response.data['friends'][1]['id'])
 	
     def test_update_author_profile(self):
 	
@@ -157,7 +163,7 @@ class FriendServiceTestCase(APITestCase):
 	self.assertEqual(str(self.author2.id), response.data['authors'][1])
 	self.assertEqual(False, response.data['friends'])
 	
-	self.author1.friends.add(self.author2.id)
+	self.author1.friends.add(self.author2)
 	response = self.client.get('/friends/%s/%s/' % (self.author1.id, self.author2.id), {
 	}, format='json')	
 	self.assertEqual(True, response.data['friends'])

@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^friends/(?P<id1>[^/.]+)/(?P<id2>[^/.]+)/$', views.FriendCheck.as_view()),
     url(r'^login/', views.Login.as_view()),
     # Used for updating author profile.
-    url(r'^author/(?P<pk>[^/.]+)/$', views.UpdateProfile.as_view()),
+    url(r'^author/(?P<pk>[^/.]+)/$', views.AuthorProfileUpdateView.as_view()),
     # Used for sending friend requests.
     url(r'^friendrequest/$', views.FriendRequestView.as_view()),    
 ]
