@@ -60,7 +60,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-class UpdateProfile(APIView):
+class AuthorProfileUpdateView(APIView):
     serializer_class = AuthorSerializer
     
     '''
@@ -84,6 +84,7 @@ class UpdateProfile(APIView):
             serializer.save()
             return Response("Author profile updated.", status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 '''   
 class PostView(APIView):
     
