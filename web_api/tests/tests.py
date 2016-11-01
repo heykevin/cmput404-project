@@ -29,7 +29,6 @@ class AuthorServiceTestCase(APITestCase):
 	self.author2 = createAuthor(self,1)
 	self.author3 = createAuthor(self,2)
 	self.author1.friends.add(self.author2)
-	self.author1.friends.add(self.author3)
 
         response = self.client.get('/author/%s/' % self.author1.id, {
         }, format='json')
@@ -37,8 +36,7 @@ class AuthorServiceTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response)
         self.assertEqual(getAuthor(self,0)['username'], response.data['displayName'])
         self.assertEqual(str(self.author1.id), response.data['id'])
-	self.assertEqual(str(self.author2.id), response.data['friends'][1]['id'])
-	self.assertEqual(str(self.author3.id), response.data['friends'][0]['id'])
+	self.assertEqual(str(self.author2.id), response.data['friends'][0]['id'])
 	
     def test_update_author_profile(self):
 	
