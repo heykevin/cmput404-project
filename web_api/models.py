@@ -66,10 +66,14 @@ class Post(models.Model):
 
     publish_time=models.DateTimeField(auto_now=True)
 
-    content_type=models.CharField(max_length=15, choices=visibility_choice, default=text_plain)
+    content_type=models.CharField(max_length=15, choices=content_type, default=text_markdown)
 
     def get_idKey(self):
         return self.idKey()
+
+    # count number of posts
+    def get_count(self):
+        return self.objects.count()
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
