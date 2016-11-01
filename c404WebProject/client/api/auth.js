@@ -50,6 +50,34 @@ export default class ApiAuth {
         })
     }
 
+    static updateProfile(action) {
+        let response = [],
+            body = new FormData();
+        const encodedLogin = window.btoa(`${action.username}:${action.password}`);
+
+        console.log('signupAPI');
+        console.dir(action);
+
+        body.append('display_name', action.display_name);
+        body.append('first_name', action.first_name);
+        body.append('last_name', action.last_name);
+        body.append('email', action.email);
+        body.append('github_username', action.github_username);
+        body.append('bio', action.bio);
+        body.append('host', 'http://127.0.0.1:8000/');
+        return fetch('http://localhost:8000/author/', {
+            method: 'PUT',
+            body: body
+        }).then((response) => {
+            return ApiAuth.handleErrors(response);
+        }).then((response) => {
+            return {
+                author: response,
+                token: encodedLogin
+            };
+        })
+    }
+
     static logout(action) {
         let response = [];
         sessionStorage.clear();

@@ -14,80 +14,73 @@ export class AuthorEditForm extends React.Component {
     constructor(props)
     {
         super(props);
-        // currentState = getState();
-        // if (currentState === NULL || undefined){
-            console.log("Default information");
             this.state = {
-                firstName: '',
-                lastName: '',
-                github: '',
-                bios: ''
+                display_name: '',
+                first_name: '',
+                last_name: '',
+                email: '',
+                github_username: '',
+                bio: ''
             }
-        // }
+        this.handleDisplayNameChange = this.handleDisplayNameChange.bind(this);
         this.handleFirstNameChange = this.handleFirstNameChange.bind(this);
         this.handleLastNameChange = this.handleLastNameChange.bind(this);
+        this.handleEmailChange = this.handleEmailChange.bind(this);
         this.handleGithubChange = this.handleGithubChange.bind(this);
-        this.handleBiosChange = this.handleBiosChange.bind(this);
+        this.handleBioChange = this.handleBioChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
 
     onSubmit(event) {
-        console.log("AuthorEditForm onSubmit", this.state.firstName, this.state.lastName, this.state.github, this.state.bios);
-        console.log('dispatch props to store');
+        console.log("AuthorEditForm onSubmit", this.state.display_name, this.state.first_name, this.state.last_name, this.state.email, this.state.github_username, this.state.bio);
+        console.log("dispatch action authEdit");
 
         //Method one Error --> method not defined
         this.props.dispatch({
             type: "authEdit",
-            firstName: this.state.firstName,
-            lastName: this.state.lastName,
-            github: this.state.github,
-            bios: this.state.bios
+            display_name: this.state.display_name,
+            first_name: this.state.first_name,
+            last_name: this.state.last_name,
+            email: this.state.email,
+            github_username: this.state.github_username,
+            bio: this.state.bio
         });
-        //Method two
-        //code from http://stackoverflow.com/questions/27617020/how-to-pass-a-prop-into-a-component
-        // $.ajax({
-        //     url: 'this.props.url',
-        //     dataType: 'json',
-        //     type: 'PUT',
-        //     data: state,
-        //     success: function(state){
-        //         this.setState({
-        //             firstName: state.firstName,
-        //             lastName: state.lastName,
-        //             github: state.github,
-        //             bios: state.bios
-        //         }.bind(this),
-        //         error: function (xhr, status, err) {
-        //             console.error(this.props.url, status, err.toString());
-        //         }.bind(this);
-        //     }
-        // });
+    }
 
+    handleDisplayNameChange(event) {
+        let display_name = event.target.value;
+        this.setState({display_name: display_name});
+        console.log("Author setting", this.state);
     }
 
     handleFirstNameChange(event) {
-        let firstName = event.target.value;
-        this.setState({firstName: firstName});
+        let first_name = event.target.value;
+        this.setState({first_name: first_name});
         console.log("Author setting", this.state);
-
     }
 
     handleLastNameChange(event) {
-        let lastName = event.target.value;
-        this.setState({lastName: lastName});
+        let last_name = event.target.value;
+        this.setState({last_name: last_name});
+        console.log("Author setting", this.state);
+    }
+
+    handleEmailChange(event) {
+        let email = event.target.value;
+        this.setState({email: email});
         console.log("Author setting", this.state);
     }
 
     handleGithubChange(event) {
-        let github = event.target.value;
-        this.setState({github: github});
+        let github_username = event.target.value;
+        this.setState({github_username: github_username});
         console.log("Author setting", this.state);
 
     }
 
-    handleBiosChange(event) {
-        let bios = event.target.value;
-        this.setState({bios: bios});
+    handleBioChange(event) {
+        let bio = event.target.value;
+        this.setState({bio: bio});
         console.log("Author setting", this.state);
     }
 
@@ -98,33 +91,47 @@ export class AuthorEditForm extends React.Component {
         return (
             <div className="author-edit-form">
                 <Form onSubmit={this.onSubmit.bind(this)}>
+                    <ControlLabel> Display name </ControlLabel>
+                    <FormControl
+                        onChange = {this.handleDisplayChange}
+                        id="display_nameEdit"
+                        type="text"
+                        value={this.state.display_name}
+                        />
                     <ControlLabel> First name </ControlLabel>
                     <FormControl
                         onChange = {this.handleFirstNameChange}
-                        id="firstNameEdit"
+                        id="first_nameEdit"
                         type="text"
-                        value={this.state.firstName}
+                        value={this.state.first_name}
                         />
                     <ControlLabel> Last name </ControlLabel>
                     <FormControl
                         onChange = {this.handleLastNameChange}
-                        id="lastNameEdit"
+                        id="last_nameEdit"
                         type="text"
-                        value={this.state.lastName}
+                        value={this.state.last_name}
+                        />
+                    <ControlLabel> Email </ControlLabel>
+                    <FormControl
+                        onChange = {this.handleEmailChange}
+                        id="emailEdit"
+                        type="email"
+                        value={this.state.email}
                         />
                     <ControlLabel> Github account </ControlLabel>
                     <FormControl
                         onChange = {this.handleGithubChange}
-                        id="githubEdit"
+                        id="github_usernameEdit"
                         type="text"
-                        value={this.state.github}
+                        value={this.state.github_username}
                         />
                     <ControlLabel> Bios </ControlLabel>
                     <FormControl
                         onChange = {this.handleBiosChange}
-                        id="biosEdit"
+                        id="bioEdit"
                         type="text"
-                        value={this.state.bios}
+                        value={this.state.bio}
                         />
                     <Button type = "submit">
                         Submit
@@ -143,10 +150,12 @@ function mapStateToProps(state, props) {
 
     // set the form data
     let form_data = {
-        firstName: state.firstName,
-        lastName: state.lastName,
-        github: state.github,
-        bios: state.bios
+        display_name: state.display_name,
+        first_name: state.first_name,
+        last_name: state.last_name,
+        email: state.email,
+        github_username: state.github_username,
+        bio: state.bio
     };
 
 

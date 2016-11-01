@@ -23,6 +23,7 @@ import AuthorEdit from './pages/AuthorEdit.jsx'
 import EditPost from './pages/EditPost.jsx';
 import AddPost from './pages/AddPost.jsx';
 import Friends from './pages/Friends.jsx';
+import Profile from './pages/Profile.jsx';
 
 
 // create the store
@@ -61,6 +62,9 @@ ReactDOM.render(
                 <Route path="/settings" component={AuthorEdit}/>
                 <Route path="/friends*" component={Friends}/>
             </Route>
+            <Route path="/settings" component={AuthorEdit}/>
+            <Route path="/profile" component={Profile}/>
+            <Route onEnter={checkAuth}></Route>
             <Route path="*" component={NotFound}/>
         </Route>
     </Router>
