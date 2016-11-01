@@ -16,6 +16,7 @@ class reducerClass {
 
     static getFailure(new_state, action) {
 		new_state.response = action.response;
+        new_state.resolved = true;
         return new_state;
     }
 
@@ -26,6 +27,7 @@ class reducerClass {
 
     static getUserFailure(new_state, action) {
         new_state.response = action.response.response;
+        new_state.resolved = true;
         return new_state;
     }
 }

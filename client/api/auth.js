@@ -1,14 +1,9 @@
 /**
  * API Auth static class
  */
+import Utils from '../utils/utils.js';
+
 export default class ApiAuth {
-    static handleErrors(response) {
-        if (!response.ok) {
-            console.log("error", response);
-            throw new Error(response.statusText);
-        }
-        return response.json();
-    };
 
     static login(action) {
         let response = [];
@@ -22,7 +17,7 @@ export default class ApiAuth {
                 'Authorization': `Basic ${encodedLogin}`
             }
         }).then((response) => {
-            return ApiAuth.handleErrors(response);
+            return Utils.handleErrors(response);
         }).then((response) => {
             return {
                 response: response,
@@ -46,7 +41,7 @@ export default class ApiAuth {
             method: 'POST',
             body: body
         }).then((response) => {
-            return ApiAuth.handleErrors(response);
+            return Utils.handleErrors(response);
         }).then((response) => {
             return {
                 author: response,

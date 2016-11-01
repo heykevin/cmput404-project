@@ -1,6 +1,8 @@
 /**
  * API Git static class
  */
+ import Utils from '../utils/utils.js';
+
 export default class ApiGit {
     static handleErrors(response) {
         if (!response.ok) {
@@ -17,7 +19,7 @@ export default class ApiGit {
         return fetch('https://api.github.com/users/' + action.username + '/events', {
             method: 'GET'
         }).then((response) => {
-            return ApiGit.handleErrors(response);
+            return Utils.handleErrors(response);
         }).then((response) => {
             return {
                 response
@@ -32,7 +34,7 @@ export default class ApiGit {
         return fetch('https://api.github.com/users/' + action.username, {
             method: 'GET'
         }).then((response) => {
-            return ApiGit.handleErrors(response);
+            return Utils.handleErrors(response);
         }).then((response) => {
             return {
                 response

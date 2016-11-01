@@ -1,47 +1,30 @@
 /**
  * API Users static class
  */
-export default class ApiUsers
-{
-    static getList(action)
-    {
-        let users = [];
-        return fetch('http://rest.learncode.academy/api/learncode/friends').then((res) => {
-            return res.json();
-        }).then((list) => {
-            console.log(list)
-            list.forEach((person, i) => {
-                if (person.name && person.drink && person.id) {
-                    users.push({
-                        id: i,
-                        username: person.name,
-                        drink: person.drink
-                    });
-                }
-            });
-            console.log(users)
-            return users;
+import Utils from '../utils/utils.js';
+
+export default class ApiUsers {
+    static getAuthorProfile(action) {
+        return fetch('http://localhost:8000/author/' + action.authorId).then((response) => {
+            return Utils.handleErrors(response);
         });
     }
 
-    static addUser(action) {
-
-        const searchParams = Object.keys(action).map((key) => {
-            let encodedKey = encodeURIComponent(key)
-            if(key === "username") {
-                encodedKey = encodeURIComponent("name");
-            }
-            return encodedKey + '=' + encodeURIComponent(action[key]);
-        }).join('&');
-
+    static getUsers(action) {
         let users = [];
-        return fetch('http://rest.learncode.academy/api/learncode/friends', ({
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: searchParams
-        })
-        )
+        return fetch('http://localhost:8000/author/').then((response) => {
+            return Utils.handleErrors(response);
+        }).then((list) => {
+            console.log(list);
+            return list;
+        });
+    }
+
+    static getFriendsIds(action) {
+        return fetch('http://localhost:8000/friends/' + action.authorId).then((response) => {
+            return Utils.handleErrors(response);
+        }).then((list) => {
+            return list.authors;
+        });
     }
 }

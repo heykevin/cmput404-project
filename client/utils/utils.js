@@ -14,4 +14,12 @@ export default class Utils {
 		return JSON.parse(sessionStorage.author);
 	}
 
+	static handleErrors(response) {
+		if (!response.ok) {
+			console.log("error", response);
+			throw new Error(response.statusText);
+		}
+		return response.json();
+	};
+
 }

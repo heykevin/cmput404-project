@@ -37,7 +37,18 @@ export class GithubStream extends React.Component
 
         // render
 		if (!this.state.hasGitStream) {
-            return (<div></div>);
+            return (
+                <div>
+                    <div className="gha-header">
+                        <div className="gha-github-icon"><span className="octicon octicon-mark-github"></span></div>
+                        <div className="gha-user-info without-name"></div>
+                    </div>
+                    <div className="list-group-item text-center">
+                        You haven't enabled github activity stream.<br/>
+                    Go to your <a href="/profile">profile</a>, and add your github name to enable this feature!
+                    </div>
+                </div>
+            );
 		}
 
         if (this.props.events.length && this.props.user) {
@@ -72,7 +83,7 @@ export class GithubStream extends React.Component
         } else {
             return (
                 <div className="no-posts">
-                    You currently do not have any events available to read.
+                    Oops! Something went wrong with github activity.
                 </div>
             );
         }

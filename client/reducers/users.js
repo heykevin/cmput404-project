@@ -67,14 +67,31 @@ class reducerClass
         return new_state;
     }
 
-    static fetchListSuccess(new_state, action)
+    static fetchUsersSuccess(new_state, action)
     {
-        new_state.list = action.users;
+        new_state.users = action.users;
+        new_state.usersResolved = true;
         return new_state;
     }
-    static addUserSuccess(new_state, action)
+
+    static fetchUsersFailure(new_state, action)
     {
+        new_state.error = new_state.error;
+        new_state.usersResolved = true;
+        return new_state;
+    }
+
+    static fetchFriendsSuccess(new_state, action)
+    {
+        new_state.friends = action.friends;
+        new_state.friendsResolved = true;
+        return new_state;
+    }
+
+    static fetchFriendsFailure(new_state, action)
+    {
+        new_state.error = new_state.error;
+        new_state.friendsResolved = true;
         return new_state;
     }
 }
-

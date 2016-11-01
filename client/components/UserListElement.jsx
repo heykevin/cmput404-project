@@ -13,19 +13,13 @@ export class UserListElement extends React.Component
         this.modalDeleteShow = this.modalDeleteShow.bind(this);
     }
 
-    static get propTypes()
-    {
-        return {
-            id: React.PropTypes.number.isRequired,
-        };
-    }
-
     render()
     {
         // get the user element data
         let user;
-        for (const val of this.props.users) {
-            if (val.id === Number(this.props.id)) {
+        const users = this.props.view === "myfriends" ? this.props.friends : this.props.users;
+        for (const val of users) {
+            if (val.id === this.props.id) {
                 user = val;
                 break;
             }
@@ -34,15 +28,9 @@ export class UserListElement extends React.Component
         // render
         return (
             <tr>
-                <td>#{user.id}</td>
-                <td>{user.username}</td>
-                <td>{user.drink}</td>
-                <td>
-                    <Button bsSize="xsmall" className="user-delete" data-id={user.id} data-username={user.username}
-                        onClick={this.modalDeleteShow}>
-                        Delete <Glyphicon glyph="remove-circle"/>
-                    </Button>
-                </td>
+                <td>{user.displayName}</td>
+                <td>{user.bio ? user.bio : user.displayName + " is rather private. So no bio is available."}</td>
+                <td>Already Friends</td>
             </tr>
         );
     }
@@ -62,7 +50,8 @@ export class UserListElement extends React.Component
 // export the connected class
 function mapStateToProps(state, own_props) {
     return {
-        users: state.users.list || [],
+        users: state.users.users || [],
+        friends: state.users.friends || [],
         id: own_props.id,
     }
 }
