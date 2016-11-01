@@ -37,7 +37,7 @@ export class GithubStream extends React.Component
 
         // render
 		if (!this.state.hasGitStream) {
-            return (<ReactMustache template={templates.NoActivity}/>);
+            return (<div></div>);
 		}
 
         if (this.props.events.length && this.props.user) {
