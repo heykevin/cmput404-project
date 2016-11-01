@@ -18,7 +18,7 @@ urlpatterns = [
     
     url(r'^', include(router.urls)),
     # Specific post
-    url(r'^posts/', views.PostViewSet.as_view()),
+    url(r'^posts/', views.PostView.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
     # Posts from specific Author
     url(r'^author/(?P<pk>[^/.]+)/posts/$', views.SpecificPostView.as_view()),

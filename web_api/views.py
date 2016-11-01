@@ -94,7 +94,7 @@ class PostView(APIView):
         return Response(serializer.data)
 '''
 
-class PostViewSet(APIView):
+class PostView(APIView):
     # shows all authors post lists
     #
     # GET /posts
@@ -114,8 +114,6 @@ class PostViewSet(APIView):
         res = dict()
         res["count"] = Post.objects.count()
         res["posts"] = serializer.data
-        
-        print("this is method get")
         return Response(res)
 
     # POST post by an author
@@ -169,7 +167,10 @@ class SpecificPostView(APIView):
         author = Author.objects.get(id=pk)
         queryset = Post.objects.filter(author_id=author)
         serializer = PostSerializer(queryset, many=True)
-        return Response(serializer.data)
+        res = dict()
+        res["count"] = Post.objects.count()
+        res["posts"] = serializer.data
+        return Response(res)
 
 class CommentView(APIView):
 
