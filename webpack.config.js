@@ -11,7 +11,7 @@ module.exports = {
         __dirname + '/' + app_root + '/app.js',
     ],
     output: {
-        path: __dirname + '/public/js',
+        path: __dirname + '/' + app_root+'/public/js',
         publicPath: 'js/',
         filename: 'bundle.js',
     },
@@ -38,7 +38,7 @@ module.exports = {
         ],
     },
     devServer: {
-        contentBase: __dirname + '/public',
+        contentBase: __dirname + '/' + app_root+'/public',
     },
     devTool: "#source-map",
     plugins: []

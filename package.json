@@ -1,5 +1,5 @@
 {
-  "name": "WARC-portal",
+  "name": "Blogging",
   "version": "1.0.0",
   "main": "app.js",
   "homepage": "https://github.com/CMPUT404F16Project/cmput404-project",
@@ -28,6 +28,7 @@
   "author": "Kevin Tang",
   "license": "",
   "dependencies": {
+    "connect": "3.5.0",
     "react-markdown-editor": "0.4.0",
     "react": "^15.3.2",
     "react-bootstrap": "^0.30.3",
@@ -38,7 +39,8 @@
     "react-router-redux": "^4.0.6",
     "redux": "^3.5.2",
     "redux-form": "^6.0.2",
-    "redux-saga": "^0.11.1"
+    "redux-saga": "^0.11.1",
+    "serve-static": "1.11.1"
   },
   "devDependencies": {
     "babel-core": "^6.16.0",
