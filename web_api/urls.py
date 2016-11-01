@@ -19,6 +19,8 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     # Specific post
     url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
+    # Posts from specific Author
+    url(r'^author/(?P<pk>[^/.]+)/posts/$', views.SpecificPostView.as_view()),
     # Used for get the list of friends id or check the if an author is a friend of another author.
     url(r'^friends/(?P<pk>[^/.]+)/$', views.FriendsWith.as_view()),                     
     # Used for check 2 author is friend.

@@ -71,12 +71,6 @@ class Post(models.Model):
     def get_idKey(self):
         return self.idKey()
 
-    '''
-    def get_count(self):
-        return self.objects.count()
-    '''
-
-
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     content = models.TextField(default="")

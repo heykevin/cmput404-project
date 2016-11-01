@@ -102,6 +102,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    serializer = PostSerializer(queryset)
 
     # get specific post from an author
     #
@@ -133,7 +134,17 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.delete()
         return Response("post has been deleted", status=status.HTTP_204_NO_CONTENT)
 
+# A viewset for
+# service/author/author_id/post
+class SpecificPostView(APIView):
 
+    # get posts from specific author
+
+    def get(self, request, pk, format=None):
+        author = Author.objects.get(id=pk)
+        queryset = Post.objects.filter(author_id=author)
+        serializer = PostSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 class CommentView(APIView):
 
