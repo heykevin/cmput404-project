@@ -93,7 +93,7 @@ export class AuthorEditForm extends React.Component {
                 <Form onSubmit={this.onSubmit.bind(this)}>
                     <ControlLabel> Display name </ControlLabel>
                     <FormControl
-                        onChange = {this.handleDisplayChange}
+                        onChange = {this.handleDisplayNameChange}
                         id="display_nameEdit"
                         type="text"
                         value={this.state.display_name}
@@ -128,7 +128,7 @@ export class AuthorEditForm extends React.Component {
                         />
                     <ControlLabel> Bios </ControlLabel>
                     <FormControl
-                        onChange = {this.handleBiosChange}
+                        onChange = {this.handleBioChange}
                         id="bioEdit"
                         type="text"
                         value={this.state.bio}

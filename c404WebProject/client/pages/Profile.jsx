@@ -11,7 +11,7 @@ export default class Profile extends React.Component
                 <h1>My Profile</h1>
                 <a href="/settings">Edit your profile</a>
 
-                <PostList method="posts"/>
+                <AuthorEdit method="posts"/>
             </div>
         );
     }
