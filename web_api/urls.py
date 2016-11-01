@@ -9,7 +9,7 @@ router.register(r'groups', views.GroupViewSet)
 router.register(r'author', views.AuthorViewSet)
 
 # adding router for public post
-router.register(r'posts', views.PostViewSet)
+# router.register(r'posts', views.PostViewSet)
 
 urlpatterns = [
     # Examples:
@@ -18,6 +18,7 @@ urlpatterns = [
     
     url(r'^', include(router.urls)),
     # Specific post
+    url(r'^posts/', views.PostViewSet.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
     # Posts from specific Author
     url(r'^author/(?P<pk>[^/.]+)/posts/$', views.SpecificPostView.as_view()),

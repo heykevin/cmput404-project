@@ -94,25 +94,50 @@ class PostView(APIView):
         return Response(serializer.data)
 '''
 
-class PostViewSet(viewsets.ModelViewSet):    
+class PostViewSet(APIView):
     # shows all authors post lists
     #
     # GET /posts
-    #
+    # #
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    serializer = PostSerializer(queryset)
+    # serializer = PostSerializer(queryset)
 
     # get specific post from an author
     #
     # GET /posts/<postID>
     #
-    def get(self, request, pk, format=None):
+    def get(self, request, format=None):
+        queryset = Post.objects.all()
+        serializer = PostSerializer(queryset, many=True)
+        res = dict()
+        res["count"] = Post.objects.count()
+        res["posts"] = serializer.data
+        
+        print("this is method get")
+        return Response(res)
+
+    # POST post by an author
+    #
+    # POST
+    #
+    def post(self,request):
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    '''
+    Note to self, to do
+    '''
+    def delete(self, request, pk, format=None):
+        # find the query set
         queryset = Post.objects.get(id=pk)
         serializer = PostSerializer(queryset)
-        return Response(serializer.data)
-
+        serializer.delete()
+        return Response("post has been deleted", status=status.HTTP_204_NO_CONTENT)
     # POST post by an author
     #
     # POST
