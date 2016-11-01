@@ -12,7 +12,8 @@
     "build-dev": "webpack --config webpack.dev.config.js",
     "build-prod": "webpack -p --config webpack.prod.config.js",
     "test": "mocha --compilers js:babel-register --recursive",
-    "test-watch": "npm test -- --watch"
+    "test-watch": "npm test -- --watch",
+    "heroku-postbuild": "npm build-prod"
   },
   "babel": {
     "presets": [
