@@ -55,11 +55,13 @@ class AuthorSerializer(serializers.ModelSerializer):
     password = serializers.CharField(source='user.password', write_only=True)
 
     friends = SubAuthorSerializer(many=True, required=False)
+    friend_request_received = SubAuthorSerializer(many=True, required=False)
+    friend_request_sent = SubAuthorSerializer(many=True, required=False)
 
     class Meta:
         model = Author
-        fields = ('id', 'displayName', 'password', 'first_name', 'last_name', 
-                  'email', 'bio', 'host', 'github_username', 'friends')
+        fields = ('id', 'displayName', 'password', 'first_name', 'last_name',
+                  'email', 'bio', 'host', 'github_username', 'friends', 'friend_request_received', 'friend_request_sent')
 
     # # Need to be created as User is a nest object of Author.
     # # Returns an author object with user object as an field after extracting data from json.
