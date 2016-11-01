@@ -55,20 +55,20 @@ export default class ApiAuth {
             body = new FormData();
         const encodedLogin = window.btoa(`${action.username}:${action.password}`);
 
-        console.log('signupAPI');
+        console.log('updateAPI');
         console.dir(action);
+        const author = Utils.getAuthor();
+        var id = author.id;
 
-	const author = Utils.getAuthor();
-
-        body.append('display_name', action.display_name);
+        body.append('displayName', action.displayName);
         body.append('first_name', action.first_name);
         body.append('last_name', action.last_name);
         body.append('email', action.email);
         body.append('github_username', action.github_username);
         body.append('bio', action.bio);
         body.append('host', 'http://127.0.0.1:8000/');
-	body.append('password', author.password);
-        return fetch('http://localhost:8000/author/', {
+        body.append('password', author.password);
+        return fetch('http://localhost:8000/author/' + author.id + '/', {
             method: 'PUT',
             body: body
         }).then((response) => {

@@ -52,7 +52,7 @@ class reducerClass {
 
     static updateSuccess(new_state, action) {
         new_state = action.response;
-        new_state.display_name = action.display_name,
+        new_state.displayName = action.displayName,
         new_state.first_name = action.first_name,
         new_state.last_name = action.last_name,
         new_state.email = action.email,
