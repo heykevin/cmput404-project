@@ -68,7 +68,7 @@ export default class ApiAuth {
         body.append('bio', action.bio);
         body.append('host', 'http://127.0.0.1:8000/');
 	body.append('password', author.password);
-        return fetch('http://localhost:8000/author/' + author.id + '/', {
+        return fetch('http://localhost:8000/author/', {
             method: 'PUT',
             body: body
         }).then((response) => {
