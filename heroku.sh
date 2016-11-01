@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Starting servers"
-if ["$NODE_ENV" == "true"]; then
+if [ "$NODE_ENV" == "true" ]; then
     echo "Starting node server"
     node client/server.js
 else
