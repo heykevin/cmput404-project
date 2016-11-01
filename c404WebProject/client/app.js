@@ -22,6 +22,7 @@ import MyPosts from './pages/MyPosts.jsx';
 import AuthorEdit from './pages/AuthorEdit.jsx'
 import EditPost from './pages/EditPost.jsx';
 import AddPost from './pages/AddPost.jsx';
+import Friends from './pages/Friends.jsx';
 
 
 // create the store
@@ -37,25 +38,10 @@ sagaMiddleware.run(sagas);
 function checkAuth(nextState, replace) {
 
     let loggedIn = sessionStorage.token;
-    // Check if the path isn't dashboard. That way we can apply specific logic to
-    // display/render the path we want to
-    if (nextState.location.pathname !== '/dashboard') {
-        if (loggedIn) {
-            if (nextState.location.state && nextState.location.pathname) {
-                replace(nextState.location.pathname);
-            } else {
-                replace('/');
-            }
-        }
-    } else {
-        // If the user is already logged in, forward them to the homepage
-        if (!loggedIn) {
-            if (nextState.location.state && nextState.location.pathname) {
-                replace(nextState.location.pathname)
-            } else {
-                replace('/');
-            }
-        }
+    if (!loggedIn) {
+        replace('/');
+    } else if (nextState.location.state && nextState.location.pathname) {
+        replace(nextState.location.pathname)
     }
 }
 
@@ -66,13 +52,15 @@ ReactDOM.render(
             <IndexRoute component={Home}/>
             <Route path="/login" component={Login}/>
             <Route path="/signup" component={Signup}/>
-            <Router path="/addpost" component={AddPost}/>
-            <Router path="/editpost" component={EditPost}/>
-            <Route path="/dashboard" component={Dashboard}/>
-            <Route path="/myposts" component={MyPosts}/>
             <Route path="/post/*" component={Post}/>
-            <Route path="/settings" component={AuthorEdit}/>
-            <Route onEnter={checkAuth}></Route>
+            <Route onEnter={checkAuth}>
+                <Router path="/addpost" component={AddPost}/>
+                <Router path="/editpost" component={EditPost}/>
+                <Route path="/dashboard" component={Dashboard}/>
+                <Route path="/myposts" component={MyPosts}/>
+                <Route path="/settings" component={AuthorEdit}/>
+                <Route path="/friends*" component={Friends}/>
+            </Route>
             <Route path="*" component={NotFound}/>
         </Route>
     </Router>

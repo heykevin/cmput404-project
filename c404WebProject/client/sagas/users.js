@@ -1,35 +1,47 @@
-import { call, put } from 'redux-saga/effects';
+import {
+    call,
+    put
+} from 'redux-saga/effects';
 
 import ApiUsers from '../api/users';
 
 export function* usersFetchList(action) {
-    // call the api to get the users list
-    console.log("users fetch list")
-    const users = yield call(ApiUsers.getList);
-    console.log(users);
-    // dispatch the success action with the users attached
-    yield put({
-        type: 'users.fetchListSuccess',
-        users: users,
-    });
+    try {
+        // call the api to get the users list
+        console.log("users fetch list")
+        const users = yield call(ApiUsers.getUsers);
+        console.log(users);
+        // dispatch the success action with the users attached
+        yield put({
+            type: 'users.fetchUsersSuccess',
+            users: users,
+        });
+    } catch (error) {
+        yield put({
+            type: 'users.fetchUsersFailure',
+            error: error
+        });
+    }
+
 }
 
-export function* usersAdd(action) {
-    // call the api to get the users list
-    console.log("users add list")
-    console.log(action)
-    yield call(ApiUsers.addUser, action);
-    const users = yield call(ApiUsers.getList);
-    yield put({
-        type: 'users.fetchListSuccess',
-        users: users,
-    });
-}
-
-export function* usersEdit(action) {
-    yield call(ApiUsers.edit, action);
-}
-
-export function* usersDelete(action) {
-    yield call(ApiUsers.delete, action);
+export function* usersFetchFriendsList(action) {
+    try {
+        let friends = [], dispatch = action.dispatch;
+        // call the api to get the users list
+        console.log("users fetch friend list");
+        const friendsIds = yield call(ApiUsers.getFriendsIds, action);
+        for (const friendId of friendsIds) {
+            friends.push(yield call(ApiUsers.getAuthorProfile, {authorId: friendId}));
+        }
+        Promise.all(friends).then(() => {
+            console.log("here?");
+            action.dispatch({type: 'users.fetchFriendsSuccess', friends});
+        });
+    } catch (error) {
+        yield put({
+            type: 'users.fetchFailure',
+            error: error
+        });
+    }
 }

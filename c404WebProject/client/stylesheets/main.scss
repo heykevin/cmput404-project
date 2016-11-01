@@ -18,6 +18,10 @@
     float: right !important;
 }
 
+.text-center {
+    text-align: center;
+}
+
 .center {
     align-items: center;
 }
@@ -197,6 +201,23 @@
         margin: 10px auto;
         width: 300px;
     }
+
+    .friends-content {
+        border-radius: 15px;
+        padding: 2%;
+        background: white;
+
+        .nav {
+            margin-bottom: 0px;
+            li {
+                background: white;
+            }
+        }
+
+        .user-list {
+            margin: 0 0.5% 30px 0.5%;
+        }
+    }
 }
 // Github activity feed styles
 /*!
@@ -298,7 +319,7 @@ span.gha-time {
     /* IE10+ */
     background: linear-gradient(to bottom, #ffffff 0%,#f4f4f4 100%);
     /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr= '#ffffff', endColorstr='#f4f4f4',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=  '#ffffff', endColorstr='#f4f4f4',GradientType=0 );
     /* IE6-9 */
 }
 
@@ -324,7 +345,7 @@ span.gha-time {
     /* IE10+ */
     background: linear-gradient(to bottom, #ffffff 0%,#f4f4f4 100%);
     /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr= '#ffffff', endColorstr='#f4f4f4',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=  '#ffffff', endColorstr='#f4f4f4',GradientType=0 );
     /* IE6-9 */
     color: #495961;
     font-size: 13px;

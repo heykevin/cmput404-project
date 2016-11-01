@@ -38,7 +38,7 @@ export class Menu extends React.Component
                             <Glyphicon glyph="list"/>
                         </NavItem>
                     </LinkContainer>
-                    <LinkContainer to="/friends">
+                    <LinkContainer to="/friends?view=myfriends">
                         <NavItem className="nav-item float-right">
                             Friends
                             <Glyphicon glyph="globe"/>
