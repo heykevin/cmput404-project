@@ -1,5 +1,5 @@
 {
-  "name": "WARC-portal",
+  "name": "Blogging",
   "version": "1.0.0",
   "main": "app.js",
   "homepage": "https://github.com/CMPUT404F16Project/cmput404-project",
@@ -13,7 +13,7 @@
     "build-prod": "webpack -p --config webpack.prod.config.js",
     "test": "mocha --compilers js:babel-register --recursive",
     "test-watch": "npm test -- --watch",
-    "heroku-postbuild": "npm build-prod"
+    "heroku-postbuild": "webpack -p --config webpack.prod.config.js"
   },
   "babel": {
     "presets": [
