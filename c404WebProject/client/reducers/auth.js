@@ -50,4 +50,24 @@ class reducerClass {
         return new_state;
     }
 
+    static updateSuccess(new_state, action) {
+        new_state = action.response;
+        new_state.display_name = action.display_name,
+        new_state.first_name = action.first_name,
+        new_state.last_name = action.last_name,
+        new_state.email = action.email,
+        new_state.github_username = action.github_username,
+        new_state.bio =action.bio
+        console.dir(action);
+        console.dir(new_state);
+        return new_state;
+    }
+
+    static signupFailure(new_state, action) {
+        console.log('error', action);
+        new_state.error = action;
+        console.dir(new_state);
+        return new_state;
+    }
+
 }
