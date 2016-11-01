@@ -165,13 +165,26 @@ class SpecificPostView(APIView):
 
     def get(self, request, pk, format=None):
         author = Author.objects.get(id=pk)
-        queryset = Post.objects.filter(author_id=author)
-        serializer = PostSerializer(queryset, many=True)
-        res = dict()
-        res["count"] = Post.objects.count()
-        res["posts"] = serializer.data
-        return Response(res)
+        if Post.objects.filter(author_id=author).exists():
+            queryset = Post.objects.filter(author_id=author)
+            serializer = PostSerializer(queryset, many=True)
+            res = dict()
+            res["count"] = Post.objects.count()
+            res["posts"] = serializer.data
+            return Response(res, status=status.HTTP_200_OK)
+        return Response("Author has no post", status=status.HTTP_400_BAD_REQUEST)
 
+class PostIDView(APIView):
+
+    def get(self, request, pk, format=None):
+        if Post.objects.filter(id=pk).exists():
+            queryset = Post.objects.filter(id=pk)
+            serializer = PostSerializer(queryset, many=True)
+            res = dict()
+            res["posts"] = serializer.data
+            return Response(res, status=status.HTTP_200_OK)
+        return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
+        
 class CommentView(APIView):
 
     # GET comment from specific post_id
