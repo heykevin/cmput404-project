@@ -2,10 +2,11 @@ import {call, put} from 'redux-saga/effects';
 import { browserHistory } from 'react-router';
 
 import ApiAuth from '../api/auth';
+import Utils from '../utils/utils.js';
 
 function setAuthAndRedirect(token, author) {
-    sessionStorage.setItem("token", token);
-    sessionStorage.setItem("author", JSON.stringify(author));
+    Utils.setToken(token);
+    Utils.setAuthor(author);
     browserHistory.push('/dashboard');
 }
 

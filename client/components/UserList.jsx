@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
 import {ProgressBar, Table, Pagination} from 'react-bootstrap';
+import Notifications, {notify} from 'react-notify-toast';
 
 import UserListElement from './UserListElement.jsx';
 import Utils from '../utils/utils.js';
@@ -11,8 +12,13 @@ export class UserList extends React.Component
     constructor(props)
     {
         super(props);
-
-        this.props.dispatch({type: 'usersFetchFriendsList', authorId: Utils.getAuthor().id, dispatch: this.props.dispatch});
+        const author = Utils.getAuthor(),
+            actor = {
+                id: author.id,
+                host: author.host
+            }
+        this.props.dispatch({type: 'usersFetchFriendsList', authorId: author.id, dispatch: this.props.dispatch});
+        this.props.dispatch({type: 'usersFetchFriendRequestsList', actor: actor, dispatch: this.props.dispatch});
         this.props.dispatch({type: 'usersFetchList'});
 
         // bind <this> to the event method
@@ -24,18 +30,22 @@ export class UserList extends React.Component
 
         // Mode
         const view = this.props.view.toLowerCase();
-        let list, listResolved;
+        let list,
+            listResolved;
 
         if (view === "myfriends") {
             list = this.props.friends;
             listResolved = this.props.friendsResolved;
+        } else if (view === "friendrequests") {
+            list = this.props.friendRequests;
+            listResolved = this.props.friendRequestsResolved;
         } else {
             list = this.props.users;
             listResolved = this.props.usersResolved;
         }
 
         // render
-        if (list.length) {
+        if (list && list.length) {
 
             const per_page = 10;
             const pages = Math.ceil(list.length / per_page);
@@ -43,43 +53,54 @@ export class UserList extends React.Component
             const start_offset = (current_page - 1) * per_page;
             let start_count = 0;
 
-            return (
-                <div>
-                    <Table bordered hover responsive striped>
-                        <thead>
-                            <tr>
-                                <th>Display Name</th>
-                                <th>Bio</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {list.map((user, index) => {
-                                if (index >= start_offset && start_count < per_page) {
-                                    start_count++;
-                                    return (<UserListElement view={view} key={user.id} id={user.id}/>);
-                                }
-                            })}
-                        </tbody>
-                    </Table>
+            if (this.props.toastMessage && !this.props.error && this.props.status && this.props.status !== 0) {
+                notify.show(this.props.toastMessage);
+            }
 
-                    <Pagination className="users-pagination pull-right" bsSize="medium" maxButtons={10} first last next prev boundaryLinks items={pages} activePage={current_page} onSelect={this.changePage}/>
+            return (
+
+                <div>
+                    <div className={(this.props.status === 0 ? "visible" : "invisible") + " hide-yall-kids-hide-yall-wife"}>
+                        <i className="fa fa-spinner fa-spin"></i>
+                    </div>
+                        <Table bordered hover responsive striped>
+                            <thead>
+                                <tr>
+                                    <th>Display Name</th>
+                                    <th>Bio</th>
+                                    <th className="header-action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {list.map((user, index) => {
+                                    if (index >= start_offset && start_count < per_page) {
+                                        start_count++;
+                                        if (user.id != this.props.author.id) {
+                                            return (<UserListElement view={view} key={user.id} id={user.id}/>);
+                                        }
+                                    }
+                                })}
+                            </tbody>
+                        </Table>
+                        <Pagination className="users-pagination pull-right" bsSize="medium" maxButtons={10} first last next prev boundaryLinks items={pages} activePage={current_page} onSelect={this.changePage}/>
+                    <Notifications />
                 </div>
             );
         } else if (!listResolved) {
             // show the loading state
             return (<ProgressBar active now={100}/>);
-        } else if (!list.length && listResolved){
+        } else if (!list.length && listResolved) {
             return (
                 <div className="text-center">
-                    Sorry, you do not have any friends. Check out all <a href="/friends?view=allauthors">authors</a> and you might find someone interesting!
+                    Sorry, you do not have any {view === "friendrequests" ? "friend requests" : "friends"}. Check out all <a href="/friends?view=allauthors">authors</a> and you might find someone interesting!
                 </div>
             );
         } else {
             return (
                 <div className="text-center">
-                    Service Temporarily Unavailable. Please come back later.
-                    {this.props.error ? this.props.error : ""}
+                    Service Temporarily Unavailable. Please come back later. {this.props.error
+                        ? this.props.error
+                        : ""}
                 </div>
             );
         }
@@ -99,10 +120,18 @@ function mapStateToProps(state) {
     return {
         users: state.users.users || [],
         usersResolved: state.users.usersResolved,
+
         friends: state.users.friends || [],
         friendsResolved: state.users.friendsResolved,
+
+        friendRequests: state.users.friendRequests || [],
+        friendRequestsResolved: state.users.friendRequestsResolved,
+
         page: Number(state.routing.locationBeforeTransitions.query.page) || 1,
-        error: state.users.error
+
+        error: state.users.error,
+        author: state.users.author || Utils.getAuthor(),
+        status: state.users.requestStatus //undefined, -1 error, 0 sending, 1 success
     };
 }
 export default connect(mapStateToProps)(UserList);

@@ -1,7 +1,7 @@
 import { takeLatest } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
 
-import { usersFetchList, usersFetchFriendsList } from './users';
+import { usersFetchList, usersFetchFriendsList, usersUnfriendAuthor, usersBefriendAuthor, usersRespondToFriendRequest, usersFetchAuthorProfile, usersFetchFriendRequestsList } from './users';
 import { postsGetPosts, postsSavePost, postsDeletePost, postsEditPostRedirect } from './posts';
 import { authLogin, authSignup, authLogout, authEdit } from './auth';
 import { gitGetEvents, gitGetUser } from './git';
@@ -13,6 +13,11 @@ export function* sagas() {
     yield [
         fork(takeLatest, 'usersFetchList', usersFetchList),
         fork(takeLatest, 'usersFetchFriendsList', usersFetchFriendsList),
+        fork(takeLatest, 'usersUnfriendAuthor', usersUnfriendAuthor),
+        fork(takeLatest, 'usersBefriendAuthor', usersBefriendAuthor),
+        fork(takeLatest, 'usersRespondToFriendRequest', usersRespondToFriendRequest),
+        fork(takeLatest, 'usersFetchAuthorProfile', usersFetchAuthorProfile),
+        fork(takeLatest, 'usersFetchFriendRequestsList', usersFetchFriendRequestsList),
 
         fork(takeLatest, 'postsGetPosts', postsGetPosts),
         fork(takeLatest, 'postsSavePost', postsSavePost),

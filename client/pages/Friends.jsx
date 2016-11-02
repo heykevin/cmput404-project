@@ -4,23 +4,20 @@ import { connect } from 'react-redux';
 import {IndexLinkContainer, LinkContainer} from 'react-router-bootstrap';
 
 import UserList from '../components/UserList.jsx';
+import Utils from '../utils/utils.js';
 
 export class Friends extends React.Component
 {
     constructor(props)
     {
         super(props);
-
-        this.handleSelect = this.handleSelect.bind(this);
-        this.getList = this.getList.bind(this);
     }
 
     render()
     {
-        let userList = this.getList(this.props.view);
 		return (
             <div className="friends-content">
-                <Nav bsStyle="tabs" justified onSelect={this.handleSelect}>
+                <Nav bsStyle="tabs" justified>
                     <LinkContainer to="/friends?view=allauthors">
                         <NavItem className="nav-item">
                             All Authors
@@ -32,27 +29,16 @@ export class Friends extends React.Component
                         </NavItem>
                     </LinkContainer>
                     <LinkContainer to="/friends?view=friendrequests">
-                        <NavItem className="nav-item" eventKey={"friendRequests"}>
+                        <NavItem className="nav-item">
                             Friend Requests
                         </NavItem>
                     </LinkContainer>
                 </Nav>
                 <div className="user-list">
-    			     {userList}
+    			     <UserList view={this.props.view}/>
                 </div>
             </div>
 		);
-    }
-
-    getList(view)
-    {
-        switch (view.toLowerCase()) {
-            case "myfriends":
-                return <UserList view="myfriends"/>
-                break;
-            default:
-                return <UserList view="allauthors"/>
-        }
     }
 
     handleSelect(key)
@@ -69,7 +55,8 @@ export class Friends extends React.Component
 function mapStateToProps(state, ownProps)
 {
     return {
-        view: state.routing.locationBeforeTransitions.query.view || "allauthors"
+        view: state.routing.locationBeforeTransitions.query.view.toLowerCase() || "allauthors",
+        author: state.users.author || Utils.getAuthor()
     };
 }
 export default connect(mapStateToProps)(Friends);

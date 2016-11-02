@@ -25,7 +25,6 @@ import AddPost from './pages/AddPost.jsx';
 import Friends from './pages/Friends.jsx';
 import Profile from './pages/Profile.jsx';
 
-
 // create the store
 const sagaMiddleware = createSagaMiddleware();
 let middleware = applyMiddleware(routerMiddleware(browserHistory), sagaMiddleware);

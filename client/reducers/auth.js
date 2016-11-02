@@ -1,7 +1,4 @@
 import {
-    browserHistory
-} from 'react-router';
-import {
     reducerCall
 } from './index';
 
