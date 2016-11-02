@@ -114,7 +114,7 @@ class PersonalAuthorStream(generics.ListAPIView):
         return querySet
     
 
-class AuthorViewSet(viewsets.ModelViewSet):
+class AuthorViewSet(APIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
 
@@ -142,6 +142,11 @@ class AuthorViewSet(viewsets.ModelViewSet):
         friends (list)
         id (UUID)
     """    
+    def get(self, request):
+        queryset = Author.objects.all()
+        serializer = AuthorSerializer(queryset, many=True)
+        return Response(serializer.data)
+
     def post(self, request):
         serializer = AuthorSerializer(data=request.data)
         if serializer.is_valid():
