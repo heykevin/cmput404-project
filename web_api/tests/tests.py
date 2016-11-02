@@ -265,3 +265,18 @@ class LoginTestCase(APITestCase):
         response = self.client.post('/login/')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED, response)
         self.assertTrue(response.data['detail'] == 'Invalid username/password.')
+
+
+class PostTestCase(APITestCase):
+
+	def test_create_post(self):
+		pass
+
+	def test_get_post(self):
+		pass
+
+	def test_update_post(self):
+		pass
+
+	def test_delete_post(self):
+		pass
