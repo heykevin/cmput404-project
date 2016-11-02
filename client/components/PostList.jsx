@@ -28,7 +28,6 @@ export class PostList extends React.Component
         const current_page = this.props.page;
         const start_offset = (current_page - 1) * per_page;
         let start_count = 0;
-
         // render
         if (this.props.posts.length) {
             // show the list of users
@@ -60,19 +59,16 @@ export class PostList extends React.Component
 
     changePage(page)
     {
-        this.props.dispatch(push('/page=' + page));
+        this.props.dispatch(push('&page=' + page));
     }
 }
 
 // export the connected class
 function mapStateToProps(state) {
-    console.log("mapStateToProps -- posts");
-    console.dir(state);
-
     return {
         posts: state.posts.list || [],
         page: Number(state.routing.locationBeforeTransitions.query.page) || 1,
-        resolved: state.posts.resolved || false
+        resolved: state.posts.resolved
     };
 }
 export default connect(mapStateToProps)(PostList);

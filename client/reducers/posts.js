@@ -7,9 +7,16 @@ export default function posts(state = {}, action) {
 class reducerClass
 {
 
-    static getPostsResolved(new_state, action)
+    static getPostsSuccess(new_state, action)
     {
         new_state.list = action.posts;
+        new_state.resolved = true;
+        return new_state;
+    }
+
+    static getPostsFailure(new_state, action)
+    {
+        new_state.error = action.error;
         new_state.resolved = true;
         return new_state;
     }

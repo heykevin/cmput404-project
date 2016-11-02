@@ -9,9 +9,7 @@ export default class ApiAuth {
     static login(action) {
         console.log(getApi());
         let response = [];
-        const encodedLogin = window.btoa(`${action.username}:${action.password}`);
-
-        const host = getApi();
+        const encodedLogin = window.btoa(`${action.username}:${action.password}`), host = getApi();
         // TODO: Create config.js with paths and urls
         return fetch(`${host}login/`, {
             method: 'POST',
@@ -32,8 +30,7 @@ export default class ApiAuth {
     static signup(action) {
         let response = [],
             body = new FormData();
-        const encodedLogin = window.btoa(`${action.username}:${action.password}`);
-
+        const encodedLogin = window.btoa(`${action.username}:${action.password}`), host = getApi();
         console.log('signupAPI');
         console.dir(action);
         body.append('displayName', action.username);

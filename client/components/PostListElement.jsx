@@ -16,11 +16,12 @@ export class PostListElement extends React.Component
     render()
     {
         // get the post element data
-        let post, href;
+        let post, href, time;
         for (const val of this.props.posts) {
             if (val.id === this.props.id) {
                 post = val;
                 href = this.props.preview ? post.origin : "#";
+                time = new Date(post.publish_time).toString();
                 break;
             }
         }
@@ -42,14 +43,12 @@ export class PostListElement extends React.Component
                             <span className="post-title-font">{post.title}</span>
                         </div>
                         <div className="post-info">
-                            <span>Posted by <strong>{post.author}</strong> on {post.dateTime}</span>
+                            <span>Posted by <strong>{post.author.displayName}</strong> on {time}</span>
                         </div>
                         <div className="post-description">
                             {post.description}
                         </div>
                         <div className={this.props.preview ? "invisible" : "visible post-content"}>
-                            // TODO: This content will need a rendering function that shows content
-                            // as markdown or simpletext
                             {post.content}
                         </div>
                     </a>
