@@ -1,5 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import Utils from '../utils/utils.js';
 import {
     Form,
     FormGroup,
@@ -8,6 +9,9 @@ import {
     Button
 } from 'react-bootstrap';
 
+const author = Utils.getAuthor();
+console.log(author);
+
 export class AuthorEditForm extends React.Component {
     //currentState = getState();
 
@@ -15,14 +19,12 @@ export class AuthorEditForm extends React.Component {
     {
         super(props);
             this.state = {
-                displayName: '',
-                first_name: '',
-                last_name: '',
-                email: '',
-                github_username: '',
-                bio: ''
+                first_name: author.first_name,
+                last_name: author.last_name,
+                email: author.email,
+                github_username: author.github_username,
+                bio: author.bio
             }
-        this.handleDisplayNameChange = this.handleDisplayNameChange.bind(this);
         this.handleFirstNameChange = this.handleFirstNameChange.bind(this);
         this.handleLastNameChange = this.handleLastNameChange.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
@@ -32,72 +34,51 @@ export class AuthorEditForm extends React.Component {
     }
 
     onSubmit(event) {
-        console.log("AuthorEditForm onSubmit", this.state.displayName, this.state.first_name, this.state.last_name, this.state.email, this.state.github_username, this.state.bio);
+        console.log("AuthorEditForm onSubmit", this.state.first_name, this.state.last_name, this.state.email, this.state.github_username, this.state.bio);
         console.log("dispatch action authEdit");
 
         //Method one Error --> method not defined
         this.props.dispatch({
             type: "authEdit",
-            displayName: this.state.displayName,
             first_name: this.state.first_name,
             last_name: this.state.last_name,
             email: this.state.email,
             github_username: this.state.github_username,
             bio: this.state.bio
         });
-    }
 
-    handleDisplayNameChange(event) {
-        let displayName = event.target.value;
-        this.setState({displayName: displayName});
-        console.log("Author setting", this.state);
+        Utils.redirect("/profile");
     }
 
     handleFirstNameChange(event) {
         let first_name = event.target.value;
         this.setState({first_name: first_name});
-        console.log("Author setting", this.state);
     }
 
     handleLastNameChange(event) {
         let last_name = event.target.value;
         this.setState({last_name: last_name});
-        console.log("Author setting", this.state);
     }
 
     handleEmailChange(event) {
         let email = event.target.value;
         this.setState({email: email});
-        console.log("Author setting", this.state);
     }
 
     handleGithubChange(event) {
         let github_username = event.target.value;
         this.setState({github_username: github_username});
-        console.log("Author setting", this.state);
-
     }
 
     handleBioChange(event) {
         let bio = event.target.value;
         this.setState({bio: bio});
-        console.log("Author setting", this.state);
     }
 
     render() {
-        // Need to add SERVERONLY to
-        console.log("Author setting", this.state);
-
         return (
             <div className="author-edit-form">
                 <Form onSubmit={this.onSubmit.bind(this)}>
-                    <ControlLabel> Display name </ControlLabel>
-                    <FormControl
-                        onChange = {this.handleDisplayNameChange}
-                        id="displayNameEdit"
-                        type="text"
-                        value={this.state.displayName}
-                        />
                     <ControlLabel> First name </ControlLabel>
                     <FormControl
                         onChange = {this.handleFirstNameChange}
@@ -145,12 +126,16 @@ export class AuthorEditForm extends React.Component {
 
 //connects
 
+function backToProfile(){
+    console.log("return to profile")
+    window.location.assign("http://localhost:8080/profile")
+}
+
 // export the connected class
 function mapStateToProps(state, props) {
 
     // set the form data
     let form_data = {
-        displayName: state.displayName,
         first_name: state.first_name,
         last_name: state.last_name,
         email: state.email,

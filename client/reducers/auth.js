@@ -48,13 +48,13 @@ class reducerClass {
     }
 
     static updateSuccess(new_state, action) {
-        new_state = action.response;
-        new_state.displayName = action.displayName,
-        new_state.first_name = action.first_name,
-        new_state.last_name = action.last_name,
-        new_state.email = action.email,
-        new_state.github_username = action.github_username,
-        new_state.bio =action.bio
+        console.log('reducer update');
+
+        new_state.first_name = action.response.first_name,
+        new_state.last_name = action.response.last_name,
+        new_state.email = action.response.email,
+        new_state.github_username = action.response.github_username,
+        new_state.bio =action.response.bio
         console.dir(action);
         console.dir(new_state);
         return new_state;
