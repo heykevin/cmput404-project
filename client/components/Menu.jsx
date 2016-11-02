@@ -66,18 +66,6 @@ export class Menu extends React.Component
                             Hello World Blog
                         </NavItem>
                     </IndexLinkContainer>
-                    <LinkContainer to="/signup">
-                        <NavItem className="nav-item float-right">
-                            Sign Up
-                            <Glyphicon glyph="plus"/>
-                        </NavItem>
-                    </LinkContainer>
-                    <LinkContainer to="/login">
-                        <NavItem className="nav-item float-right">
-                            Log In
-                            <Glyphicon glyph="log-in"/>
-                        </NavItem>
-                    </LinkContainer>
                 </Nav>
             );
         }

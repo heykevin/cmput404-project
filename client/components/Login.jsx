@@ -21,12 +21,19 @@ export class Login extends React.Component {
                 <PageHeader className="text-center"> ( ˘･з･) Log In </PageHeader>
                 {!this.state.status && this.state.attempt ? "Username/Password Invalid" : null}
                 <Form horizontal onSubmit={this.props.handleSubmit(this.formSubmit)}>
-                    <Field name="username" component={AuthorLoginName} />
+                    <Col smOffset={2} sm={10}>
+                        <Field name="username" component={AuthorLoginName} />
+                    </Col>
+                    <Col smOffset={2} sm={10}>
                     <Field name="password" component={AuthorLoginPass} />
-                    <FormGroup>
+                    </Col>
+                    <FormGroup className="button-center">
                         <Button bsStyle="default" type="submit"> Log Me In Already </Button>
                     </FormGroup>
                 </Form>
+                <div className="evil-thoughts">
+                    <span>( ˘･з･): Oh man, can't wait to check all the amazing posts... But first, I have to log in.</span>
+                </div>
             </div>
         );
 

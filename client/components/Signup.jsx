@@ -21,12 +21,19 @@ export class Signup extends React.Component {
                 <PageHeader> σ ﾟ∀ ﾟ) ﾟ∀ﾟ)σ Sign Up </PageHeader>
                 {!this.state.status && this.state.attempt ? "Username/Password Invalid" : null}
                 <Form horizontal onSubmit={this.props.handleSubmit(this.formSubmit)}>
-                    <Field name="username" component={AuthorsignupName} />
-                    <Field name="password" component={AuthorsignupPass} />
-                    <FormGroup>
-                        <Button type="submit"> Sign Me Up! </Button>
+                    <Col smOffset={2} sm={10}>
+                        <Field name="username" component={AuthorsignupName} />
+                    </Col>
+                    <Col smOffset={2} sm={10}>
+                        <Field name="password" component={AuthorsignupPass} />
+                    </Col>
+                    <FormGroup className="button-center">
+                        <Button bsStyle="default" type="submit"> Sign Me Up! </Button>
                     </FormGroup>
                 </Form>
+                <div className="evil-thoughts">
+                    <span>(≧ロ≦): Just wait until my first post! I'll be post queen or king, whatever. I shall rule all the authors.</span>
+                </div>
             </div>
         );
 
