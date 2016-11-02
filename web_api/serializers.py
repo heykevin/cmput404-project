@@ -14,17 +14,6 @@ class UserSerializer(serializers.ModelSerializer):
             },
         }
 
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ('id', 'content', 'author')
-
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('url', 'name')
-
 class SubAuthorSerializer(serializers.ModelSerializer):
     
     displayName = serializers.CharField(source='user.username')
@@ -36,16 +25,50 @@ class SubAuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ('id', 'displayName', 'first_name', 'last_name', 
                   'email', 'bio', 'host', 'github_username')
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = SubAuthorSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'content', 'author', 'publish_time', 'post')
+
+    def create(self, validated_data):
+        postId = self.context['request'].parser_context.get('kwargs').get('pk')
+        post = Post.objects.get(id=postId)
+        author = Author.objects.get(user=self.context.get('request').user)
+        comment = Comment.objects.create(author=author,post=post, **validated_data)
+        comment.save()
+        return comment
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('url', 'name')
                   
 class PostSerializer(serializers.ModelSerializer):
 
     author = SubAuthorSerializer(many = False, read_only = True)
-    comment = CommentSerializer(many=True, read_only=True)
+    comments = serializers.SerializerMethodField('getComments')
 
     class Meta:
         model = Post
         fields = ('id', 'title', 'source', 'origin', 'description', 'content',
-            'category', 'author', 'visibility', 'publish_time', 'content_type', 'comment')
+            'category', 'author', 'visibility', 'publish_time', 'content_type', 'comments')
+
+    def create(self, validated_data):
+        author = Author.objects.get(user=self.context.get('request').user)
+        post = Post.objects.create(author=author, **validated_data)
+        post.save()
+        return post
+    
+    # Returns a list of comments
+    def getComments(self, obj):
+        commentsQuerySet = Comment.objects.all().filter(post__id=obj.id).order_by('publish_time')[:5]
+
+        serializer = CommentSerializer(commentsQuerySet, many=True)
+        print serializer.data
+        return serializer.data
 
 class AuthorSerializer(serializers.ModelSerializer):
     """

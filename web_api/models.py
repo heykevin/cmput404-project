@@ -41,7 +41,6 @@ class Post(models.Model):
     content = models.TextField()
     category = ListField(blank=True, default=[])
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-
     text_plain="text/plain"
     text_markdown="text/markdown"
 

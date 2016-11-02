@@ -2,20 +2,22 @@ from django.http import HttpResponse
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User, Group
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser  
+from rest_framework.authentication import BasicAuthentication 
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, generics
 from rest_framework import status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
+from .permissions import IsAuthorOrReadOnly
 from .models import Author, Post
 from serializers import *
 import json
 
 class PostsResultsSetPagination(PageNumberPagination):
-    page_size = 3
+    page_size = 10
     page_size_query_param = 'size'
     max_page_size = 1000
 
@@ -26,6 +28,20 @@ class PostsResultsSetPagination(PageNumberPagination):
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
             'posts': data
+        })
+
+class CommentResultsSetPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'size'
+    max_page_size = 1000
+
+    def get_paginated_response(self, data):
+        return Response({
+            "query": "comments",
+            "size": self.page_size,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'comments': data
         })
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -47,7 +63,7 @@ Response:
     size (int)
     next (string)
     prev (string)
-    posts (list of posts)
+    posts (list of posts with comments)
 """    
 class AuthorStream(generics.ListAPIView):
     authentication_classes = (BasicAuthentication, )
@@ -113,10 +129,28 @@ class PersonalAuthorStream(generics.ListAPIView):
     
         return querySet
     
-
 class AuthorViewSet(APIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+
+    """
+    POST /author/
+    Response:
+        displayname (string)
+        password (string)
+        first_name (string)
+        password (string)
+        email (string)
+        bio (string)
+        host (string)
+        github_username (string)
+        friends (list)
+        id (UUID)
+    """    
+    def get(self, request):
+        queryset = Author.objects.all()
+        serializer = AuthorSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     """
     POST /author/
@@ -142,11 +176,6 @@ class AuthorViewSet(APIView):
         friends (list)
         id (UUID)
     """    
-    def get(self, request):
-        queryset = Author.objects.all()
-        serializer = AuthorSerializer(queryset, many=True)
-        return Response(serializer.data)
-
     def post(self, request):
         serializer = AuthorSerializer(data=request.data)
         if serializer.is_valid():
@@ -156,7 +185,8 @@ class AuthorViewSet(APIView):
     
 class AuthorProfileUpdateView(APIView):
     serializer_class = AuthorSerializer
-    
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthorOrReadOnly, )
     '''
     Request:
         displayname (string)
@@ -168,8 +198,16 @@ class AuthorProfileUpdateView(APIView):
         host (string)
         github_username (string)
         friends (list)
-    Response:
-        "Author profile updated."
+    Response (author object):
+        displayname (string)
+        password (string)
+        first_name (string)
+        password (string)
+        email (string)
+        bio (string)
+        host (string)
+        github_username (string)
+        friends (list)
     '''
     def put(self, request, pk):
         authorObj = Author.objects.get(id=pk)
@@ -191,73 +229,36 @@ class PostView(APIView):
         serializer = PostSerializer(queryset)
         return Response(serializer.data)
 '''
-
-class PostView(APIView):
+class PostView(viewsets.ModelViewSet):
     # shows all authors post lists
     #
     # GET /posts
     # #
-
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    pagination_class = PostsResultsSetPagination
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthorOrReadOnly, )
     # serializer = PostSerializer(queryset)
 
     # get specific post from an author
     #
     # GET /posts/<postID>
     #
-    def get(self, request, format=None):
-        queryset = Post.objects.all()
-        serializer = PostSerializer(queryset, many=True)
-        res = dict()
-        res["count"] = Post.objects.count()
-        res["posts"] = serializer.data
-        return Response(res)
+    def get_queryset(self):
+        return Post.objects.all().filter(visibility="PUBLIC")
 
     # POST post by an author
     #
     # POST
     #
     def post(self,request):
-        serializer = PostSerializer(data=request.data)
+        print request.data
+        serializer = PostSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        # find the query set
-        queryset = Post.objects.get(id=pk)
-        serializer = PostSerializer(queryset)
-        serializer.delete()
-        return Response("post has been deleted", status=status.HTTP_204_NO_CONTENT)
-    # POST post by an author
-    #
-    # POST
-    #
-    def post(self,request):
-        serializer = PostSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# A viewset for
-# service/author/author_id/post
-class SpecificPostView(APIView):
-
-    # get posts from specific author
-
-    def get(self, request, pk, format=None):
-        author = Author.objects.get(id=pk)
-        if Post.objects.filter(author_id=author).exists():
-            queryset = Post.objects.filter(author_id=author)
-            serializer = PostSerializer(queryset, many=True)
-            res = dict()
-            res["count"] = Post.objects.count()
-            res["posts"] = serializer.data
-            return Response(res, status=status.HTTP_200_OK)
-        return Response("Author has no post", status=status.HTTP_400_BAD_REQUEST)
 
 class PostIDView(APIView):
 
@@ -270,30 +271,28 @@ class PostIDView(APIView):
             return Response(res, status=status.HTTP_200_OK)
         return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
         
-class CommentView(APIView):
+class CommentView(generics.ListCreateAPIView):
 
     # GET comment from specific post_id
+    queryset = Post.objects.all()
+    serializer_class = CommentSerializer
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated, )
+    pagination_class = CommentResultsSetPagination
 
-    def get(self, request, pk, format=None):
-        post = Post.objects.get(id=pk)
-        queryset = Comment.objects.filter(post=post)
-        serializer = CommentSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def post(self,request):
-        serializer = CommentSerializer(data=request.data)
+    def post(self, request, pk):
+        serializer = CommentSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-    def delete(self, request, pk, format=None):
-        post = Post.objects.get(id=pk)
-        queryset = Comment.objects.get(post=post)
-        serializer = CommentSerializer(queryset)
-        serializer.delete()
-        return Response("comment has been deleted", status=status.HTTP_204_NO_CONTENT)
+    # def delete(self, request, pk, format=None):
+    #     post = Post.objects.get(id=pk)
+    #     queryset = Comment.objects.get(post=post)
+    #     serializer = CommentSerializer(queryset)
+    #     serializer.delete()
+    #     return Response("comment has been deleted", status=status.HTTP_204_NO_CONTENT)
 
 
 class FriendsWith(APIView):
