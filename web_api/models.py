@@ -23,8 +23,8 @@ class FriendRequest(models.Model):
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=500)
-    source = models.CharField(max_length=150)
-    origin = models.CharField(max_length=150, default="http://127.0.0.1:8000/posts")
+    source = models.URLField()
+    origin = models.URLField(default="http://127.0.0.1:8000/posts")
     description = models.CharField(max_length = 50)
     content = models.TextField()
     category = ListField(blank=True, default=[])
