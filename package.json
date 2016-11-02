@@ -8,7 +8,7 @@
     "url": "https://github.com/CMPUT404F16Project/cmput404-project"
   },
   "scripts": {
-    "start": "webpack-dev-server -d --inline --hot --history-api-fallback ",
+    "start": "webpack-dev-server -d --inline --hot --history-api-fallback",
     "build-dev": "webpack --config webpack.dev.config.js",
     "build-prod": "webpack -p --config webpack.prod.config.js",
     "test": "mocha --compilers js:babel-register --recursive",

@@ -13,12 +13,6 @@ class UserSerializer(serializers.ModelSerializer):
                 'write_only': True
             },
         }
-        
-class PostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ('id', 'title', 'source', 'origin', 'description', 'content',
-            'category', 'author', 'visibility', 'publish_time')
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,6 +36,15 @@ class SubAuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ('id', 'displayName', 'first_name', 'last_name', 
                   'email', 'bio', 'host', 'github_username')
+                  
+class PostSerializer(serializers.ModelSerializer):
+
+    author = SubAuthorSerializer(many = False, read_only = True)
+
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'source', 'origin', 'description', 'content',
+            'category', 'author', 'visibility', 'publish_time')
 
 class AuthorSerializer(serializers.ModelSerializer):
     """

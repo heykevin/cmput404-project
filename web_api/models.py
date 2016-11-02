@@ -14,7 +14,7 @@ class Author(models.Model):
     friends = models.ManyToManyField("self", blank=True)
         
     def __str__(self):
-        return self.user.first_name
+        return self.user.username
     
 class FriendRequest(models.Model):
     sender = models.ForeignKey(Author, related_name="sender", on_delete=models.CASCADE)
@@ -41,16 +41,14 @@ class Post(models.Model):
     public="PUBLIC"
     local="SERVERONLY"
     foaf="FOAF"
-    local_friends="SERVERONLY"
     list_of_friends="FRIENDS"
     private="PRIVATE"
 
     visibility_choice=(
         (public, 'Public'),
-        (local, 'Public to local'),
+        (local, 'Local only'),
         (foaf, 'Friends of friends'),
-        (local_friends, 'Local friends'),
-        (list_of_friends, 'friend selected'),
+        (list_of_friends, 'Friends'),
         (private, 'Myself only')
     )
 
@@ -66,6 +64,9 @@ class Post(models.Model):
     # count number of posts
     def get_count(self):
         return self.objects.count()
+
+    def __str__(self):
+        return self.title
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

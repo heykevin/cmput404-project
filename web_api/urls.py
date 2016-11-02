@@ -16,11 +16,11 @@ urlpatterns = [
     # url(r'^$', 'c404WebProject.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     
-    url(r'^', include(router.urls)),
     # Specific post
     url(r'^posts/$', views.PostView.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/$', views.PostIDView.as_view()),
+    url(r'^author/posts/$', views.AuthorStream.as_view()),
     # Posts from specific Author
     url(r'^author/(?P<pk>[^/.]+)/posts/$', views.SpecificPostView.as_view()),
     # Used for get the list of friends id or check the if an author is a friend of another author.
@@ -31,5 +31,6 @@ urlpatterns = [
     # Used for updating author profile.
     url(r'^author/(?P<pk>[^/.]+)/$', views.AuthorProfileUpdateView.as_view()),
     # Used for sending friend requests.
-    url(r'^friendrequest/$', views.FriendRequestView.as_view()),    
+    url(r'^friendrequest/$', views.FriendRequestView.as_view()), 
+    url(r'^', include(router.urls)),   
 ]

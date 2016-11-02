@@ -4,8 +4,9 @@ from django.contrib.auth.models import User, Group
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BasicAuthentication
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import JSONParser
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_framework import status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
@@ -13,7 +14,19 @@ from .models import Author, Post
 from serializers import *
 import json
 
-        
+class PostsResultsSetPagination(PageNumberPagination):
+    page_size = 3
+    page_size_query_param = 'size'
+    max_page_size = 1000
+
+    def get_paginated_response(self, data):
+        return Response({
+            "size": self.page_size,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'posts': data
+        })
+
 class UserViewSet(viewsets.ModelViewSet):
     """
     A viewset for viewing and editing user instances.
@@ -24,6 +37,34 @@ class UserViewSet(viewsets.ModelViewSet):
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
+class AuthorStream(generics.ListAPIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated,)
+
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    pagination_class = PostsResultsSetPagination
+
+    def get_queryset(self):
+        # when declaring authentication, user can be found in request
+        user = self.request.user
+        # could refactor to use permissions but whatevs
+        postsQuerySet = Post.objects.all().filter(visibility="PUBLIC")
+        privateQuerySet = Post.objects.all().filter(visibility="PRIVATE").filter(author__user=user)
+        serverQuerySet = Post.objects.all().filter(visibility="SERVERONLY")
+
+        # get friends and foaf posts
+        for friend in Author.objects.get(user=user).friends.all():
+            friendQuerySet = Post.objects.all().filter(author=friend).exclude(visibility="PRIVATE")
+            for foaf in friend.friends.all():
+                foafQuerySet = Post.objects.all().filter(author=foaf).filter(visibility="FOAF")
+
+            
+        querySet = postsQuerySet | privateQuerySet | serverQuerySet | friendQuerySet | foafQuerySet
+
+        return querySet
+    
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()

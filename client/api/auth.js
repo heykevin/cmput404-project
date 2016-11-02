@@ -2,16 +2,18 @@
  * API Auth static class
  */
 import Utils from '../utils/utils.js';
+import {getApi} from '../config.js';
 
 export default class ApiAuth {
 
     static login(action) {
+        console.log(getApi());
         let response = [];
         const encodedLogin = window.btoa(`${action.username}:${action.password}`);
 
-        console.log('LoginAPI');
+        const host = getApi();
         // TODO: Create config.js with paths and urls
-        return fetch('http://localhost:8000/login/', {
+        return fetch(`${host}login/`, {
             method: 'POST',
             headers: {
                 'Authorization': `Basic ${encodedLogin}`
@@ -37,7 +39,7 @@ export default class ApiAuth {
         body.append('displayName', action.username);
         body.append('password', action.password);
         body.append('host', 'http://127.0.0.1:8000/');
-        return fetch('http://localhost:8000/author/', {
+        return fetch(`${host}author/`, {
             method: 'POST',
             body: body
         }).then((response) => {
@@ -68,7 +70,7 @@ export default class ApiAuth {
         body.append('bio', action.bio);
         body.append('host', 'http://127.0.0.1:8000/');
         body.append('password', author.password);
-        return fetch('http://localhost:8000/author/' + author.id + '/', {
+        return fetch(`${host}author/` + author.id + '/', {
             method: 'PUT',
             body: body
         }).then((response) => {
