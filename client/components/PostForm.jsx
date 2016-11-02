@@ -107,7 +107,7 @@ export default class PostForm extends React.Component {
             description: this.state.description,
             content: this.state.content,
             visibility: this.state.visibility,
-            isMarkdownContent: this.state.isMarkdownEditor,
+            content_type: this.state.isMarkdownEditor,
             // author:
             // categories:
             // dateTime:

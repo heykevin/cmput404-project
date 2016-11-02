@@ -110,19 +110,3 @@ export function* usersRespondToFriendRequest(action) {
         });
     }
 }
-
-export function* usersFetchFriendRequestsList(action) {
-    try {
-        console.log("get to friend requests");
-        const response = yield call(ApiUsers.getFriendRequestsList, action);
-        yield put({
-            type: 'users.fetchFRListSuccess',
-            response: response
-        });
-    } catch (error) {
-        yield put({
-            type: 'users.fetchFRListFailure',
-            response: response
-        });
-    }
-}

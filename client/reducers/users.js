@@ -92,18 +92,6 @@ class reducerClass {
         return new_state;
     }
 
-    static fetchFRListSuccess(new_state, action) {
-        new_state.friendRequests = action.response;
-        new_state.friendRequestsResolved = true;
-        return new_state;
-    }
-
-    static fetchFRListFailure(new_state, action) {
-        new_state.error = action.error;
-        new_state.friendRequestsResolved = true;
-        return new_state;
-    }
-
     static sortUsersByDisplayName(userList) {
         userList.sort(function(a, b) {
             return a.displayName.localeCompare(b.displayName);

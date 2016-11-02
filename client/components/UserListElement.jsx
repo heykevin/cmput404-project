@@ -33,7 +33,7 @@ export class UserListElement extends React.Component
         const users = this.props.view === "myfriends"
             ? this.props.friends
             : this.props.view === "friendrequests"
-                ? this.props.friendRequests
+                ? this.props.author.request_received
                 : this.props.users;
         for (const val of users) {
             if (val.id === this.props.id) {
@@ -82,6 +82,9 @@ export class UserListElement extends React.Component
                     template = waitAction;
                 } else if (requestReceived) {
                     template = <div>{sendAction}{viewAction}</div>;
+                } else if (isMyFriend) {
+                    template = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} onClick={this.sendUnfriendRequest}>Unfriend<Glyphicon glyph="remove-sign"/>
+                    </Button>;
                 } else {
                     template = sendAction;
                 }
@@ -172,11 +175,11 @@ export class UserListElement extends React.Component
     }
 
     sentFriendRequestTo(user) {
-        return this.finder(this.props.author.friend_request_sent, user.id);
+        return this.finder(this.props.author.request_sent, user.id);
     }
 
     receivedFriendRequestFrom(user) {
-        return this.finder(this.props.author.friend_request_received, user.id);
+        return this.finder(this.props.author.request_received, user.id);
     }
 
     finder(sourceList, targetId) {
@@ -196,7 +199,6 @@ function mapStateToProps(state, own_props) {
     return {
         users: state.users.users || [],
         friends: state.users.friends || [],
-        friendRequests: state.users.friendRequests || [],
         id: own_props.id,
         author: state.users.author || Utils.getAuthor()
     }

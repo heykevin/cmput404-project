@@ -28,7 +28,7 @@ export class Login extends React.Component {
                     <Field name="password" component={AuthorLoginPass} />
                     </Col>
                     <FormGroup className="button-center">
-                        <Button bsStyle="default" type="submit"> Log Me In Already </Button>
+                        <Button bsStyle="primary" type="submit"> Log Me In Already </Button>
                     </FormGroup>
                 </Form>
                 <div className="evil-thoughts">

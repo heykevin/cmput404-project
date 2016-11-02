@@ -34,9 +34,9 @@ export class GithubStream extends React.Component
 
     render()
     {
-
+        const author = Utils.getAuthor();
         // render
-		if (!this.state.hasGitStream) {
+		if (!Boolean(author.github_username)) {
             return (
                 <div>
                     <div className="gha-header">

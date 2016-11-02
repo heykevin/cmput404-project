@@ -6,6 +6,13 @@
     min-height: 1000px;
 }
 
+.warning-text {
+    background: #f0ad4e;
+    padding: 2em;
+    border-radius: 10px;
+    color: white;
+}
+
 .visible {
     display: block;
 }
@@ -251,6 +258,13 @@
 
         .user-list {
             margin: 0 0.5% 30px;
+            min-height: 500px;
+
+            .align-center {
+                margin: auto;
+                height: 300px;
+                padding-top: 12em;
+            }
 
             .header-action {
                 width: 25em;

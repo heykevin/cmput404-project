@@ -18,7 +18,6 @@ export class UserList extends React.Component
                 host: author.host
             }
         this.props.dispatch({type: 'usersFetchFriendsList', authorId: author.id, dispatch: this.props.dispatch});
-        this.props.dispatch({type: 'usersFetchFriendRequestsList', actor: actor, dispatch: this.props.dispatch});
         this.props.dispatch({type: 'usersFetchList'});
 
         // bind <this> to the event method
@@ -37,8 +36,8 @@ export class UserList extends React.Component
             list = this.props.friends;
             listResolved = this.props.friendsResolved;
         } else if (view === "friendrequests") {
-            list = this.props.friendRequests;
-            listResolved = this.props.friendRequestsResolved;
+            list = this.props.author.request_received;
+            listResolved = true;
         } else {
             list = this.props.users;
             listResolved = this.props.usersResolved;
@@ -91,17 +90,21 @@ export class UserList extends React.Component
             return (<ProgressBar active now={100}/>);
         } else if (!list.length && listResolved) {
             return (
-                <div className="text-center">
+                <div className="text-center align-center">
+                <span className="warning-text">
                     Sorry, you do not have any {view === "friendrequests" ? "friend requests" : "friends"}. Check out all <a href="/friends?view=allauthors">authors</a> and you might find someone interesting!
-                </div>
+                </span>
+            </div>
             );
         } else {
             return (
-                <div className="text-center">
+                <div className="text-center align-center">
+                <span className="warning-text">
                     Service Temporarily Unavailable. Please come back later. {this.props.error
                         ? this.props.error
                         : ""}
-                </div>
+                </span>
+            </div>
             );
         }
     }
@@ -123,9 +126,6 @@ function mapStateToProps(state) {
 
         friends: state.users.friends || [],
         friendsResolved: state.users.friendsResolved,
-
-        friendRequests: state.users.friendRequests || [],
-        friendRequestsResolved: state.users.friendRequestsResolved,
 
         page: Number(state.routing.locationBeforeTransitions.query.page) || 1,
 
