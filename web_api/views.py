@@ -21,6 +21,7 @@ class PostsResultsSetPagination(PageNumberPagination):
 
     def get_paginated_response(self, data):
         return Response({
+            "query": "posts",
             "size": self.page_size,
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
