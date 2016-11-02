@@ -18,13 +18,13 @@ export class Signup extends React.Component {
         console.log("redner", this.state);
         return (
             <div className="auth-form">
-                <PageHeader> signup </PageHeader>
+                <PageHeader> σ ﾟ∀ ﾟ) ﾟ∀ﾟ)σ Sign Up </PageHeader>
                 {!this.state.status && this.state.attempt ? "Username/Password Invalid" : null}
                 <Form horizontal onSubmit={this.props.handleSubmit(this.formSubmit)}>
                     <Field name="username" component={AuthorsignupName} />
                     <Field name="password" component={AuthorsignupPass} />
                     <FormGroup>
-                        <Button type="submit"> signup </Button>
+                        <Button type="submit"> Sign Me Up! </Button>
                     </FormGroup>
                 </Form>
             </div>

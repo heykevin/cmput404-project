@@ -18,13 +18,13 @@ export class Login extends React.Component {
         console.log("redner", this.state);
         return (
             <div className="auth-form">
-                <PageHeader> Login </PageHeader>
+                <PageHeader className="text-center"> ( ˘･з･) Log In </PageHeader>
                 {!this.state.status && this.state.attempt ? "Username/Password Invalid" : null}
                 <Form horizontal onSubmit={this.props.handleSubmit(this.formSubmit)}>
                     <Field name="username" component={AuthorLoginName} />
                     <Field name="password" component={AuthorLoginPass} />
                     <FormGroup>
-                        <Button type="submit"> Login </Button>
+                        <Button bsStyle="default" type="submit"> Log Me In Already </Button>
                     </FormGroup>
                 </Form>
             </div>
