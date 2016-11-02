@@ -320,22 +320,6 @@ class FriendRequestView(APIView):
         
         return Response("Friend request declined.", status.HTTP_200_OK)
     
-    def check_friend_request_staus(self, request_data):
-        authorObj = Author.objects.get(id=request_data['author']["id"])
-        
-        res = dict()
-        res["sent to"] = []
-        res["recv from"] = []
-        
-        
-        for object in FriendRequest.objects.filter(sender=authorObj):
-            res["sent to"].append(AuthorSerializer(object.receiver).data)
-        
-        for object in FriendRequest.objects.filter(receiver=authorObj):
-            res["recv from"].append(AuthorSerializer(object.sender).data)
-        
-        return Response(res, status.HTTP_200_OK)
-    
     def unfriend(self, request_data):
         senderObj = Author.objects.get(id=request_data['author']["id"])
         receiverObj = Author.objects.get(id=request_data['friend']["id"])        
