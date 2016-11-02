@@ -173,9 +173,6 @@ class PostView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    '''
-    Note to self, to do
-    '''
     def delete(self, request, pk, format=None):
         # find the query set
         queryset = Post.objects.get(id=pk)
@@ -192,16 +189,6 @@ class PostView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    '''
-    Note to self, to do
-    '''
-    def delete(self, request, pk, format=None):
-        # find the query set
-        queryset = Post.objects.get(id=pk)
-        serializer = PostSerializer(queryset)
-        serializer.delete()
-        return Response("post has been deleted", status=status.HTTP_204_NO_CONTENT)
 
 # A viewset for
 # service/author/author_id/post
@@ -238,8 +225,23 @@ class CommentView(APIView):
     def get(self, request, pk, format=None):
         post = Post.objects.get(id=pk)
         queryset = Comment.objects.filter(post=post)
-        serializer = CommentSerializer(queryset)
+        serializer = CommentSerializer(queryset, many=True)
         return Response(serializer.data)
+
+    def post(self,request):
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, pk, format=None):
+        post = Post.objects.get(id=pk)
+        queryset = Comment.objects.get(post=post)
+        serializer = CommentSerializer(queryset)
+        serializer.delete()
+        return Response("comment has been deleted", status=status.HTTP_204_NO_CONTENT)
 
 
 class FriendsWith(APIView):

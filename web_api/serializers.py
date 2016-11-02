@@ -40,11 +40,12 @@ class SubAuthorSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
 
     author = SubAuthorSerializer(many = False, read_only = True)
+    comment = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
         fields = ('id', 'title', 'source', 'origin', 'description', 'content',
-            'category', 'author', 'visibility', 'publish_time', 'content_type')
+            'category', 'author', 'visibility', 'publish_time', 'content_type', 'comment')
 
 class AuthorSerializer(serializers.ModelSerializer):
     """
