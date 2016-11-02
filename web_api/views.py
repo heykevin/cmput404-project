@@ -247,38 +247,48 @@ class FriendRequestView(APIView):
         receiverObj = Author.objects.get(id=request_data['friend']["id"])
         
         # Handle the case which sender and receiver are already friends.        
-        if senderObj.friends.all().filter(id=receiverObj.id).exists() or receiverObj.friends.all().filter(id=senderObj.id).exists():
+        if senderObj.friends.all().filter(id=receiverObj.id).exists():
             return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
         
-        # Handle the case which sender already sent the request.
-        if senderObj.friend_request_sent.all().filter(id=receiverObj.id).exists() or receiverObj.friend_request_received.all().filter(id=senderObj.id).exists():
-            return Response("The friend request has already been sent.", status.HTTP_400_BAD_REQUEST)
+        if FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).exists():
+            return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
         
-        # Handle the case which reciver already sent the request to the sender.
-        if senderObj.friend_request_received.all().filter(id=receiverObj.id).exists() or receiverObj.friend_request_sent.all().filter(id=senderObj.id).exists():
-            return Response("The friend request has already been sent by receiver.", status.HTTP_400_BAD_REQUEST)        
+        if FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).exists():
+            return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)        
+         
+        friend_request = FriendRequest.objects.create(sender=senderObj, receiver=receiverObj)
+        friend_request.save()
         
-        senderObj.friend_request_sent.add(receiverObj)
-        receiverObj.friend_request_received.add(senderObj)
-                
-        # senderObj.save()
-        # receiverObj.save()
-                
-        return Response("Friend request created.", status.HTTP_200_OK)
+        return Response("Friend request sent.", status.HTTP_200_OK)
     
     def post_response(self, request_data):
         senderObj = Author.objects.get(id=request_data['author']["id"])
         receiverObj = Author.objects.get(id=request_data['friend']["id"])
         accepted = request_data["accepted"]
         
-        senderObj.friend_request_sent.remove(receiverObj)
-        receiverObj.friend_request_received.remove(senderObj)
+        FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
         
         if accepted:
             senderObj.friends.add(receiverObj)
             return Response("Friend added.", status.HTTP_200_OK)
         
         return Response("Friend request declined.", status.HTTP_200_OK)
+    
+    def check_friend_request_staus(self, request_data):
+        authorObj = Author.objects.get(id=request_data['author']["id"])
+        
+        res = dict()
+        res["sent to"] = []
+        res["recv from"] = []
+        
+        
+        for object in FriendRequest.objects.filter(sender=authorObj):
+            res["sent to"].append(AuthorSerializer(object.receiver).data)
+        
+        for object in FriendRequest.objects.filter(receiver=authorObj):
+            res["recv from"].append(AuthorSerializer(object.sender).data)
+        
+        return Response(res, status.HTTP_200_OK)
     
     def unfriend(self, request_data):
         senderObj = Author.objects.get(id=request_data['author']["id"])
@@ -298,6 +308,8 @@ class FriendRequestView(APIView):
             return self.post_response(request.data)
         elif request.data['query'] == 'unfriend':
             return self.unfriend(request.data)
+        elif request.data['query'] == 'friendrequeststatus':
+            return self.check_friend_request_staus(request.data)
         else:
             return Response("Bad request header.", status.HTTP_400_BAD_REQUEST)
 

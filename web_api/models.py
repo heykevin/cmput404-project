@@ -12,21 +12,13 @@ class Author(models.Model):
     bio = models.TextField(blank=True, null=True)
     host = models.URLField()
     friends = models.ManyToManyField("self", blank=True)
-    
-    friend_request_received = models.ManyToManyField('self', related_name='friend_request_received', blank=True)
-    friend_request_sent = models.ManyToManyField('self', related_name='friend_request_sent', blank=True)        
-
-    def get_idKey(self):
-        return self.idKey
-
-    def get_name(self):
-        return self.first_name+" "+self.last_name
-
-    def get_url(self):
-        return self.url
         
     def __str__(self):
         return self.user.first_name
+    
+class FriendRequest(models.Model):
+    sender = models.ForeignKey(Author, related_name="sender", on_delete=models.CASCADE)
+    receiver = models.ForeignKey(Author, related_name="receiver", on_delete=models.CASCADE)   
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
