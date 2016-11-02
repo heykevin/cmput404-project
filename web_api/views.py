@@ -39,6 +39,16 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
+"""
+GET /author/posts
+Requires Auth
+Response:
+    query (string)
+    size (int)
+    next (string)
+    prev (string)
+    posts (list of posts)
+"""    
 class AuthorStream(generics.ListAPIView):
     authentication_classes = (BasicAuthentication, )
     permission_classes = (IsAuthenticated,)
@@ -64,6 +74,43 @@ class AuthorStream(generics.ListAPIView):
             
         querySet = postsQuerySet | privateQuerySet | serverQuerySet | friendQuerySet | foafQuerySet
 
+        return querySet
+
+"""
+GET /author/<authorID>/posts
+Requires Auth
+Response:
+    query (string)
+    size (int)
+    next (string)
+    prev (string)
+    posts (list of posts)
+""" 
+class PersonalAuthorStream(generics.ListAPIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated,)
+
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    pagination_class = PostsResultsSetPagination
+
+    def get_queryset(self):
+        # when declaring authentication, user can be found in request
+        authorId = self.request.parser_context.get('kwargs').get('pk')
+        user = self.request.user
+        author = Author.objects.get(id=authorId)
+        # could refactor to use permissions but whatevs
+        authorPosts = Post.objects.all().filter(author=author)
+        publicPosts = authorPosts.all().filter(visibility="PUBLIC")
+        serverPosts = authorPosts.all().filter(visibility="SERVERONLY")
+        privatePosts = authorPosts.all().filter(visibility="PRIVATE").filter(author__user=user)
+        foafPosts = authorPosts.all().filter(visibility="FOAF").filter(author__user=user)
+
+        querySet = publicPosts | serverPosts | foafPosts | privatePosts
+
+        if author.friends.all().filter(user=user):
+            querySet = querySet | authorPosts.all().filter(visibility="FRIENDS")
+    
         return querySet
     
 

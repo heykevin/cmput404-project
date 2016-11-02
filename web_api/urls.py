@@ -20,7 +20,10 @@ urlpatterns = [
     url(r'^posts/$', views.PostView.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/$', views.PostIDView.as_view()),
+    # Get all posts that author can see
     url(r'^author/posts/$', views.AuthorStream.as_view()),
+    # Get all posts you can see from <authorID>
+    url(r'^author/(?P<pk>[^/.]+)/posts/$', views.PersonalAuthorStream.as_view()),
     # Posts from specific Author
     url(r'^author/(?P<pk>[^/.]+)/posts/$', views.SpecificPostView.as_view()),
     # Used for get the list of friends id or check the if an author is a friend of another author.
