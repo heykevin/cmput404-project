@@ -126,7 +126,11 @@ class AuthorProfileUpdateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
+    def get(self, request, pk):
+        authorObj = Author.objects.get(id=pk)
+        serializer = AuthorSerializer(authorObj)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 '''   
 class PostView(APIView):
     
@@ -350,8 +354,6 @@ class FriendRequestView(APIView):
             return self.post_response(request.data)
         elif request.data['query'] == 'unfriend':
             return self.unfriend(request.data)
-        elif request.data['query'] == 'friendrequeststatus':
-            return self.check_friend_request_staus(request.data)
         else:
             return Response("Bad request header.", status.HTTP_400_BAD_REQUEST)
 
