@@ -351,6 +351,31 @@ class PostTestCase(APITestCase):
 		response = self.client.get('/posts/HelloWorld/', {}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND, response)
 
+		# test for UPDATE post1
+		response = self.client.get('/posts/%s/' % self.pId1, {}, format='json')
+		response = self.client.put('/posts/%s/' % self.pId1, {
+			'title': 'new post1 title',
+			'content': 'this is a changed content of post 1',
+			'source': 'http://127.0.0.1:8000/ualberta',
+			'origin': 'http://127.0.0.1:8000/compsci',
+			'description': 'new post1 desc'
+			}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+		self.assertTrue(response.data['title'] == 'new post1 title')
+		self.assertTrue(response.data['content'] == 'this is a changed content of post 1')
+		self.assertTrue(response.data['source'] == 'http://127.0.0.1:8000/ualberta')
+		self.assertTrue(response.data['origin'] == 'http://127.0.0.1:8000/compsci')
+		self.assertTrue(response.data['description'] == 'new post1 desc')
+
+		# test for DELETE post
+		response = self.client.delete('/posts/%s/' % self.pId1, {}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, response)
+		response = self.client.get('/posts/%s/' % self.pId1, {}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND, response)
+		response = self.client.get('/posts/', {}, format='json')
+		# from 3 posts, 1 was deleted so total 2 posts left
+		self.assertTrue(len(response.data['posts']) == 2)
+
 class CommentTestCase(APITestCase):
 
 	def setUp(self):
