@@ -242,6 +242,7 @@ class PersonalAuthorStreamTestCase(APITestCase):
     def setUp(self):
 	self.author1 = createAuthor(self,0)
 	self.author2 = createAuthor(self,1)
+	self.author3 = createAuthor(self,2)
 	self.author1.friends.add(self.author2)
     
     def test_get_personal_posts(self):
@@ -261,8 +262,15 @@ class PersonalAuthorStreamTestCase(APITestCase):
 	
 	response = self.client.get('/author/%s/posts/' % self.author1.id, {}, format='json')
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
-	# Post with index 1, 2
+	# Post with index 0, 2
 	self.assertEqual(len(response.data['posts']), 2)
+	
+	self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Eddie:cooldogs'))
+	
+	response = self.client.get('/author/%s/posts/' % self.author1.id, {}, format='json')
+	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+	# Post with index 0
+	self.assertEqual(len(response.data['posts']), 1)	
 
 class PostTestCase(APITestCase):
 
