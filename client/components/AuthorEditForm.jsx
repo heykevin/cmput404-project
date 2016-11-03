@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import Utils from '../utils/utils.js';
+import Profile from '../pages/Profile.jsx'
 import {
     Form,
     FormGroup,
@@ -37,7 +38,6 @@ export class AuthorEditForm extends React.Component {
         console.log("AuthorEditForm onSubmit", this.state.first_name, this.state.last_name, this.state.email, this.state.github_username, this.state.bio);
         console.log("dispatch action authEdit");
 
-        //Method one Error --> method not defined
         this.props.dispatch({
             type: "authEdit",
             first_name: this.state.first_name,
@@ -46,7 +46,6 @@ export class AuthorEditForm extends React.Component {
             github_username: this.state.github_username,
             bio: this.state.bio
         });
-
         Utils.redirect("/profile");
     }
 

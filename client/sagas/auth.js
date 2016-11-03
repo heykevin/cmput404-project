@@ -66,7 +66,7 @@ export function* authEdit(action) {
         const response = yield call(ApiAuth.updateProfile, action);
         yield put({
             type: 'auth.updateSuccess',
-            response: response.author
+            response: response.author,
         });
         setAuthAndRedirect(response.token, response.author);
     } catch (error) {

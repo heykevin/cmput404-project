@@ -1,20 +1,22 @@
 import React from 'react';
-import PostList from '../components/PostList.jsx';
-import AuthorEditForm from '../components/AuthorEditForm.jsx';
 import Utils from '../utils/utils.js';
 import {
     Button
 } from 'react-bootstrap';
 
+//window.location.reload();
 const author = Utils.getAuthor();
-console.log(author);
 
 export default class Profile extends React.Component {
+
     render() {
         return(
             <div className="page-profile">
+                <span>
+                    <Button bsStyle="primary" href="/settings">Edit your profile</Button>
+                    <Button bsStyle="primary" href="/profile">Update</Button>
+                </span>
                 <h1>My Profile</h1>
-                <Button href="/settings">Edit your profile</Button>
                 <div>
                     <h3>Display name</h3>
                         <span>{author.displayName}</span>
