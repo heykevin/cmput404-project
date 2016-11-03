@@ -78,17 +78,18 @@ class AuthorStream(generics.ListAPIView):
         user = self.request.user
         # could refactor to use permissions but whatevs
         postsQuerySet = Post.objects.all().filter(visibility="PUBLIC")
+        ownQuerySet = Post.objects.all().filter(author__user=user).exclude(visibility="PUBLIC")
         privateQuerySet = Post.objects.all().filter(visibility="PRIVATE").filter(author__user=user)
-        serverQuerySet = Post.objects.all().filter(visibility="SERVERONLY")
-
+        querySet = postsQuerySet | privateQuerySet | ownQuerySet
+        
         # get friends and foaf posts
         for friend in Author.objects.get(user=user).friends.all():
             friendQuerySet = Post.objects.all().filter(author=friend).exclude(visibility="PRIVATE")
+            serverQuerySet = Post.objects.all().filter(author=friend).filter(visibility="SERVERONLY")
+            querySet = querySet | friendQuerySet | serverQuerySet
             for foaf in friend.friends.all():
                 foafQuerySet = Post.objects.all().filter(author=foaf).filter(visibility="FOAF")
-
-            
-        querySet = postsQuerySet | privateQuerySet | serverQuerySet | friendQuerySet | foafQuerySet
+                querySet = querySet | foafQuerySet
 
         return querySet
 
