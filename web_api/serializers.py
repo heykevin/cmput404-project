@@ -67,7 +67,6 @@ class PostSerializer(serializers.ModelSerializer):
         commentsQuerySet = Comment.objects.all().filter(post__id=obj.id).order_by('publish_time')[:5]
 
         serializer = CommentSerializer(commentsQuerySet, many=True)
-        print serializer.data
         return serializer.data
 
 class AuthorSerializer(serializers.ModelSerializer):

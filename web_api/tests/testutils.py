@@ -45,6 +45,42 @@ AUTHOR_LIST = [
     }        
 ]
 
+POST_LIST =[
+    {
+        "title": "Cool Bear",
+        "source": "https://c404-web.slack.com/messages/general/",
+        "origin": "https://c404-web.slack.com/messages/general/",
+        "description": "This is a cool bear.",
+        "content": "I am a cool bear!",
+        "category": "bear",
+        "visibility": "PUBLIC",
+        "content_type": "text/plain"
+    },
+    {
+        "title": "Very Cool Bear",
+        "source": "https://c404-web.slack.com/messages/general/",
+        "origin": "https://c404-web.slack.com/messages/general/",
+        "description": "This is a very cool bear.",
+        "content": "I am a very cool bear!",
+        "category": "bear",
+        "visibility": "PRIVATE",
+        "content_type": "text/plain"
+    },
+    {
+        "title": "Very Very Cool Bear",
+        "source": "https://c404-web.slack.com/messages/general/",
+        "origin": "https://c404-web.slack.com/messages/general/",
+        "description": "This is a very very cool bear.",
+        "content": "I am a very very cool bear!",
+        "category": "bear",
+        "visibility": "PRIVATE",
+        "content_type": "text/plain"
+    }        
+]
+
+def get_post_json(index):
+    return POST_LIST[index]
+
 def createAuthor(self, index):
     self.user = User.objects.create_user(**(USER_LIST[index]))    
     return Author.objects.create(user=self.user, **(AUTHOR_LIST[index]))

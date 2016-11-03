@@ -3,7 +3,7 @@ import base64
 from rest_framework.test import APITestCase
 from rest_framework import status
 from requests.auth import HTTPBasicAuth
-from testutils import check201, createAuthor, getAuthor
+from testutils import *
 from ..models import *
 
 class AuthorServiceTestCase(APITestCase):
@@ -237,17 +237,41 @@ class LoginTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED, response)
         self.assertTrue(response.data['detail'] == 'Invalid username/password.')
 
+class PersonalAuthorStreamTestCase(APITestCase):
+    
+    def setUp(self):
+	self.author1 = createAuthor(self,0)
+	self.author2 = createAuthor(self,1)
+	self.author1.friends.add(self.author2)
+    
+    def test_get_personal_posts(self):
+	
+	self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
+	self.client.post('/posts/', get_post_json(0), format='json')
+	self.client.post('/posts/', get_post_json(1), format='json')
+	self.client.post('/posts/', get_post_json(2), format='json')
+	
+	response = self.client.get('/author/%s/posts/' % self.author1.id, {}, format='json')
+	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+	self.assertEqual(len(response.data['posts']), 3)
+	
+	
+	self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Joshua:coolcats'))
+	
+	response = self.client.get('/author/%s/posts/' % self.author1.id, {}, format='json')
+	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+	self.assertEqual(len(response.data['posts']), 1)
 
 class PostTestCase(APITestCase):
 
-	def test_create_post(self):
-		pass
+    def test_create_post(self):
+	pass
+    
+    def test_get_post(self):
+	pass
 
-	def test_get_post(self):
-		pass
+    def test_update_post(self):
+	pass
 
-	def test_update_post(self):
-		pass
-
-	def test_delete_post(self):
-		pass
+    def test_delete_post(self):
+	pass

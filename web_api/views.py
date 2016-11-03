@@ -253,7 +253,6 @@ class PostView(viewsets.ModelViewSet):
     # POST
     #
     def post(self,request):
-        print request.data
         serializer = PostSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
