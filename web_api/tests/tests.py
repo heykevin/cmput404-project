@@ -137,12 +137,13 @@ class FriendRequestTestCase(APITestCase):
 	    "friend": {
 	        "id" : self.receiver.id
 	    },
-	    "accepted" : 'true'
+	    "accepted" : False
 	}, format='json')
 
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
-	self.assertTrue(Author.objects.get(id=self.receiver.id).friends.all().filter(id=self.sender.id).exists())
-	self.assertTrue(Author.objects.get(id=self.sender.id).friends.all().filter(id=self.receiver.id).exists())
+	self.assertFalse(Author.objects.get(id=self.receiver.id).friends.all().filter(id=self.sender.id).exists())
+	self.assertFalse(Author.objects.get(id=self.sender.id).friends.all().filter(id=self.receiver.id).exists())
+	self.assertFalse(FriendRequest.objects.filter(sender=self.sender, receiver=self.receiver).exists())
 	
     def test_unfriend(self):
 	self.sender = createAuthor(self,0)
@@ -157,7 +158,6 @@ class FriendRequestTestCase(APITestCase):
 		    "friend": {
 		        "id" : self.receiver.id
 		    },
-		    "accepted" : 'true'
 	}, format='json')	
 	
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
