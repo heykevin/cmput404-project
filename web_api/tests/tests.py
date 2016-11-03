@@ -275,9 +275,7 @@ class PersonalAuthorStreamTestCase(APITestCase):
 class PostTestCase(APITestCase):
 
 	def setUp(self):
-		self.postAuthor1 = createAuthor(self,0)
-		self.postAuthor2 = createAuthor(self,1)
-		self.postAUthor3 = createAuthor(self,2)
+		self.postAuthor = createAuthor(self,0)
 
 	def test_post(self):
 		# test for POST post
@@ -379,7 +377,31 @@ class PostTestCase(APITestCase):
 class CommentTestCase(APITestCase):
 
 	def setUp(self):
-		pass
-
+		self.commentAuthor1 = createAuthor(self,0)
+		self.commentAuthor2 = createAuthor(self,1)
+		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
+		response = self.client.post('/posts/', {
+				'title': 'comp sci 404',
+				'source': 'http://127.0.0.1:8000',
+				'origin': 'http://127.0.0.1:8000',
+				'description': 'This post is about comp sci 404',
+				'content': 'comp sci 404 project, blah blah blah',
+				'category': 'compsci',
+				'visibility_choice': 'Public',
+				'content_type': 'text/markdown'
+			}, format='json'
+		)
+		self.pId1 = response.data['id']
+'''
 	def test_comment(self):
-		pass
+		# commentAuthor1: Ahindle logged in
+		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
+		response = self.client.post('/posts/%s/comments/' % self.pId1, {
+				'content': 'the post has really good information, I like it'
+			}, format='json'
+		)
+		print(response.status_code)
+		response = self.client.get('/posts/%s/comments/' % self.pId1, {}, format='json')
+		print(response.status_code)
+		print(len(reponse.data['id']))
+'''
