@@ -73,7 +73,7 @@ POST_LIST =[
         "description": "This is a very very cool bear.",
         "content": "I am a very very cool bear!",
         "category": "bear",
-        "visibility": "PRIVATE",
+        "visibility": "FRIENDS",
         "content_type": "text/plain"
     }        
 ]

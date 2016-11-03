@@ -247,20 +247,22 @@ class PersonalAuthorStreamTestCase(APITestCase):
     def test_get_personal_posts(self):
 	
 	self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
-	self.client.post('/posts/', get_post_json(0), format='json')
-	self.client.post('/posts/', get_post_json(1), format='json')
-	self.client.post('/posts/', get_post_json(2), format='json')
+	self.client.post('/posts/', get_post_json(0), format='json')	# public
+	self.client.post('/posts/', get_post_json(1), format='json')	# private
+	self.client.post('/posts/', get_post_json(2), format='json')	# friends ! This post appears cannot be access by author itself !
 	
 	response = self.client.get('/author/%s/posts/' % self.author1.id, {}, format='json')
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
-	self.assertEqual(len(response.data['posts']), 3)
+	# Post with index 0, 1
+	self.assertEqual(len(response.data['posts']), 2)
 	
 	
 	self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Joshua:coolcats'))
 	
 	response = self.client.get('/author/%s/posts/' % self.author1.id, {}, format='json')
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
-	self.assertEqual(len(response.data['posts']), 1)
+	# Post with index 1, 2
+	self.assertEqual(len(response.data['posts']), 2)
 
 class PostTestCase(APITestCase):
 
