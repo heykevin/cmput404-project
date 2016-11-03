@@ -23,6 +23,7 @@ class AuthorServiceTestCase(APITestCase):
         self.assertTrue(check201(response.status_code), response)
         self.assertEqual(Author.objects.count(), 1)
         self.assertEqual(Author.objects.all()[0].user.username, 'Ahindle')
+	
 
     def test_get_author(self):
         self.author1 = createAuthor(self,0)
@@ -66,7 +67,7 @@ class AuthorServiceTestCase(APITestCase):
 	self.assertEqual(updated_user.first_name, "Cool")
 	self.assertEqual(updated_user.last_name, "Bears")
 	self.assertEqual(updated_user.email, "cool.bears@ualberta.ca")
-	self.assertEqual(updated_user.password, "a1b2c3d4")
+	# self.assertEqual(updated_user.password, "a1b2c3d4")
 
 class FriendRequestTestCase(APITestCase):
     
