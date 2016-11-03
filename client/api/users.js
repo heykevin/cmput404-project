@@ -67,22 +67,7 @@ export default class ApiUsers {
                 friend: action.target,
                 accepted: action.accepted
         });
-        return fetch('http://localhost:8000/friendrequest/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: body
-        }).then((response) => {
-            return Utils.handleErrors(response);
-        });
-    }
-
-    static getFriendRequestsList(action) {
-        const body = JSON.stringify({
-            author: action.actor,
-            query: "friendrequeststatus"
-        });
+        console.log(body);
         return fetch('http://localhost:8000/friendrequest/', {
             method: 'POST',
             headers: {

@@ -12,11 +12,8 @@ export class UserList extends React.Component
     constructor(props)
     {
         super(props);
-        const author = Utils.getAuthor(),
-            actor = {
-                id: author.id,
-                host: author.host
-            }
+        const author = Utils.getAuthor();
+        this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: author.id});
         this.props.dispatch({type: 'usersFetchFriendsList', authorId: author.id, dispatch: this.props.dispatch});
         this.props.dispatch({type: 'usersFetchList'});
 
@@ -37,14 +34,14 @@ export class UserList extends React.Component
             listResolved = this.props.friendsResolved;
         } else if (view === "friendrequests") {
             list = this.props.author.request_received;
-            listResolved = true;
+            listResolved = this.props.authorResolved;
         } else {
             list = this.props.users;
             listResolved = this.props.usersResolved;
         }
 
         // render
-        if (list && list.length) {
+        if (list && list.length && listResolved) {
 
             const per_page = 10;
             const pages = Math.ceil(list.length / per_page);
@@ -52,14 +49,10 @@ export class UserList extends React.Component
             const start_offset = (current_page - 1) * per_page;
             let start_count = 0;
 
-            if (this.props.toastMessage && !this.props.error && this.props.status && this.props.status !== 0) {
-                notify.show(this.props.toastMessage);
-            }
-
             return (
 
                 <div>
-                    <div className={(this.props.status === 0 ? "visible" : "invisible") + " hide-yall-kids-hide-yall-wife"}>
+                    <div className={(this.props.sending ? "visible" : "invisible") + " hide-yall-kids-hide-yall-wife"}>
                         <i className="fa fa-spinner fa-spin"></i>
                     </div>
                         <Table bordered hover responsive striped>
@@ -74,9 +67,7 @@ export class UserList extends React.Component
                                 {list.map((user, index) => {
                                     if (index >= start_offset && start_count < per_page) {
                                         start_count++;
-                                        if (user.id != this.props.author.id) {
-                                            return (<UserListElement view={view} key={user.id} id={user.id}/>);
-                                        }
+                                        return (<UserListElement view={view} key={user.id} id={user.id}/>);
                                     }
                                 })}
                             </tbody>
@@ -87,13 +78,17 @@ export class UserList extends React.Component
             );
         } else if (!listResolved) {
             // show the loading state
-            return (<ProgressBar active now={100}/>);
+            return (<div>
+                        <ProgressBar active now={100}/>
+                        <Notifications />
+                    </div>);
         } else if (!list.length && listResolved) {
             return (
                 <div className="text-center align-center">
                 <span className="warning-text">
                     Sorry, you do not have any {view === "friendrequests" ? "friend requests" : "friends"}. Check out all <a href="/friends?view=allauthors">authors</a> and you might find someone interesting!
                 </span>
+                <Notifications />
             </div>
             );
         } else {
@@ -106,6 +101,13 @@ export class UserList extends React.Component
                 </span>
             </div>
             );
+        }
+    }
+
+    componentDidUpdate()
+    {
+        if (this.props.toastMessage && !this.props.error && this.props.sending === false) {
+            notify.show(this.props.toastMessage);
         }
     }
 
@@ -127,11 +129,15 @@ function mapStateToProps(state) {
         friends: state.users.friends || [],
         friendsResolved: state.users.friendsResolved,
 
+        author: state.users.author || {},
+        authorResolved: state.users.authorResolved,
+
         page: Number(state.routing.locationBeforeTransitions.query.page) || 1,
 
         error: state.users.error,
-        author: state.users.author || Utils.getAuthor(),
-        status: state.users.requestStatus //undefined, -1 error, 0 sending, 1 success
+        toastMessage: state.users.toastMessage,
+        sending: state.users.sending
+
     };
 }
 export default connect(mapStateToProps)(UserList);

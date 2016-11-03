@@ -50,10 +50,10 @@ export class PostList extends React.Component
         } else {
             return (
                 <div className="no-posts">
-                    <span className="warning-text">
+                    <div className="warning-text">
                         You currently do not have any posts available to read. <br/>
                         Click <a href="/addpost">Add Post</a> to make a new post!
-                    </span>
+                    </div>
                 </div>
             );
         }

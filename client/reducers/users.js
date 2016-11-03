@@ -11,28 +11,32 @@ export default function users(state = {}, action) {
 class reducerClass {
 
     static befriendFailure(new_state, action) {
-        new_state.status = -1;
+        new_state.sending = false;
+        new_state.authorResolved = false;
         new_state.error = action.error;
         new_state.toastMessage = "Oops! Something went wrong. Please try again later.";
         return new_state;
     }
 
     static befriendSuccess(new_state, action) {
-        new_state.statis = 1;
+        new_state.sending = false;
+        new_state.authorResolved = false;
         new_state.response = action.response;
         new_state.toastMessage = "Your friend request has been sent. ε٩(๑> ₃ <)۶з";
         return new_state;
     }
 
     static unfriendFailure(new_state, action) {
-        new_state.status = -1;
+        new_state.sending = false;
+        new_state.authorResolved = false;
         new_state.error = action.error;
         new_state.toastMessage = "Oops! Something went wrong. _(┐「ε:)_ Please try again later.";
         return new_state;
     }
 
     static unfriendSuccess(new_state, action) {
-        new_state.statis = 1;
+        new_state.sending = false;
+        new_state.authorResolved = false;
         new_state.response = action.response;
         new_state.toastMessage = "Congrats, that guy is no long your friend. ╮(╯_╰)╭";
         return new_state;
@@ -64,6 +68,8 @@ class reducerClass {
 
     static fetchAuthorProfileSuccess(new_state, action) {
         new_state.author = action.profile;
+        new_state.authorResolved = true;
+        new_state.sending = undefined;
         // not safe, need to double check id and such, should be improved later
         Utils.setAuthor(action.profile);
         return new_state;
@@ -71,6 +77,8 @@ class reducerClass {
 
     static fetchAuthorProfileFailure(new_state, action) {
         new_state.authorError = action.error;
+        new_state.authorResolved = true;
+        new_state.sending = undefined;
         return new_state;
     }
 
@@ -82,6 +90,7 @@ class reducerClass {
 
     static respondToFriendRequestSuccess(new_state, action) {
         new_state.sending = false;
+        new_state.authorResolved = false;
         new_state.response = action.response;
         return new_state;
     }

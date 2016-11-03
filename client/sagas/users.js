@@ -95,9 +95,25 @@ export function* usersBefriendAuthor(action) {
     }
 }
 
-export function* usersRespondToFriendRequest(action) {
+export function* usersAcceptFriendRequest(action) {
     try {
-        console.log("respone to friend request");
+        console.log("accept to friend request", action.accepted);
+        const response = yield call(ApiUsers.postFriendRequestResponse, action);
+        yield put({
+            type: 'users.respondToFriendRequestSuccess',
+            response: response
+        });
+    } catch (error) {
+        yield put({
+            type: 'users.respondToFriendRequestFailure',
+            response: response
+        });
+    }
+}
+
+export function* usersDeclineFriendRequest(action) {
+    try {
+        console.log("decline to friend request", action.accepted);
         const response = yield call(ApiUsers.postFriendRequestResponse, action);
         yield put({
             type: 'users.respondToFriendRequestSuccess',

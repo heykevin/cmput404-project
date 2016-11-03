@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
-import {Button, Glyphicon} from 'react-bootstrap';
+import {Button, Glyphicon, ProgressBar} from 'react-bootstrap';
 
 import Utils from '../utils/utils.js';
 
@@ -17,7 +17,7 @@ export class UserListElement extends React.Component
         this.sentFriendRequestTo = this.sentFriendRequestTo.bind(this);
         this.receivedFriendRequestFrom = this.receivedFriendRequestFrom.bind(this);
         this.declineFriendRequest = this.declineFriendRequest.bind(this);
-        this.acceptFriendRequest = this.declineFriendRequest.bind(this);
+        this.acceptFriendRequest = this.acceptFriendRequest.bind(this);
         this.finder = this.finder.bind(this);
         this.composeData = this.composeData.bind(this);
     }
@@ -33,7 +33,7 @@ export class UserListElement extends React.Component
         const users = this.props.view === "myfriends"
             ? this.props.friends
             : this.props.view === "friendrequests"
-                ? this.props.author.request_received
+                ? this.props.author ? Utils.getAuthor().request_received : this.props.author.request_received
                 : this.props.users;
         for (const val of users) {
             if (val.id === this.props.id) {
@@ -45,6 +45,18 @@ export class UserListElement extends React.Component
 
         if (!user) {
             return null;
+        }
+
+        if (this.props.view === "allauthors" && !this.props.authorResolved) {
+            return (
+                <tr>
+                    <td>{user.displayName}</td>
+                    <td>{user.bio
+                            ? user.bio
+                            : user.displayName + " is rather private. So no bio is available."}</td>
+                        <td><ProgressBar active now={100}/></td>
+                </tr>
+            );
         }
 
         switch (this.props.view) {
@@ -67,6 +79,9 @@ export class UserListElement extends React.Component
                 break;
             default:
                 // all authors view
+                if (this.props.author.id === user.id) {
+                    return null;
+                }
                 const requestSent = this.sentFriendRequestTo(user),
                     requestReceived = this.receivedFriendRequestFrom(user);
                 console.log(user.displayName, 'requestSent', requestSent, 'requestReceived', requestReceived);
@@ -75,7 +90,6 @@ export class UserListElement extends React.Component
                     sendAction = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} onClick={this.sendFriendRequest}>
                         Send a friend request<Glyphicon glyph="plus-sign"/>
                     </Button>;
-
                 if (requestSent && requestReceived) {
                     template = <div>{waitAction}{viewAction}</div>;
                 } else if (requestSent) {
@@ -89,8 +103,8 @@ export class UserListElement extends React.Component
                     template = sendAction;
                 }
                 break;
-        }
 
+        }
         // render
         return (
             <tr>
@@ -152,12 +166,12 @@ export class UserListElement extends React.Component
 
         this.props.dispatch({type: 'users.sendingRequest', targetId: target.id});
 
-        this.props.dispatch({type: 'usersRespondToFriendRequest', actor, target, accepted: false});
+        this.props.dispatch({type: 'usersDeclineFriendRequest', actor, target, accepted: 'false'});
 
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
     }
 
-    acceptedFriendRequest(event) {
+    acceptFriendRequest(event) {
         const {target, actor} = this.composeData(event);
         if (!target.id) {
             return;
@@ -165,7 +179,7 @@ export class UserListElement extends React.Component
 
         this.props.dispatch({type: 'users.sendingRequest', targetId: target.id});
 
-        this.props.dispatch({type: 'usersRespondToFriendRequest', actor, target, accepted: true});
+        this.props.dispatch({type: 'usersAcceptFriendRequest', actor, target, accepted: 'true'});
 
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
     }
@@ -200,7 +214,8 @@ function mapStateToProps(state, own_props) {
         users: state.users.users || [],
         friends: state.users.friends || [],
         id: own_props.id,
-        author: state.users.author || Utils.getAuthor()
+        author: state.users.author || {},
+        authorResolved: state.users.authorResolved
     }
 }
 export default connect(mapStateToProps)(UserListElement);
