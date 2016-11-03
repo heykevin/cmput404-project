@@ -113,7 +113,7 @@ export default class PostForm extends React.Component {
             // dateTime:
         };
         console.dir(data);
-        //this.props.dispatch({type: "postsSavePost", postData: data});
+        this.props.dispatch({type: "postsSavePost", postData: data});
     }
 
     handleSelect(isMarkdownContent)
