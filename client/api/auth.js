@@ -60,6 +60,9 @@ export default class ApiAuth {
         console.dir(action);
         const author = Utils.getAuthor();
 
+        console.log('author.displayName ' + author.displayName);
+        console.log('author.password ' + author.password);
+
         body.append('displayName', author.displayName);
         body.append('first_name', action.first_name);
         body.append('last_name', action.last_name);

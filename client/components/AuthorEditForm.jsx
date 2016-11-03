@@ -135,11 +135,11 @@ function mapStateToProps(state, props) {
 
     // set the form data
     let form_data = {
-        first_name: state.first_name,
-        last_name: state.last_name,
-        email: state.email,
-        github_username: state.github_username,
-        bio: state.bio
+        first_name: state.auth.first_name,
+        last_name: state.auth.last_name,
+        email: state.auth.email,
+        github_username: state.auth.github_username,
+        bio: state.auth.bio
     };
 
 
