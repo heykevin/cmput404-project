@@ -28,6 +28,13 @@ class reducerClass
         return new_state;
     }
 
+    static savePostsFailure(new_state, aciton)
+    {
+        new_state.error = action.error;
+        new_state.resolved = true;
+        return new_state;
+    }
+
     static modalDeleteShow(new_state, action)
     {
         new_state.modal = new_state.modal ? new_state.modal : {};

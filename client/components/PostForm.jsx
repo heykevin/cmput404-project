@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {MarkdownEditor, MarkdownEditorContentStore} from 'react-markdown-editor';
 import {Form, FormGroup, FormControl, ControlLabel, Button, Nav, NavItem, ProgressBar} from 'react-bootstrap';
 
-export default class PostForm extends React.Component {
+export class PostForm extends React.Component {
 
     constructor(props)
     {
@@ -16,7 +16,8 @@ export default class PostForm extends React.Component {
             disableButton: true,
             isMarkdownContent: true,
             edited: false,
-            editorModeOverride: false
+            editorModeOverride: false,
+            category: ""
         };
 
         this.getEditorMode = this.getEditorMode.bind(this);
@@ -25,6 +26,7 @@ export default class PostForm extends React.Component {
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.onTitleChange = this.onTitleChange.bind(this);
+        this.onCategoryChange = this.onCategoryChange.bind(this);
         this.onDescriptionChange = this.onDescriptionChange.bind(this);
         this.onVisibilityChange = this.onVisibilityChange.bind(this);
     }
@@ -32,6 +34,9 @@ export default class PostForm extends React.Component {
     render()
     {
 		console.dir(this.props);
+        console.log('.post ' + this.props.post.title);
+        console.log('.post ' + this.props.post.description);
+        console.log('.post ' + this.props.post.content);
         return (
             <div className="post-editor">
                 <Nav bsStyle="pills" onSelect={this.handleSelect}>
@@ -52,6 +57,16 @@ export default class PostForm extends React.Component {
                             defaultValue={this.props.post.title}
                             required={true}
                             onChange={this.onTitleChange}/>
+                    </FormGroup>
+                    <FormGroup>
+                        <ControlLabel>Category</ControlLabel>
+                        <FormControl id="category"
+                            type="text"
+                            label="Category*"
+                            placeholder="Category"
+                            defaultValue={this.props.post.category}
+                            required={true}
+                            onChange={this.onCategoryChange}/>
                     </FormGroup>
                     <FormGroup>
                         <ControlLabel>Description</ControlLabel>
@@ -102,16 +117,21 @@ export default class PostForm extends React.Component {
 
     onSubmit(event)
     {
+
         let data = {
             title: this.state.title,
             description: this.state.description,
             content: this.state.content,
             visibility: this.state.visibility,
             content_type: this.state.isMarkdownEditor,
+            isMarkdownContent: this.state.isMarkdownContent,
+            category: this.state.category
             // author:
             // categories:
             // dateTime:
         };
+        console.log('post form data ' + data);
+        console.log('onSubmit title' + this.state.title);
         console.dir(data);
         this.props.dispatch({type: "postsSavePost", postData: data});
     }
@@ -147,6 +167,18 @@ export default class PostForm extends React.Component {
             edited: true,
             disableButton: this.isButtonDisabled()
         });
+        console.log('this.state.title - ' + this.state.title);
+        console.log('this.props.title - ' + this.props.title);
+        console.log('this.props.post.title - ' + this.props.post.title);
+    }
+
+    onCategoryChange(event)
+    {
+        this.setState({
+            category: event.target.value,
+            edited: true,
+            disableButton: this.isButtonDisabled()
+        });
     }
 
     onDescriptionChange(event)
@@ -166,7 +198,31 @@ export default class PostForm extends React.Component {
         if (this.props.isEditMode && !this.state.edited) {
             return false;
         } else {
-            return !(this.state.title.length > 0 && this.state.description.length > 0 && this.state.content.length > 0);
+            return !(this.state.title.length > 0 && this.state.description.length > 0 && this.state.content.length > 0 && this.state.category.length > 0);
         }
     }
 }
+
+// export the connected class
+function mapStateToProps(state, props) {
+
+    // set the form data
+    let post_data = {
+        title: state.title,
+        category: state.category,
+        description: state.description,
+        content: state.content,
+        visibility: state.visibility,
+        isMarkdownContent: state.isMarkdownContent,
+        edited: state.edited,
+        editorModeOverride: state.editorModeOverride
+    };
+
+
+    // pass the state values
+    return {
+        post_data,
+    };
+}
+
+export default connect(mapStateToProps)(PostForm);

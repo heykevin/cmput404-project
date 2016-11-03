@@ -2,11 +2,12 @@
  * API Posts static class
  */
 import Utils from '../utils/utils.js';
-import { getApi } from '../config.js';
+import {getApi} from '../config.js';
 
 export default class ApiPosts {
+
     static getPosts(action) {
-        console.log("posts api");
+        console.log("get posts api");
         const defaultPageSize = 10,
             host = getApi(),
             token = Utils.getToken();
@@ -38,10 +39,42 @@ export default class ApiPosts {
         console.log("api - save post");
         // add Authorization
         // refer to auth.js
-        return {
-            status: 201
-        }
+        let response = []
+        let body = new FormData();
+        const host = getApi(),
+            token = Utils.getToken();
+
+        //id
+        body.append('title', action.postData.title);
+        body.append('source', host);
+        body.append('origin', host);
+        body.append('description', action.postData.description);
+        body.append('content', action.postData.content);
+        body.append('category', action.postData.category);
+        body.append('visibility_choice', action.postData.visibility);
+        body.append('content_type', 'text/markdown');
+
+        // TODO: Create config.js with paths and urls
+        console.log('api savepost body ' + body);
+        return fetch(`${host}posts/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${token}`
+            },
+            body: body
+        }).then((response) => {
+            return Utils.handleErrors(response);
+        }).then((response) => {
+            return {
+                response: response,
+                token: token
+            };
+        });
     }
+    //     return {
+    //         status: 201
+    //     }
+    // }
 
     static deletePost(action) {
         console.log("api - delete post id: " + action.id);
