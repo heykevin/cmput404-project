@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User, Group
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser  
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser 
 from rest_framework.authentication import BasicAuthentication 
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import permission_classes, authentication_classes
@@ -11,7 +11,7 @@ from rest_framework import viewsets, generics
 from rest_framework import status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
-from .permissions import IsAuthorOrReadOnly
+from .permissions import IsAuthorOrReadOnly, IsAFriend
 from .models import Author, Post
 from serializers import *
 import json
@@ -84,7 +84,7 @@ class AuthorStream(generics.ListAPIView):
         
         # get friends and foaf posts
         for friend in Author.objects.get(user=user).friends.all():
-            friendQuerySet = Post.objects.all().filter(author=friend).exclude(visibility="PRIVATE")
+            friendQuerySet = Post.objects.all().filter(author=friend).filter(visibility="FRIENDS")
             serverQuerySet = Post.objects.all().filter(author=friend).filter(visibility="SERVERONLY")
             querySet = querySet | friendQuerySet | serverQuerySet
             for foaf in friend.friends.all():
@@ -119,15 +119,13 @@ class PersonalAuthorStream(generics.ListAPIView):
         # could refactor to use permissions but whatevs
         authorPosts = Post.objects.all().filter(author=author)
         publicPosts = authorPosts.all().filter(visibility="PUBLIC")
-        serverPosts = authorPosts.all().filter(visibility="SERVERONLY")
         privatePosts = authorPosts.all().filter(visibility="PRIVATE").filter(author__user=user)
-        foafPosts = authorPosts.all().filter(visibility="FOAF").filter(author__user=user)
+        querySet = publicPosts | privatePosts
+        if (author.friends.all().get(user=user)):
+            friendQuerySet = authorPosts.filter(visibility="FRIENDS")
+            serverQuerySet = authorPosts.filter(visibility="SERVERONLY")
+            querySet = querySet | friendQuerySet | serverQuerySet
 
-        querySet = publicPosts | serverPosts | foafPosts | privatePosts
-
-        if author.friends.all().filter(user=user):
-            querySet = querySet | authorPosts.all().filter(visibility="FRIENDS")
-    
         return querySet
     
 class AuthorViewSet(APIView):
@@ -271,8 +269,10 @@ class PostView(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostIDView(APIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated, )
     '''
-    APIView for service/posts/<post_id>/
+    APIView for service/posts/<post_id>/    
 
     response(post_object)
         'id': UUID
@@ -286,9 +286,23 @@ class PostIDView(APIView):
         'content type': choice selection
     '''
     def get(self, request, pk, format=None):
-        if Post.objects.filter(id=pk).exists():
-            queryset = Post.objects.filter(id=pk)
-            serializer = PostSerializer(queryset, many=True)
+        if Post.objects.get(id=pk):
+            queryset = Post.objects.get(id=pk)
+            # TODO: Refactor this gross code
+            if queryset.visibility == "FRIENDS":
+                print queryset.author.friends.all()
+                if queryset.author.friends.all().get(user=request.user):
+                    pass
+                else:
+                    return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+            if queryset.visibility == "PRIVATE":
+                if (queryset.author.user==request.user):
+                    pass
+                else:
+                    return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = PostSerializer(queryset)
             res = dict()
             res["posts"] = serializer.data
             return Response(res, status=status.HTTP_200_OK)
