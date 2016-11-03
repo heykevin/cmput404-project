@@ -275,11 +275,14 @@ class PersonalAuthorStreamTestCase(APITestCase):
 class PostTestCase(APITestCase):
 
 	def setUp(self):
-		self.postAuthor = createAuthor(self,0)
-		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
-		response = self.client.post('/login/')
+		self.postAuthor1 = createAuthor(self,0)
+		self.postAuthor2 = createAuthor(self,1)
+		self.postAUthor3 = createAuthor(self,2)
 
-	def test_create_post(self):
+	def test_post(self):
+		# test for POST post
+		# postAuthor1: Ahindle post, a public post
+		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
 		response = self.client.post('/posts/', {
 				'title': 'comp sci 404',
 				'source': 'http://127.0.0.1:8000',
@@ -292,4 +295,66 @@ class PostTestCase(APITestCase):
 			}, format='json'
 		)
 		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
-		self.assertTrue(response.data['title'] == 'comp sci 404')
+		self.pId1 = response.data['id']
+		# postAuthor: Ahindle post, a private post
+		response = self.client.post('/posts/', {
+				'title': 'Joshua lab notes',
+				'source': 'http://127.0.0.1:8000/lab',
+				'origin': 'http://127.0.0.1:8000/ualberta',
+				'description': 'lab notes for next week',
+				'content': 'lab for next week will have 3 hours of exam',
+				'category': 'compsci',
+				'visibility_choice': 'private',
+				'content_type': 'text/markdown'
+			}, format='json'
+		)
+		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
+		self.pId2 = response.data['id']
+		# postAuthor: Ahindle post, a public post
+		response = self.client.post('/posts/', {
+				'title': 'comp sci 404 notice',
+				'source': 'http://127.0.0.1:8000',
+				'origin': 'http://127.0.0.1:8000/ualberta',
+				'description': 'class cancel notice',
+				'content': 'class this week is cancelled due to flu',
+				'category': 'compsci',
+				'visibility_choice': 'public',
+				'content_type': 'text/markdown'
+			}, format='json'
+		)
+		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
+		self.pId3 = response.data['id']
+		# postAuthor: Ahindle post, a public post with wrong values
+		response = self.client.post('/posts/', {
+				'title': 'comp sci 404',
+				'source': 'who cares about source',
+				'origin': 'who cares about origin',
+				'description': 'This post is about comp sci 404',
+				'content': 'comp sci 404 project, blah blah blah',
+				'category': 'compsci',
+				'visibility_choice': 'something',
+				'content_type': 'text/json'
+			}, format='json'
+		)
+		self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response)
+
+		# test for GET post1
+		response = self.client.get('/posts/%s/' % self.pId1, {}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+		# test for GET post2
+		response = self.client.get('/posts/%s/' % self.pId2, {}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+		# test for GET post3
+		response = self.client.get('/posts/%s/' % self.pId3, {}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+		# test for GET random post id
+		response = self.client.get('/posts/HelloWorld/', {}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND, response)
+
+class CommentTestCase(APITestCase):
+
+	def setUp(self):
+		pass
+
+	def test_comment(self):
+		pass

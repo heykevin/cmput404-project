@@ -221,38 +221,48 @@ class AuthorProfileUpdateView(APIView):
         authorObj = Author.objects.get(id=pk)
         serializer = AuthorSerializer(authorObj)
         return Response(serializer.data, status=status.HTTP_200_OK)
-'''   
-class PostView(APIView):
-    
-    def get(self, request, pk, format=None):
-        queryset = Post.objects.get(id=pk)
-        serializer = PostSerializer(queryset)
-        return Response(serializer.data)
-'''
+
 class PostView(viewsets.ModelViewSet):
-    # shows all authors post lists
-    #
-    # GET /posts
-    # #
+    '''
+    A viewset for service/posts/
+    public posts are shown by get_queryset as default
+
+    response(post_object)
+        'id': UUID
+        'title': string
+        'source': URL
+        'origin': URL
+        'description': string
+        'content': string
+        'category': string
+        'visibility': choice selection
+        'content type': choice selection
+    '''
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     pagination_class = PostsResultsSetPagination
     authentication_classes = (BasicAuthentication, )
     permission_classes = (IsAuthorOrReadOnly, )
-    # serializer = PostSerializer(queryset)
 
-    # get specific post from an author
-    #
-    # GET /posts/<postID>
-    #
     def get_queryset(self):
         return Post.objects.all().filter(visibility="PUBLIC")
 
-    # POST post by an author
-    #
-    # POST
-    #
     def post(self,request):
+        '''
+        POST method for post
+        requires(post_object)
+            'id': UUID
+            'title': string
+            'source': URL
+            'origin': URL
+            'description': string
+            'content': string
+            'category': string
+            'visibility': choice selection
+            'content type': choice selection
+
+        responses are the same
+        '''
         serializer = PostSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
@@ -260,7 +270,20 @@ class PostView(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostIDView(APIView):
+    '''
+    APIView for service/posts/<post_id>/
 
+    response(post_object)
+        'id': UUID
+        'title': string
+        'source': URL
+        'origin': URL
+        'description': string
+        'content': string
+        'category': string
+        'visibility': choice selection
+        'content type': choice selection
+    '''
     def get(self, request, pk, format=None):
         if Post.objects.filter(id=pk).exists():
             queryset = Post.objects.filter(id=pk)
@@ -271,8 +294,24 @@ class PostIDView(APIView):
         return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
         
 class CommentView(generics.ListCreateAPIView):
+    '''
+    List API view for comment
+    service/posts/<post_id>/comments
 
-    # GET comment from specific post_id
+    response(post_object)
+        'id': UUID
+        'title': string
+        'source': URL
+        'origin': URL
+        'description': string
+        'content': string
+        'category': string
+        'visibility': choice selection
+        'content type': choice selection
+    response(comment_object)
+        'id': UUID
+        'content': string
+    '''
     queryset = Post.objects.all()
     serializer_class = CommentSerializer
     authentication_classes = (BasicAuthentication, )
@@ -285,14 +324,6 @@ class CommentView(generics.ListCreateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # def delete(self, request, pk, format=None):
-    #     post = Post.objects.get(id=pk)
-    #     queryset = Comment.objects.get(post=post)
-    #     serializer = CommentSerializer(queryset)
-    #     serializer.delete()
-    #     return Response("comment has been deleted", status=status.HTTP_204_NO_CONTENT)
-
 
 class FriendsWith(APIView):
     """
