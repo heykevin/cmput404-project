@@ -71,8 +71,7 @@ class Post(models.Model):
 
     def get_idKey(self):
         return self.idKey()
-
-    # count number of posts
+        
     def get_count(self):
         return self.objects.count()
 

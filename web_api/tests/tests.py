@@ -273,15 +273,26 @@ class PersonalAuthorStreamTestCase(APITestCase):
 	self.assertEqual(len(response.data['posts']), 1)	
 
 class PostTestCase(APITestCase):
+	self.postAuthor = createAuthor(self,0)
+	self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
+	response = self.client.post('/login/')
+	
+	def test_create_post(self):
+		response = self.client.post('/posts/', {
+				'title': 'comp sci 404',
+				'source': 'http://127.0.0.1:8000',
+				'origin': 'http://127.0.0.1:8000',
+				'description': 'This post is about comp sci 404',
+				'content': 'comp sci 404 project, blah blah blah',
+				'category': 'compsci',
+				'visibility_choice': 'Public',
+				'content_type': 'text/markdown'
+			}, format='json'
+		)
+		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
+		self.assertTrue(response.data['title'] == 'comp sci 404')
 
-    def test_create_post(self):
-	pass
-    
-    def test_get_post(self):
-	pass
-
-    def test_update_post(self):
-	pass
-
-    def test_delete_post(self):
-	pass
+	def test_update_post(self):
+		pass
+	def test_delete_post(self):
+		pass
