@@ -10,22 +10,13 @@ import {
     Button
 } from 'react-bootstrap';
 
-const author = Utils.getAuthor();
-console.log(author);
-
-export class AuthorEditForm extends React.Component {
+export default class AuthorEditForm extends React.Component {
     //currentState = getState();
 
     constructor(props)
     {
         super(props);
-            this.state = {
-                first_name: author.first_name,
-                last_name: author.last_name,
-                email: author.email,
-                github_username: author.github_username,
-                bio: author.bio
-            }
+        this.state = this.props.author;
         this.handleFirstNameChange = this.handleFirstNameChange.bind(this);
         this.handleLastNameChange = this.handleLastNameChange.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
@@ -46,7 +37,6 @@ export class AuthorEditForm extends React.Component {
             github_username: this.state.github_username,
             bio: this.state.bio
         });
-        Utils.redirect("/profile");
     }
 
     handleFirstNameChange(event) {
@@ -83,35 +73,35 @@ export class AuthorEditForm extends React.Component {
                         onChange = {this.handleFirstNameChange}
                         id="first_nameEdit"
                         type="text"
-                        value={this.state.first_name}
+                        defaultValue={this.props.first_name}
                         />
                     <ControlLabel> Last name </ControlLabel>
                     <FormControl
                         onChange = {this.handleLastNameChange}
                         id="last_nameEdit"
                         type="text"
-                        value={this.state.last_name}
+                        defaultValue={this.props.last_name}
                         />
                     <ControlLabel> Email </ControlLabel>
                     <FormControl
                         onChange = {this.handleEmailChange}
                         id="emailEdit"
                         type="email"
-                        value={this.state.email}
+                        defaultValue={this.props.email}
                         />
                     <ControlLabel> Github account </ControlLabel>
                     <FormControl
                         onChange = {this.handleGithubChange}
                         id="github_usernameEdit"
                         type="text"
-                        value={this.state.github_username}
+                        defaultValue={this.props.github_username}
                         />
                     <ControlLabel> Bios </ControlLabel>
                     <FormControl
                         onChange = {this.handleBioChange}
                         id="bioEdit"
                         type="text"
-                        value={this.state.bio}
+                        defaultValue={this.props.bio}
                         />
                     <Button type = "submit">
                         Submit
@@ -123,13 +113,7 @@ export class AuthorEditForm extends React.Component {
     }
 }
 
-//connects
-
-function backToProfile(){
-    console.log("return to profile")
-    window.location.reload()
-}
-
+//connect
 // export the connected class
 function mapStateToProps(state, props) {
 

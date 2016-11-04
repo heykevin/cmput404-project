@@ -54,14 +54,10 @@ export default class ApiAuth {
     static updateProfile(action) {
         let response = [],
             body = new FormData();
-        const encodedLogin = window.btoa(`${action.username}:${action.password}`);
         const host = getApi();
         console.log('updateAPI');
         console.dir(action);
         const author = Utils.getAuthor();
-
-        console.log('author.displayName ' + author.displayName);
-        console.log('author.password ' + author.password);
 
         body.append('displayName', author.displayName);
         body.append('first_name', action.first_name);
@@ -81,7 +77,6 @@ export default class ApiAuth {
         }).then((response) => {
             return {
                 author: response,
-                token: encodedLogin
             };
         })
     }
