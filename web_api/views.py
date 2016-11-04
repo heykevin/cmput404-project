@@ -11,6 +11,7 @@ from rest_framework import viewsets, generics
 from rest_framework import status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 from .permissions import IsAuthorOrReadOnly, IsPostAuthorOrReadOnly
 from .models import Author, Post
 from serializers import *
@@ -290,27 +291,25 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
         'content type': choice selection
     '''
     def get(self, request, pk, format=None):
-        if Post.objects.get(id=pk):
-            queryset = Post.objects.get(id=pk)
-            # TODO: Refactor this gross code
-            if queryset.visibility == "FRIENDS":
-                print queryset.author.friends.all()
-                if queryset.author.friends.all().get(user=request.user):
-                    pass
-                else:
-                    return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
+        queryset = get_object_or_404(Post,id=pk)
+        # TODO: Refactor this gross code
+        if queryset.visibility == "FRIENDS":
+            print queryset.author.friends.all()
+            if queryset.author.friends.all().get(user=request.user):
+                pass
+            else:
+                return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
 
-            if queryset.visibility == "PRIVATE":
-                if (queryset.author.user==request.user):
-                    pass
-                else:
-                    return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
+        if queryset.visibility == "PRIVATE":
+            if (queryset.author.user==request.user):
+                pass
+            else:
+                return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
 
-            serializer = PostSerializer(queryset)
-            res = dict()
-            res["posts"] = serializer.data
-            return Response(res, status=status.HTTP_200_OK)
-        return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
+        serializer = PostSerializer(queryset)
+        res = dict()
+        res["posts"] = serializer.data
+        return Response(res, status=status.HTTP_200_OK)
         
 class CommentView(generics.ListCreateAPIView):
     '''

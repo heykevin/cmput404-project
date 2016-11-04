@@ -347,7 +347,7 @@ class PostTestCase(APITestCase):
 		response = self.client.get('/posts/%s/' % self.pId3, {}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK, response)
 		# test for GET random post id
-		response = self.client.get('/posts/HelloWorld/', {}, format='json')
+		response = self.client.get('/posts/0b261288-2242-4cd6-b329-ba7cee6813f0/', {}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND, response)
 
 		# test for UPDATE post1
@@ -356,14 +356,12 @@ class PostTestCase(APITestCase):
 			'title': 'new post1 title',
 			'content': 'this is a changed content of post 1',
 			'source': 'http://127.0.0.1:8000/ualberta',
-			'origin': 'http://127.0.0.1:8000/compsci',
 			'description': 'new post1 desc'
 			}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK, response)
 		self.assertTrue(response.data['title'] == 'new post1 title')
 		self.assertTrue(response.data['content'] == 'this is a changed content of post 1')
 		self.assertTrue(response.data['source'] == 'http://127.0.0.1:8000/ualberta')
-		self.assertTrue(response.data['origin'] == 'http://127.0.0.1:8000/compsci')
 		self.assertTrue(response.data['description'] == 'new post1 desc')
 
 		# test for DELETE post
