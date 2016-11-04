@@ -33,9 +33,9 @@ https://api-bloggyblog404.herokuapp.com/
 https://bloggyblog404.herokuapp.com/
 
 ### Libraries used
-- Built off the [redux-minimal] starter kit
-- Front end Libraries
-- Back end Libraries
+- Built off the [redux-minimal starter kit](https://github.com/catalin-luntraru/redux-minimal)
+- [Front end Libraries](https://github.com/CMPUT404F16Project/cmput404-project/blob/master/package.json)
+- [Back end Libraries](https://github.com/CMPUT404F16Project/cmput404-project/blob/master/requirements.txt)
 
 ### Authors
 `Alice Wu, Josh (Ji Hwan) Kim, Kevin Tang, Philip Lam, and Xuping Fang`
