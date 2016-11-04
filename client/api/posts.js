@@ -105,4 +105,32 @@ export default class ApiPosts {
             return ApiPosts.handleEmptyResponse(response);
         });
     }
+
+    static updatePost(action) {
+        console.log("api - update post id: " + action.id + '/');
+        let body = new FormData();
+        const host = getApi(),
+            token = Utils.getToken();
+
+        body.append('title', action.postData.title);
+        body.append('description', action.postData.description);
+        body.append('content', action.postData.content);
+        body.append('category', action.postData.category);
+        body.append('visibility_choice', action.postData.visibility);
+        body.append('content_type', action.postData.contentType);
+
+        // TODO: remove these two once backend API is able to generate these and not requiring these
+        body.append('source', `${host}`);
+        body.append('origin', `${host}`)
+        console.log('api savepost body ', body);
+        return fetch(`${host}posts/` + action.id + '/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${token}`
+            },
+            body: body
+        }).then((response) => {
+            return Utils.handleErrors(response);
+        });
+    }
 }

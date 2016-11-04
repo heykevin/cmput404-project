@@ -22,7 +22,8 @@ export class PostForm extends React.Component {
             content_type: "text/markdown",
             edited: false,
             editorModeOverride: false,
-            category: ""
+            category: "",
+            change: false
         };
 
         if (this.props.isEditMode && this.props.post) {
@@ -45,6 +46,8 @@ export class PostForm extends React.Component {
     render()
     {
         let givenPost, isNewPost;
+        console.log('this.props.response ' + this.props.response);
+        let givenPost;
         if (this.props.response || this.props.error) {
             givenPost = this.props.savedPost;
         } else {
@@ -165,6 +168,8 @@ export class PostForm extends React.Component {
         } else {
             this.props.dispatch({type: "postsSavePost", postData: data});
         }
+            this.props.dispatch({type: "postsSavePost", postData: data});
+            this.props.dispatch({type: "postsUpdatePost", postData: data});
     }
 
     handleSelect(isMarkdownContent)
@@ -184,13 +189,15 @@ export class PostForm extends React.Component {
         });
     }
 
-    onChange(content)
+    onChange(event)
     {
+
         this.setState({
             content: this.state.content_type === "text/markdown" ? content : content.target.value,
             edited: true,
             disableButton: this.isButtonDisabled()
         });
+
     }
 
     onTitleChange(event)
@@ -225,10 +232,12 @@ export class PostForm extends React.Component {
     }
 
     isButtonDisabled() {
+        console.log("isEditmode " + this.props.isEditmode);
         if (this.props.isEditMode && !this.state.edited) {
             return false;
         } else {
-            return !(this.state.title.length > 0 && this.state.description.length > 0 && this.state.content.length > 0 && this.state.category.length > 0);
+            return false;
+            //return !(this.state.title.length > 0 && this.state.description.length > 0 && this.state.content.length > 0 && this.state.category.length > 0);
         }
     }
 }

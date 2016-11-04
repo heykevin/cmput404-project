@@ -22,6 +22,7 @@ export default class ProfileInfo extends React.Component {
                 <Panel header="Github username">{author.github_username}</Panel>
                 <Panel header="Bios">{author.bio}</Panel>
                 <Button bsStyle="primary" href="/settings">Edit your profile</Button>
+                <Button bsStyle="primary" href="/profile">Update</Button>
             </div>
         );
     }
