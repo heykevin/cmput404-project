@@ -391,16 +391,19 @@ class CommentTestCase(APITestCase):
 			}, format='json'
 		)
 		self.pId1 = response.data['id']
-'''
+
 	def test_comment(self):
 		# commentAuthor1: Ahindle logged in
+		# test for creating a comment
 		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
 		response = self.client.post('/posts/%s/comments/' % self.pId1, {
 				'content': 'the post has really good information, I like it'
 			}, format='json'
 		)
-		print(response.status_code)
+		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
+
+		# test for getting a comment
 		response = self.client.get('/posts/%s/comments/' % self.pId1, {}, format='json')
-		print(response.status_code)
-		print(len(reponse.data['id']))
-'''
+		self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+		comment = response.data['comments']
+		self.assertTrue(comment[0]['id'] != None)
