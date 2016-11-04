@@ -1,7 +1,7 @@
 // From https://github.com/reactjs/react-router-tutorial/tree/master/lessons/11-productionish-server
 const express = require('express')
 const path = require('path')
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 5000
 const app = express()
 
 // serve static assets normally

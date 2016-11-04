@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from rest_framework.decorators import detail_route
@@ -58,8 +59,10 @@ class PostSerializer(serializers.ModelSerializer):
             'category', 'author', 'visibility', 'publish_time', 'content_type', 'comments')
 
     def create(self, validated_data):
+        id = uuid.uuid4()
+        origin = self.context.get('request').build_absolute_uri() + str(id)
         author = Author.objects.get(user=self.context.get('request').user)
-        post = Post.objects.create(author=author, **validated_data)
+        post = Post.objects.create(id=id, origin=origin, author=author, **validated_data)
         post.save()
         return post
 
