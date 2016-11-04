@@ -70,8 +70,8 @@ export default class ApiUsers {
         const host = getApi();
         const body = JSON.stringify({
                 query: "friendresponse",
-                author: action.actor,
-                friend: action.target,
+                author: action.target,
+                friend: action.actor,
                 accepted: action.accepted
         });
         console.log(body);

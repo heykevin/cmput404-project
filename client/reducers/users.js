@@ -19,8 +19,8 @@ class reducerClass {
     }
 
     static befriendSuccess(new_state, action) {
-        new_state.sending = false;
         new_state.authorResolved = false;
+        new_state.sending = true;
         new_state.response = action.response;
         new_state.toastMessage = "Your friend request has been sent. ε٩(๑> ₃ <)۶з";
         return new_state;
@@ -35,8 +35,8 @@ class reducerClass {
     }
 
     static unfriendSuccess(new_state, action) {
-        new_state.sending = false;
         new_state.authorResolved = false;
+        new_state.sending = true;
         new_state.response = action.response;
         new_state.toastMessage = "Congrats, that guy is no long your friend. ╮(╯_╰)╭";
         return new_state;
@@ -69,7 +69,7 @@ class reducerClass {
     static fetchAuthorProfileSuccess(new_state, action) {
         new_state.author = action.profile;
         new_state.authorResolved = true;
-        new_state.sending = undefined;
+        new_state.sending = false;
         // not safe, need to double check id and such, should be improved later
         Utils.setAuthor(action.profile);
         return new_state;
@@ -78,7 +78,7 @@ class reducerClass {
     static fetchAuthorProfileFailure(new_state, action) {
         new_state.authorError = action.error;
         new_state.authorResolved = true;
-        new_state.sending = undefined;
+        new_state.sending = false;
         return new_state;
     }
 
@@ -92,6 +92,7 @@ class reducerClass {
         new_state.sending = false;
         new_state.authorResolved = false;
         new_state.response = action.response;
+        new_state.toastMessage = action.response + ". ε٩(๑> ₃ <)۶з";
         return new_state;
     }
 
@@ -106,5 +107,21 @@ class reducerClass {
             return a.displayName.localeCompare(b.displayName);
         });
         return userList;
+    }
+
+    static clearState(new_state, action) {
+        new_state.users = [];
+        new_state.usersResolved = false;
+        new_state.friends = [];
+        new_state.friendsResolved = false;
+        new_state.author = {};
+        new_state.authorResolved = false;
+        new_state.toastMessage = undefined;
+        return new_state;
+    }
+
+    static clearToastMessage(new_state, action) {
+        new_state.toastMessage = undefined;
+        return new_state;
     }
 }

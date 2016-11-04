@@ -13,6 +13,7 @@ export class UserList extends React.Component
     {
         super(props);
         const author = Utils.getAuthor();
+        this.props.dispatch({type: 'users.clearState'});
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: author.id});
         this.props.dispatch({type: 'usersFetchFriendsList', authorId: author.id, dispatch: this.props.dispatch});
         this.props.dispatch({type: 'usersFetchList'});
@@ -107,7 +108,7 @@ export class UserList extends React.Component
     componentDidUpdate()
     {
         if (this.props.toastMessage && !this.props.error && this.props.sending === false) {
-            notify.show(this.props.toastMessage);
+            notify.show(this.props.toastMessage, "success", 3000);
         }
     }
 

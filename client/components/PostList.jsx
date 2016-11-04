@@ -51,7 +51,7 @@ export class PostList extends React.Component
             return (
                 <div className="no-posts">
                     <div className="warning-text">
-                        You currently do not have any posts available to read. <br/>
+                        You currently do not have any posts. <br/>
                         Click <a href="/addpost">Add Post</a> to make a new post!
                     </div>
                 </div>

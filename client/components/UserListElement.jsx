@@ -82,6 +82,7 @@ export class UserListElement extends React.Component
                 if (this.props.author.id === user.id) {
                     return null;
                 }
+                console.log("is " + user.displayName + " my Friend??? " + isMyFriend);
                 const requestSent = this.sentFriendRequestTo(user),
                     requestReceived = this.receivedFriendRequestFrom(user);
                 console.log(user.displayName, 'requestSent', requestSent, 'requestReceived', requestReceived);
@@ -90,15 +91,15 @@ export class UserListElement extends React.Component
                     sendAction = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} onClick={this.sendFriendRequest}>
                         Send a friend request<Glyphicon glyph="plus-sign"/>
                     </Button>;
-                if (requestSent && requestReceived) {
+                if (isMyFriend) {
+                    template = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} onClick={this.sendUnfriendRequest}>Unfriend<Glyphicon glyph="remove-sign"/>
+                    </Button>;
+                } else if (requestSent && requestReceived) {
                     template = <div>{waitAction}{viewAction}</div>;
                 } else if (requestSent) {
                     template = waitAction;
                 } else if (requestReceived) {
                     template = <div>{sendAction}{viewAction}</div>;
-                } else if (isMyFriend) {
-                    template = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} onClick={this.sendUnfriendRequest}>Unfriend<Glyphicon glyph="remove-sign"/>
-                    </Button>;
                 } else {
                     template = sendAction;
                 }
@@ -166,7 +167,7 @@ export class UserListElement extends React.Component
 
         this.props.dispatch({type: 'users.sendingRequest', targetId: target.id});
 
-        this.props.dispatch({type: 'usersDeclineFriendRequest', actor, target, accepted: 'false'});
+        this.props.dispatch({type: 'usersDeclineFriendRequest', target, actor, accepted: 'false'});
 
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
     }
@@ -179,13 +180,13 @@ export class UserListElement extends React.Component
 
         this.props.dispatch({type: 'users.sendingRequest', targetId: target.id});
 
-        this.props.dispatch({type: 'usersAcceptFriendRequest', actor, target, accepted: 'true'});
+        this.props.dispatch({type: 'usersAcceptFriendRequest', target, actor, accepted: 'true'});
 
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
     }
 
     isFriendWith(user) {
-        return this.finder(user.friends, this.props.author.id);
+        return this.finder(this.props.friends, user.id);
     }
 
     sentFriendRequestTo(user) {
