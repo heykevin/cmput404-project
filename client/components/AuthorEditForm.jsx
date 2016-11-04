@@ -112,24 +112,3 @@ export default class AuthorEditForm extends React.Component {
         );
     }
 }
-
-//connect
-// export the connected class
-function mapStateToProps(state, props) {
-
-    // set the form data
-    let form_data = {
-        first_name: state.auth.first_name,
-        last_name: state.auth.last_name,
-        email: state.auth.email,
-        github_username: state.auth.github_username,
-        bio: state.auth.bio
-    };
-
-
-    // pass the state values
-    return {
-        form_data,
-    };
-}
-export default connect(mapStateToProps)(AuthorEditForm);
