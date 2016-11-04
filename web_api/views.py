@@ -121,7 +121,7 @@ class PersonalAuthorStream(generics.ListAPIView):
         publicPosts = authorPosts.all().filter(visibility="PUBLIC")
         privatePosts = authorPosts.all().filter(visibility="PRIVATE").filter(author__user=user)
         querySet = publicPosts | privatePosts
-        if (Author.objects.get(user=user) in author.friends.all().filter(user=user)):
+        if (Author.objects.get(user=user) in author.friends.all().filter(user=user) or Author.objects.get(user=user) == author):
             friendQuerySet = authorPosts.filter(visibility="FRIENDS")
             serverQuerySet = authorPosts.filter(visibility="SERVERONLY")
             querySet = querySet | friendQuerySet | serverQuerySet
@@ -313,21 +313,23 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
 class CommentView(generics.ListCreateAPIView):
     '''
     List API view for comment
-    service/posts/<post_id>/comments
+    GET /posts/<post_id>/comments
+    response
+        id (UUID)
+        content (string)
+        author (object)
+        publishtime
+        post(UUID)
 
-    response(post_object)
-        'id': UUID
-        'title': string
-        'source': URL
-        'origin': URL
-        'description': string
-        'content': string
-        'category': string
-        'visibility': choice selection
-        'content type': choice selection
-    response(comment_object)
-        'id': UUID
-        'content': string
+    POST /posts/<post_id>/comments
+        request
+            content(string)
+        response
+            id (UUID)
+            content (string)
+            author (object)
+            publishtime
+            post(UUID)
     '''
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
