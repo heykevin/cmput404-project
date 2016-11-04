@@ -24,8 +24,10 @@ Simply run
 > ./deploy.sh  
 
 And the script should take care of the rest
+
 Hosted at:
 www.api-bloggyblog404.herokuapp.com
+www.bloggyblog404.herokuapp.com
 
 #### Authors
 `Alice Wu, Josh (Ji Hwan) Kim, Kevin Tang, Philip Lam, and Xuping Fang`
