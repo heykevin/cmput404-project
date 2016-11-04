@@ -6,6 +6,14 @@ import {getApi} from '../config.js';
 
 export default class ApiPosts {
 
+    static handleEmptyResponse(response) {
+        if (!response.ok) {
+            console.log("error", response);
+            throw new Error(response.statusText);
+        }
+        return response;
+    }
+
     static getPosts(action) {
         console.log("get posts api");
         const defaultPageSize = 10,
@@ -63,10 +71,16 @@ export default class ApiPosts {
     }
 
     static deletePost(action) {
-        console.log("api - delete post id: " + action.id);
-        return {
-            data: data,
-            id: action.id
-        };
+        console.log("api - delete post id: " + action.id + '/');
+        const host = getApi(),
+            token = Utils.getToken();
+        return fetch(`${host}posts/` + action.id + '/', {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then((response) => {
+            return ApiPosts.handleEmptyResponse(response);
+        });
     }
 }

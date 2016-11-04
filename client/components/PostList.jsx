@@ -16,7 +16,6 @@ export class PostList extends React.Component
 
         // posts can be retrieve by either author/{AUTHOR_ID}/posts or posts
         this.props.dispatch({type: 'postsGetPosts', method: this.props.method, authorId: this.props.authorId});
-        this.changePage = this.changePage.bind(this);
     }
 
     render()
@@ -40,7 +39,7 @@ export class PostList extends React.Component
                             }
                         })}
                     </ListGroup>
-                    <Pagination className="users-pagination pull-right" bsSize="medium" maxButtons={10} first last next prev boundaryLinks items={pages} activePage={current_page} onSelect={this.changePage}/>
+                    <Pagination className="users-pagination pull-right" bsSize="medium" maxButtons={10} first last next prev boundaryLinks items={pages} activePage={current_page}/>
                 </div>
             );
         } else if (!this.props.resolved) {
@@ -56,11 +55,6 @@ export class PostList extends React.Component
                 </div>
             );
         }
-    }
-
-    changePage(page)
-    {
-        this.props.dispatch(push('&page=' + page));
     }
 }
 

@@ -25,7 +25,7 @@ export function* postsSavePost(action) {
     // dispatch success action with response and also action.postData in
     // case the response indicates a save failure and we need to restore
     // the user's data
-    try{
+    try {
         const response = yield call(ApiPosts.savePost, action);
         yield put({
             type: 'posts.savePostSuccess',
@@ -33,23 +33,29 @@ export function* postsSavePost(action) {
             postData: action.postData
         });
     } catch (error) {
-       console.log("Saga caught save post error", error);
-       yield put({
-           type: 'posts.savePostFailure',
-           error: error,
-           postData: action.postData,
-       });
+        console.log("Saga caught save post error", error);
+        yield put({
+            type: 'posts.savePostFailure',
+            error: error,
+            postData: action.postData,
+        });
     }
 }
 
 export function* postsDeletePost(action) {
     console.log("sage -- delete post");
-    const response = yield call(ApiPosts.deletePost, action);
-
-    yield put({
-        type: 'posts.deletePostResolved',
-        response: response
-    });
+    try {
+        const response = yield call(ApiPosts.deletePost, action);
+        yield put({
+            type: 'posts.deletePostSuccess',
+            response: response
+        });
+    } catch (error) {
+        yield put({
+            type: 'posts.deletePostFailure',
+            error: error
+        });
+    }
 }
 
 export function* postsEditPostRedirect(action) {

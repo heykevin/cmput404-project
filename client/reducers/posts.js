@@ -57,17 +57,27 @@ class reducerClass
         return new_state;
     }
 
-    static deletePostResolved(new_state, action)
+    static deletePostSuccess(new_state, action)
     {
-        for (const index in action.response.data) {
-            if (action.response.data[index].id === action.response.id) {
-                action.response.data.splice(index, 1);
-                break;
-            }
+        new_state.modal.list_delete = {
+            status: 1
         }
-        new_state.list = action.response.data;
-        new_state.resolved = true;
-        console.log("after deletion", new_state.list);
+        return new_state;
+    }
+
+    static deletePostFailure(new_state, action)
+    {
+        new_state.modal.list_delete = {
+            status: -1
+        }
+        return new_state;
+    }
+
+    static sendingDeleteRequest(new_state, action)
+    {
+        new_state.modal.list_delete = {
+            status: 0
+        }
         return new_state;
     }
 

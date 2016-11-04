@@ -58,6 +58,7 @@ export class PostForm extends React.Component {
             <div className="post-editor">
                 <Notifications/>
                 <div className={this.props.redirect ? "hide-yall-kids-hide-yall-wife" : "invisible"}>
+                    <i className="fa fa-spinner fa-spin"></i>
                 </div>
                 <Nav bsStyle="pills" onSelect={this.handleSelect}>
                     <NavItem className="nav-item float-right" eventKey={false}>

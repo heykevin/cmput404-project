@@ -25,17 +25,21 @@ export class PostListElement extends React.Component
                 break;
             }
         }
+
+        if (!post) {
+            return null;
+        }
         // render
         return (
                 <ListGroupItem data-id={post.id}>
                     <div className={this.props.canEdit ? "visible float-right buttons" : "invisible"}>
                         <Button bsSize="xsmall" data-id={post.id}
                             onClick={this.redirectToEditor}>
-                            Edit <Glyphicon glyph="edit"/>
+                            Edit <Glyphicon data-id={post.id} glyph="edit"/>
                         </Button>
                         <Button bsSize="xsmall"  data-id={post.id} data-title={post.title}
                             onClick={this.modalDeleteShow}>
-                            Delete <Glyphicon glyph="remove-circle"/>
+                            Delete <Glyphicon data-id={post.id} data-title={post.title} glyph="remove-circle"/>
                         </Button>
                     </div>
                     <a href={href} className="post-body">
