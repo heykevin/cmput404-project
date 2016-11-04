@@ -53,7 +53,6 @@ export class GithubStream extends React.Component
 
         if (this.props.events.length && this.props.user) {
             const user = this.props.user;
-            console.log(user.avatar_url);
             return (
                 <div>
                     <div className="gha-header">
@@ -77,15 +76,25 @@ export class GithubStream extends React.Component
                     </ListGroup>
                 </div>
             );
+        } else if (!this.props.events.length && this.props.resolved) {
+            return (    <div className="gha-header">
+                            <div className="gha-github-icon"><span className="octicon octicon-mark-github"></span></div>
+                                <div className="git-warning">
+                                    <span>(눈‸눈) Hmm...Looks like someone ate your recent Github activities. So...go commit some stuff, like right now?</span>
+                                </div>
+                        </div>
+                    );
         } else if (!this.props.resolved) {
             // show the loading state
             return (<ProgressBar active now={100}/>);
         } else {
-            return (
-                <div className="no-posts">
-                    Oops! Something went wrong with github activity.
-                </div>
-            );
+            return (    <div className="gha-header">
+                            <div className="gha-github-icon"><span className="octicon octicon-mark-github"></span></div>
+                                <div className="git-warning">
+                                    <span>ლ(´•д• ̀ლ Sorry! Something's up with Github!</span>
+                                </div>
+                        </div>
+                    );
         }
     }
 

@@ -11,10 +11,6 @@ export default class ApiGit {
             method: 'GET'
         }).then((response) => {
             return Utils.handleErrors(response);
-        }).then((response) => {
-            return {
-                response
-			};
         });
     }
 
@@ -24,10 +20,6 @@ export default class ApiGit {
             method: 'GET'
         }).then((response) => {
             return Utils.handleErrors(response);
-        }).then((response) => {
-            return {
-                response
-            };
         });
     }
 }

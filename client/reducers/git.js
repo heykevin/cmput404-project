@@ -10,7 +10,8 @@ export default function auth(state = {}, action) {
 
 class reducerClass {
     static getSuccess(new_state, action) {
-		new_state.events = action.response.response;
+		new_state.events = action.response;
+        new_state.resolved = true;
         return new_state;
 	}
 
@@ -21,13 +22,12 @@ class reducerClass {
     }
 
     static getUserSuccess(new_state, action) {
-        new_state.user = action.response.response;
+        new_state.user = action.response;
         return new_state;
     }
 
     static getUserFailure(new_state, action) {
-        new_state.response = action.response.response;
-        new_state.resolved = true;
+        new_state.response = action.response;
         return new_state;
     }
 }

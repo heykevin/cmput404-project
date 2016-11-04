@@ -197,8 +197,6 @@ export class GithubStreamEvent extends React.Component
 		}
 
 		icon = "octicon octicon-" + icon;
-		console.log(icon);
-		console.dir(gitEvent);
 		switch (data.type) {
 			case "CommitCommentEvent":
 				return (

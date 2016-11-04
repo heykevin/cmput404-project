@@ -76,6 +76,11 @@
                 display: block;
             }
         }
+
+        .git-warning {
+            margin-top: 1em;
+            padding-left: 15%;
+        }
     }
 
     .posts-stream {
@@ -668,19 +673,20 @@ span.gha-time {
     }
 }
 
-.page-profile{
+.page-profile {
     background-color: white;
     color: #84b3ff;
     text-align: center;
     border: solid;
     border-color: #344f7a;
 
-    Button{
+    Button {
         color: red;
         align-items: center;
     }
 
-    h1,h3{
+    h1,
+    h3 {
         text-align: center;
         color: #84b3ff;
         background-color: #344f7a;
