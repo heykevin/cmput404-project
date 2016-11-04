@@ -8,7 +8,7 @@ router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 
 # adding router for public post
-router.register(r'posts', views.PostView)
+# router.register(r'posts', views.PostView)
 
 urlpatterns = [
     # Examples:
@@ -17,7 +17,7 @@ urlpatterns = [
     
     # Specific post
     url(r'^', include(router.urls)),   
-    # url(r'^posts/$', views.PostView.as_view()),
+    url(r'^posts/$', views.PostView.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/$', views.PostIDView.as_view()),
 

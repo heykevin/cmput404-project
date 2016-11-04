@@ -221,7 +221,7 @@ class AuthorProfileUpdateView(APIView):
         serializer = AuthorSerializer(authorObj)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class PostView(viewsets.ModelViewSet):
+class PostView(generics.ListCreateAPIView):
     '''
     A viewset for service/posts/
     public posts are shown by get_queryset as default
@@ -241,7 +241,7 @@ class PostView(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     pagination_class = PostsResultsSetPagination
     authentication_classes = (BasicAuthentication, )
-    permission_classes = (IsAuthorOrReadOnly, )
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         return Post.objects.all().filter(visibility="PUBLIC")
@@ -268,9 +268,11 @@ class PostView(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class PostIDView(APIView):
+class PostIDView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (BasicAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthorOrReadOnly, )
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
     '''
     APIView for service/posts/<post_id>/    
 
