@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
 import {Button, Glyphicon, ListGroupItem} from 'react-bootstrap';
+import ReactMarkdown from 'react-markdown';
 
 import PostDelete from './PostDelete.jsx';
 export class PostListElement extends React.Component
@@ -16,19 +17,26 @@ export class PostListElement extends React.Component
     render()
     {
         // get the post element data
-        let post, href, time;
-        for (const val of this.props.posts) {
-            if (val.id === this.props.id) {
-                post = val;
-                href = this.props.preview ? post.origin : "#";
-                time = new Date(post.publish_time).toString();
-                break;
+        let post, href, time, content;
+
+        if (this.props.view === "view" && ! (this.props.posts instanceof Array)) {
+            post = this.props.posts;
+        } else if (this.props.posts.length > 0){
+            for (const val of this.props.posts) {
+                if (val.id === this.props.id) {
+                    post = val;
+                    break;
+                }
             }
         }
 
         if (!post) {
             return null;
         }
+
+        time = new Date(post.publish_time).toString();
+        href = this.props.preview ? '/posts/' + post.id : "#";
+        content = post.content_type.toLowerCase() === "text/markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
         // render
         return (
                 <ListGroupItem data-id={post.id}>
@@ -53,7 +61,7 @@ export class PostListElement extends React.Component
                             {post.description}
                         </div>
                         <div className={this.props.preview ? "invisible" : "visible post-content"}>
-                            {post.content}
+                            {content}
                         </div>
                     </a>
                     <PostDelete/>

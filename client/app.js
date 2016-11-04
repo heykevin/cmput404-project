@@ -52,7 +52,7 @@ ReactDOM.render(
             <IndexRoute component={Home}/>
             <Route path="/login" component={Login}/>
             <Route path="/signup" component={Signup}/>
-            <Route path="/post/*" component={Post}/>
+            <Route path="/posts/*" component={Post}/>
             <Route onEnter={checkAuth}>
                 <Router path="/addpost" component={AddPost}/>
                 <Router path="/editpost" component={EditPost}/>

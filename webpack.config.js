@@ -34,6 +34,10 @@ module.exports = {
                 query: {
                     cacheDirectory: true
                 }
+            },
+            {
+                test: /\.json$/,
+                loader: 'json'
             }
         ],
     },

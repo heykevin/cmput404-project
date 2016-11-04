@@ -58,6 +58,22 @@ export function* postsDeletePost(action) {
     }
 }
 
+export function* postsUpdatePost(action) {
+    try {
+        const response = yield call(ApiPosts.updatePost, action);
+        yield put({
+            type: 'posts.savePostSuccess',
+            response: response,
+            postData: action.postData
+        });
+    } catch (error) {
+        yield put({
+            error: error,
+            postData: action.postData
+        });
+    }
+}
+
 export function* postsEditPostRedirect(action) {
     console.log("sage -- edit post");
     browserHistory.push("/editpost");

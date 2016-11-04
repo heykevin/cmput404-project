@@ -6,6 +6,20 @@ import {getApi} from '../config.js';
 
 export default class ApiPosts {
 
+    static composeData(action) {
+        let body = new FormData();
+        const host = getApi();
+        body.append('title', action.postData.title);
+        body.append('source', host);
+        body.append('description', action.postData.description);
+        body.append('content', action.postData.content);
+        body.append('category', action.postData.category);
+        body.append('visibility', action.postData.visibility);
+        body.append('content_type', action.postData.contentType);
+        console.log(body);
+        return body;
+    }
+
     static handleEmptyResponse(response) {
         if (!response.ok) {
             console.log("error", response);
@@ -26,7 +40,7 @@ export default class ApiPosts {
         if (action.method == "author") {
             query += action.authorId ? "author/" + action.authorId + "/posts/" : "author/posts/";
         } else {
-            query += action.postId ? "posts/" + action.postId : "posts/";
+            query += action.postId ? "posts/" + action.postId  + '/' : "posts/";
             //query += action.comments ? "/comments" : "";
         }
         console.log(query);
@@ -44,27 +58,30 @@ export default class ApiPosts {
 
     static savePost(action) {
         console.log("api - save post");
-        let body = new FormData();
         const host = getApi(),
             token = Utils.getToken();
 
-        body.append('title', action.postData.title);
-        body.append('description', action.postData.description);
-        body.append('content', action.postData.content);
-        body.append('category', action.postData.category);
-        body.append('visibility_choice', action.postData.visibility);
-        body.append('content_type', action.postData.contentType);
-
-        // TODO: remove these two once backend API is able to generate these and not requiring these
-        body.append('source', `${host}`);
-        body.append('origin', `${host}`)
-        console.log('api savepost body ', body);
         return fetch(`${host}posts/`, {
             method: 'POST',
             headers: {
                 'Authorization': `Basic ${token}`
             },
-            body: body
+            body: ApiPosts.composeData(action)
+        }).then((response) => {
+            return Utils.handleErrors(response);
+        });
+    }
+
+    static updatePost(action) {
+        const host = getApi(),
+            token = Utils.getToken();
+
+        return fetch(`${host}posts/` + action.postData.id + '/', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Basic ${token}`
+            },
+            body: ApiPosts.composeData(action)
         }).then((response) => {
             return Utils.handleErrors(response);
         });

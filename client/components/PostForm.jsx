@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {MarkdownEditor, MarkdownEditorContentStore} from 'react-markdown-editor';
 import {Form, FormGroup, FormControl, ControlLabel, Button, Nav, NavItem, ProgressBar} from 'react-bootstrap';
-import Notifications, {notify} from 'react-notify-toast';
+import {notify} from 'react-notify-toast';
 
 import Utils from '../utils/utils.js';
 import {getApi} from '../config.js';
@@ -19,11 +19,17 @@ export class PostForm extends React.Component {
             content: "",
             visibility: "PUBLIC",
             disableButton: true,
-            isMarkdownContent: true,
+            content_type: "text/markdown",
             edited: false,
             editorModeOverride: false,
             category: ""
         };
+
+        if (this.props.isEditMode && this.props.post) {
+            this.state = this.props.post;
+        } else if (this.props.isEditMode && !this.props.post) {
+            Utils.redirect('/myposts');
+        }
 
         this.getEditorMode = this.getEditorMode.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
@@ -38,25 +44,26 @@ export class PostForm extends React.Component {
 
     render()
     {
-        let givenPost;
+        let givenPost, isNewPost;
         if (this.props.response || this.props.error) {
-            givenPost = this.props.savePost;
+            givenPost = this.props.savedPost;
         } else {
             givenPost = this.props.post || {};
         }
 
         if (this.props.redirect && !this.props.error) {
-            notify.show("Your post has been saved! You'll be redirected to 'My posts' after 3 seconds.", "success");
-            setTimeout(function() {
-                Utils.redirect(`${host}myposts`);
-            }, 3000);
-        } else if (this.props.error) {
-            notify.show("Sorry, we have problem saving your post! Please try again later.", "error");
+            notify.show("Post Saved! Redirecting you...", "success", 3000);
+            const url = this.props.response && this.props.response.id ? '/posts/' + this.props.response.id : '/dashboard';
+            setTimeout(() => {
+                Utils.redirect(url);
+                this.props.dispatch({type: "posts.clearEditorRelatedState"});
+            }, 5000);
+        } else if (this.props.error){
+            notify.show("Failed to save! Please try again later. " + this.props.error, "error", 3000);
         }
 
         return (
             <div className="post-editor">
-                <Notifications/>
                 <div className={this.props.redirect ? "hide-yall-kids-hide-yall-wife" : "invisible"}>
                     <i className="fa fa-spinner fa-spin"></i>
                 </div>
@@ -75,6 +82,7 @@ export class PostForm extends React.Component {
                             type="text"
                             label="Title*"
                             placeholder="Title"
+                            maxLength="50"
                             defaultValue={this.props.post.title}
                             required={true}
                             onChange={this.onTitleChange}/>
@@ -85,6 +93,7 @@ export class PostForm extends React.Component {
                             type="text"
                             label="Category*"
                             placeholder="Category"
+                            maxLength="20"
                             defaultValue={this.props.post.category}
                             required={true}
                             onChange={this.onCategoryChange}/>
@@ -95,6 +104,7 @@ export class PostForm extends React.Component {
                             type="text"
                             label="Description*"
                             placeholder="Description"
+                            maxLength="50"
                             defaultValue={this.props.post.description}
                             required={true}
                             onChange={this.onDescriptionChange}/>
@@ -114,8 +124,7 @@ export class PostForm extends React.Component {
                         <ControlLabel>This post will be made visible to
                         </ControlLabel>
                         <FormControl id="visibility" componentClass="select"
-                            placeholder="visibility"
-                            onChange={this.onVisibilityChange}>
+                            placeholder="visibility">
                             <option value="PUBLIC">Public</option>
                             <option value="FOAF">Friends of a friend</option>
                             <option value="FRIENDS">Friends only</option>
@@ -143,33 +152,42 @@ export class PostForm extends React.Component {
             title: this.state.title,
             description: this.state.description,
             content: this.state.content,
-            visibility: this.state.visibility,
-            contentType: this.state.isMarkdownEditor ? "text/markdown" : "text/plain",
+            visibility: document.getElementById("visibility").value, // this is faster -- hackin' my way lol
+            contentType: this.state.isMarkdownContent ? "text/markdown" : "text/plain",
             category: this.state.category
         };
         event.preventDefault();
-        this.props.dispatch({type: "postsSavePost", postData: data});
+        console.log(data.visibility);
+        if (this.props.isEditMode) {
+            console.log("here", this.state.id);
+            data.id = this.state.id;
+            this.props.dispatch({type: "postsUpdatePost", postData: data});
+        } else {
+            this.props.dispatch({type: "postsSavePost", postData: data});
+        }
     }
 
     handleSelect(isMarkdownContent)
     {
         this.setState({
             editorModeOverride: true,
-            isMarkdownContent: isMarkdownContent
-        })
+            content_type: isMarkdownContent ? "text/markdown" : "text/plain",
+            edited: true
+        });
     }
 
     onVisibilityChange(event)
     {
         this.setState({
-            visibility: event.target.value
+            visibility: event.target.value,
+            edited: true
         });
     }
 
     onChange(content)
     {
         this.setState({
-            content: content,
+            content: this.state.content_type === "text/markdown" ? content : content.target.value,
             edited: true,
             disableButton: this.isButtonDisabled()
         });
@@ -203,7 +221,7 @@ export class PostForm extends React.Component {
     }
 
     getEditorMode() {
-        return this.state.editorModeOverride ? this.state.isMarkdownContent : this.props.post.isMarkdownContent;
+        return this.state.editorModeOverride ? this.state.content_type === "text/markdown" : (this.props.post.content_type && this.props.post.content_type ? this.props.post.content_type ==="text/markdown" : true);
     }
 
     isButtonDisabled() {
@@ -222,7 +240,8 @@ function mapStateToProps(state, props) {
         response: state.posts.response,
         redirect: state.posts.redirect,
         error: state.posts.error,
-        savedPost: state.posts.postData
+        savedPost: state.posts.postData,
+        post: props.post
     }
 }
 

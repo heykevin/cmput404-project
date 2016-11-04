@@ -1,6 +1,6 @@
 #app {
     background: #337ab7;
-    height: 100vh;
+    height: 100%;
     width: 100%;
     min-width: 1200px;
     min-height: 1000px;
@@ -11,6 +11,7 @@
     padding: 2em;
     border-radius: 10px;
     color: white;
+    margin: 1em;
 }
 
 .visible {
@@ -120,9 +121,9 @@
         padding-top: 2em;
         padding-bottom: 2em;
         text-align: center;
-        width: 30%;
         margin: 5em auto;
         border-radius: 13px;
+        width: 65% !important;
     }
 
     .post-group {

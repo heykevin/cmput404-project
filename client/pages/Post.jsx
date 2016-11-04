@@ -24,25 +24,21 @@ export class Post extends React.Component
                 ? true
                 : false;
             this.props.dispatch({type: 'postsGetPosts', method: "post", postId: id, comments: comments});
-        } else {
-
-            // needs to be improved once we find a way to properly record log in session data
-            let redirectUrl = sessionStorage.loggedIn ? "/dashboard" : "/";
-            browserHistory.push(redirectUrl);
         }
     }
 
     render()
     {
-        if (this.props.posts.length === 1) {
-            let post = this.props.posts[0];
+        if (this.props.post && this.props.resolved) {
             return (
-                <div className="list-group">
-                    <PostListElement key={post.id} id={post.id} view="view"/>
+                <div className="list-group post-group">
+                    <PostListElement key={this.props.post.id} id={this.props.post.id} view="view"/>
                 </div>
             );
-        } else {
+        } else if (!this.props.resolved) {
             return (<ProgressBar active now={100}/>);
+        } else {
+            return (<div>{this.props.error}</div>);
         }
     }
 }
@@ -50,7 +46,9 @@ export class Post extends React.Component
 // export the connected class
 function mapStateToProps(state) {
     return {
-        posts: state.posts.list || []
+        post: state.posts.list || [],
+        resolved: state.posts.resolved || false,
+        error: state.posts.error || "503"
     };
 }
 export default connect(mapStateToProps)(Post);

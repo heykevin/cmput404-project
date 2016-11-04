@@ -101,4 +101,14 @@ class reducerClass
         new_state.resolved = false;
         return new_state;
     }
+
+    static clearEditorRelatedState (new_state, action)
+    {
+        new_state.redirect = false;
+        new_state.id = undefined;
+        new_state.response = undefined;
+        new_state.postData = undefined;
+        new_state.resolved = undefined;
+        return new_state;
+    }
 }

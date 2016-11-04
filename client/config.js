@@ -1,4 +1,4 @@
-const HOST = "http://192.168.33.10:8000/"
+const HOST = "http://localhost:8000/"
 const API = "https://api-bloggyblog404.herokuapp.com/"
 
 
