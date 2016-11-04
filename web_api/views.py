@@ -11,7 +11,7 @@ from rest_framework import viewsets, generics
 from rest_framework import status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
-from .permissions import IsAuthorOrReadOnly, IsAFriend
+from .permissions import IsAuthorOrReadOnly, IsPostAuthorOrReadOnly
 from .models import Author, Post
 from serializers import *
 import json
@@ -270,7 +270,7 @@ class PostView(generics.ListCreateAPIView):
 
 class PostIDView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (BasicAuthentication, )
-    permission_classes = (IsAuthorOrReadOnly, )
+    permission_classes = (IsPostAuthorOrReadOnly, )
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     '''
