@@ -22,6 +22,7 @@ visit localhost:8080 when bundle is built
 Make sure you do not have any local commits or unstaged changes before deploying!
 Simply run
 > ./deploy.sh  
+
 And the script should take care of the rest
 Hosted at:
 www.api-bloggyblog404.herokuapp.com
