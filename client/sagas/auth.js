@@ -68,7 +68,6 @@ export function* authEdit(action) {
             type: 'auth.updateSuccess',
             response: response.author,
         });
-        setAuthAndRedirect(response.token, response.author);
     } catch (error) {
        console.log("Saga caught signup error", error);
        yield put({

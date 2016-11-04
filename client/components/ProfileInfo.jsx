@@ -10,8 +10,6 @@ import {
     Panel
 } from 'react-bootstrap';
 
-const author = Utils.getAuthor();
-
 export class ProfileInfo extends React.Component {
 
     render() {
@@ -24,8 +22,17 @@ export class ProfileInfo extends React.Component {
                 <Panel header="Email">{this.props.author.email}</Panel>
                 <Panel header="Github username">{this.props.author.github_username}</Panel>
                 <Panel header="Bios">{this.props.author.bio}</Panel>
-                <Button bsStyle="primary" href="/settings">Edit your profile</Button>
             </div>
         );
     }
 }
+
+// export the connected class
+function mapStateToProps(state, props) {
+
+    // pass the state defaultValues
+    return {
+        author: state.author || Utils.getAuthor(),
+    };
+}
+export default connect(mapStateToProps)(ProfileInfo);

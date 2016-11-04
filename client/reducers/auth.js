@@ -1,7 +1,7 @@
 import {
     reducerCall
 } from './index';
-
+import Utils from '../utils/utils.js';
 
 export default function auth(state = {}, action) {
     return reducerCall(state, action, reducerClass);
@@ -49,26 +49,20 @@ class reducerClass {
 
     static updateSuccess(new_state, action) {
 
-        // new_state.first_name = action.response.first_name;
-        // new_state.last_name = action.response.last_name;
-        // new_state.email = action.response.email;
-        // new_state.github_username = action.response.github_username;
-        // new_state.bio =action.response.bio;
-        // new_state.refresh = true;
-        new_state.author= action.response;
+        new_state.author = action.response;
         Utils.setAuthor(action.response);
-        new_state.showForm=false;
+        new_state.showForm = false;
 
         console.dir(action);
         console.dir(new_state);
         return new_state;
     }
 
-static showForm(new_state, action){
-    new_state.showForm = true;
-    new_state.author = action.author;
-    return new_state;
-}
+    static showForm(new_state, action) {
+        new_state.showForm = true;
+        new_state.author = action.author;
+        return new_state;
+    }
 
     static updateFailure(new_state, action) {
         console.log('error', action);
