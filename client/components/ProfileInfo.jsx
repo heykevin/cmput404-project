@@ -3,27 +3,25 @@ import Utils from '../utils/utils.js';
 import {
     Button,
     ListGroup,
-    
+    ListGroupItem,
+    Panel
 } from 'react-bootstrap';
 
-const listgroupInstance = (
-    <ListGroup>
-        <ListGroupItem header="Display name">Some body text</ListGroupItem>
-        <ListGroupItem header="First Name" href="#">Linked item</ListGroupItem>
-        <ListGroupItem header="Last Name" bsStyle="danger">Danger styling</ListGroupItem>
-        <ListGroupItem header="Email" bsStyle="danger">Danger styling</ListGroupItem>
-        <ListGroupItem header="Github username" bsStyle="danger">Danger styling</ListGroupItem>
-        <ListGroupItem header="Bio" bsStyle="danger">Danger styling</ListGroupItem>
-    </ListGroup>
-);
+const author = Utils.getAuthor();
 
-export default class Profile extends React.Component {
+export default class ProfileInfo extends React.Component {
 
     render() {
         return(
-            <div>
+            <div className = "ProfileDisplay">
+                <h1>Your Profile</h1>
+                <Panel header="Display name">{author.displayName}</Panel>
+                <Panel header="First Name">{author.first_name}</Panel>
+                <Panel header="Last name">{author.last_name}</Panel>
+                <Panel header="Email">{author.email}</Panel>
+                <Panel header="Github username">{author.github_username}</Panel>
+                <Panel header="Bios">{author.bio}</Panel>
                 <Button bsStyle="primary" href="/settings">Edit your profile</Button>
-                <listgroupInstance/>
             </div>
         );
     }

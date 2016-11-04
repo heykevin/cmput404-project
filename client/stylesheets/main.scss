@@ -674,7 +674,24 @@ span.gha-time {
     }
 }
 
-
 .modal-backdrop.in {
     opacity: 0.09;
+}
+
+.ProfileDisplay{
+    h1{
+        color:white;
+    }
+    .panel{
+        border-color: #8bdbeb;
+    }
+    .panel-heading{
+        border-color: #8bdbeb;
+        background-color:green;
+        color:#1a53ff;
+    }
+    .panel-body{
+        border-width: 10px;
+        border-color: #8bdbeb;
+    }
 }
