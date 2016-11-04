@@ -4,7 +4,6 @@ This is a temporary README for a group project of CMPUT404.
 
 ## Setting up
 ### Backend
-> cd c404WebProject  
 > virtualenv venv  
 > source venv/bin/activate  
 > pip install -r requirements.txt  
@@ -14,11 +13,18 @@ This is a temporary README for a group project of CMPUT404.
 Requires NodeJS 4.0.0 and above
 
 In the terminal run:
-> cd c404WebProject  
 > npm install  
 > npm start  
 
 visit localhost:8080 when bundle is built
+
+### Deploying
+Make sure you do not have any local commits or unstaged changes before deploying!
+Simply run
+> ./deploy.sh  
+And the script should take care of the rest
+Hosted at:
+www.api-bloggyblog404.herokuapp.com
 
 #### Authors
 `Alice Wu, Josh (Ji Hwan) Kim, Kevin Tang, Philip Lam, and Xuping Fang`
