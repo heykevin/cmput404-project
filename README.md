@@ -21,6 +21,7 @@ visit localhost:8080 when bundle is built
 ## Deploying
 Make sure you do not have any local commits or unstaged changes before deploying!
 Simply run
+> heroku login  
 > ./deploy.sh  
 
 And the script should take care of the rest
