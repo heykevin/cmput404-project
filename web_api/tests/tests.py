@@ -255,8 +255,8 @@ class PersonalAuthorStreamTestCase(APITestCase):
 	
 	response = self.client.get('/author/%s/posts/' % self.author1.id, {}, format='json')
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
-	# Post with index 0, 1
-	self.assertEqual(len(response.data['posts']), 2)
+	# Post with index 0, 1, 2
+	self.assertEqual(len(response.data['posts']), 3)
 	
 	
 	self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Joshua:coolcats'))
