@@ -2,7 +2,12 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {MarkdownEditor, MarkdownEditorContentStore} from 'react-markdown-editor';
 import {Form, FormGroup, FormControl, ControlLabel, Button, Nav, NavItem, ProgressBar} from 'react-bootstrap';
+import Notifications, {notify} from 'react-notify-toast';
 
+import Utils from '../utils/utils.js';
+import {getApi} from '../config.js';
+
+const host = getApi();
 export class PostForm extends React.Component {
 
     constructor(props)
@@ -33,12 +38,27 @@ export class PostForm extends React.Component {
 
     render()
     {
-		console.dir(this.props);
-        console.log('.post ' + this.props.post.title);
-        console.log('.post ' + this.props.post.description);
-        console.log('.post ' + this.props.post.content);
+        let givenPost;
+        if (this.props.response || this.props.error) {
+            givenPost = this.props.savePost;
+        } else {
+            givenPost = this.props.post || {};
+        }
+
+        if (this.props.redirect && !this.props.error) {
+            notify.show("Your post has been saved! You'll be redirected to 'My posts' after 3 seconds.", "success");
+            setTimeout(function() {
+                Utils.redirect(`${host}myposts`);
+            }, 3000);
+        } else if (this.props.error) {
+            notify.show("Sorry, we have problem saving your post! Please try again later.", "error");
+        }
+
         return (
             <div className="post-editor">
+                <Notifications/>
+                <div className={this.props.redirect ? "hide-yall-kids-hide-yall-wife" : "invisible"}>
+                </div>
                 <Nav bsStyle="pills" onSelect={this.handleSelect}>
                     <NavItem className="nav-item float-right" eventKey={false}>
                         SimpleText
@@ -123,16 +143,10 @@ export class PostForm extends React.Component {
             description: this.state.description,
             content: this.state.content,
             visibility: this.state.visibility,
-            content_type: this.state.isMarkdownEditor,
-            isMarkdownContent: this.state.isMarkdownContent,
+            contentType: this.state.isMarkdownEditor ? "text/markdown" : "text/plain",
             category: this.state.category
-            // author:
-            // categories:
-            // dateTime:
         };
-        console.log('post form data ' + data);
-        console.log('onSubmit title' + this.state.title);
-        console.dir(data);
+        event.preventDefault();
         this.props.dispatch({type: "postsSavePost", postData: data});
     }
 
@@ -167,9 +181,6 @@ export class PostForm extends React.Component {
             edited: true,
             disableButton: this.isButtonDisabled()
         });
-        console.log('this.state.title - ' + this.state.title);
-        console.log('this.props.title - ' + this.props.title);
-        console.log('this.props.post.title - ' + this.props.post.title);
     }
 
     onCategoryChange(event)
@@ -206,23 +217,12 @@ export class PostForm extends React.Component {
 // export the connected class
 function mapStateToProps(state, props) {
 
-    // set the form data
-    let post_data = {
-        title: state.title,
-        category: state.category,
-        description: state.description,
-        content: state.content,
-        visibility: state.visibility,
-        isMarkdownContent: state.isMarkdownContent,
-        edited: state.edited,
-        editorModeOverride: state.editorModeOverride
-    };
-
-
-    // pass the state values
     return {
-        post_data,
-    };
+        response: state.posts.response,
+        redirect: state.posts.redirect,
+        error: state.posts.error,
+        savedPost: state.posts.postData
+    }
 }
 
 export default connect(mapStateToProps)(PostForm);

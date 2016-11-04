@@ -76,7 +76,7 @@ export class UserList extends React.Component
                     <Notifications />
                 </div>
             );
-        } else if (!listResolved) {
+        } else if (!list || !listResolved) {
             // show the loading state
             return (<div>
                         <ProgressBar active now={100}/>

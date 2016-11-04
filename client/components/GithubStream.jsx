@@ -77,7 +77,7 @@ export class GithubStream extends React.Component
                     </ListGroup>
                 </div>
             );
-        } else if (this.state.unresolved) {
+        } else if (!this.props.resolved) {
             // show the loading state
             return (<ProgressBar active now={100}/>);
         } else {

@@ -21,17 +21,18 @@ class reducerClass
         return new_state;
     }
 
-    static savePostsResolved(new_state, aciton)
+    static savePostSuccess(new_state, action)
     {
         new_state.response = action.response;
         new_state.postData = action.postData;
+        new_state.redirect = true;
         return new_state;
     }
 
-    static savePostsFailure(new_state, aciton)
+    static savePostFailure(new_state, action)
     {
         new_state.error = action.error;
-        new_state.resolved = true;
+        new_state.postData = action.postData;
         return new_state;
     }
 

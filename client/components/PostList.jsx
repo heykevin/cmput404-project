@@ -11,8 +11,7 @@ export class PostList extends React.Component
     {
         super(props);
         this.state = {
-            posts: [],
-            unresolved: false
+            posts: []
         }
 
         // posts can be retrieve by either author/{AUTHOR_ID}/posts or posts
@@ -30,7 +29,7 @@ export class PostList extends React.Component
         let start_count = 0;
         // render
         if (this.props.posts.length) {
-            // show the list of users
+
             return (
                 <div>
                     <ListGroup className="post-group">
@@ -44,7 +43,7 @@ export class PostList extends React.Component
                     <Pagination className="users-pagination pull-right" bsSize="medium" maxButtons={10} first last next prev boundaryLinks items={pages} activePage={current_page} onSelect={this.changePage}/>
                 </div>
             );
-        } else if (this.state.unresolved) {
+        } else if (!this.props.resolved) {
             // show the loading state
             return (<ProgressBar active now={100}/>);
         } else {

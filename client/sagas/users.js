@@ -52,7 +52,6 @@ export function* usersFetchFriendsList(action) {
             friends.push(yield call(ApiUsers.getAuthorProfile, {authorId: friendId}));
         }
         Promise.all(friends).then(() => {
-            console.log("here?");
             action.dispatch({type: 'users.fetchFriendsSuccess', friends});
         });
     } catch (error) {

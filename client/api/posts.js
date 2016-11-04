@@ -12,9 +12,8 @@ export default class ApiPosts {
             host = getApi(),
             token = Utils.getToken();
 
-        let query = host,
+        let query = "",
             post = [];
-            console.log(host);
         // if the method is author, then it'll be /author/posts or author/{author_id}/posts
         if (action.method == "author") {
             query += action.authorId ? "author/" + action.authorId + "/posts/" : "author/posts/";
@@ -23,7 +22,7 @@ export default class ApiPosts {
             //query += action.comments ? "/comments" : "";
         }
         console.log(query);
-        return fetch(query, {
+        return fetch(`${host}` + query, {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`
@@ -37,25 +36,21 @@ export default class ApiPosts {
 
     static savePost(action) {
         console.log("api - save post");
-        // add Authorization
-        // refer to auth.js
-        let response = []
         let body = new FormData();
         const host = getApi(),
             token = Utils.getToken();
 
-        //id
         body.append('title', action.postData.title);
-        body.append('source', host);
-        body.append('origin', host);
         body.append('description', action.postData.description);
         body.append('content', action.postData.content);
         body.append('category', action.postData.category);
         body.append('visibility_choice', action.postData.visibility);
-        body.append('content_type', 'text/markdown');
+        body.append('content_type', action.postData.contentType);
 
-        // TODO: Create config.js with paths and urls
-        console.log('api savepost body ' + body);
+        // TODO: remove these two once backend API is able to generate these and not requiring these
+        body.append('source', `${host}`);
+        body.append('origin', `${host}`)
+        console.log('api savepost body ', body);
         return fetch(`${host}posts/`, {
             method: 'POST',
             headers: {
@@ -64,17 +59,8 @@ export default class ApiPosts {
             body: body
         }).then((response) => {
             return Utils.handleErrors(response);
-        }).then((response) => {
-            return {
-                response: response,
-                token: token
-            };
         });
     }
-    //     return {
-    //         status: 201
-    //     }
-    // }
 
     static deletePost(action) {
         console.log("api - delete post id: " + action.id);

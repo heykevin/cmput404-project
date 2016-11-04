@@ -2,17 +2,20 @@
  * API Users static class
  */
 import Utils from '../utils/utils.js';
+import {getApi} from '../config.js';
 
 export default class ApiUsers {
 
     static getAuthorProfile(action) {
-        return fetch('http://localhost:8000/author/' + action.authorId).then((response) => {
+        const host = getApi();
+        return fetch(`${host}author/` + action.authorId).then((response) => {
             return Utils.handleErrors(response);
         });
     }
 
     static getUsers(action) {
-        return fetch('http://localhost:8000/author/').then((response) => {
+        const host = getApi();
+        return fetch(`${host}author/`).then((response) => {
             return Utils.handleErrors(response);
         }).then((list) => {
             return list;
@@ -20,7 +23,8 @@ export default class ApiUsers {
     }
 
     static getFriendsIds(action) {
-        return fetch('http://localhost:8000/friends/' + action.authorId).then((response) => {
+        const host = getApi();
+        return fetch(`${host}friends/` + action.authorId).then((response) => {
             return Utils.handleErrors(response);
         }).then((list) => {
             return list.authors;
@@ -28,7 +32,8 @@ export default class ApiUsers {
     }
 
     static postUnfriendRequest(action) {
-        return fetch('http://localhost:8000/friendrequest/', {
+        const host = getApi();
+        return fetch(`${host}friendrequest/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -44,12 +49,13 @@ export default class ApiUsers {
     }
 
     static postFriendRequest(action) {
+        const host = getApi();
         const body = JSON.stringify({
                 query: "friendrequest",
                 author: action.actor,
                 friend: action.target
             });
-        return fetch('http://localhost:8000/friendrequest/', {
+        return fetch(`${host}friendrequest/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -61,6 +67,7 @@ export default class ApiUsers {
     }
 
     static postFriendRequestResponse(action) {
+        const host = getApi();
         const body = JSON.stringify({
                 query: "friendresponse",
                 author: action.actor,
@@ -68,7 +75,7 @@ export default class ApiUsers {
                 accepted: action.accepted
         });
         console.log(body);
-        return fetch('http://localhost:8000/friendrequest/', {
+        return fetch(`${host}friendrequest/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
