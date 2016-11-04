@@ -9,7 +9,7 @@ This is a temporary README for a group project of CMPUT404.
 > pip install -r requirements.txt  
 > python manage.py runserver
 
-### Backend
+### Frontend
 Requires NodeJS 4.0.0 and above
 
 In the terminal run:
@@ -18,7 +18,7 @@ In the terminal run:
 
 visit localhost:8080 when bundle is built
 
-### Deploying
+## Deploying
 Make sure you do not have any local commits or unstaged changes before deploying!
 Simply run
 > ./deploy.sh  
