@@ -47,7 +47,6 @@ export class PostForm extends React.Component {
     {
         let givenPost, isNewPost;
         console.log('this.props.response ' + this.props.response);
-        let givenPost;
         if (this.props.response || this.props.error) {
             givenPost = this.props.savedPost;
         } else {
@@ -168,8 +167,6 @@ export class PostForm extends React.Component {
         } else {
             this.props.dispatch({type: "postsSavePost", postData: data});
         }
-            this.props.dispatch({type: "postsSavePost", postData: data});
-            this.props.dispatch({type: "postsUpdatePost", postData: data});
     }
 
     handleSelect(isMarkdownContent)
@@ -189,7 +186,7 @@ export class PostForm extends React.Component {
         });
     }
 
-    onChange(event)
+    onChange(content)
     {
 
         this.setState({
@@ -236,8 +233,7 @@ export class PostForm extends React.Component {
         if (this.props.isEditMode && !this.state.edited) {
             return false;
         } else {
-            return false;
-            //return !(this.state.title.length > 0 && this.state.description.length > 0 && this.state.content.length > 0 && this.state.category.length > 0);
+            return !(this.state.title.length > 0 && this.state.description.length > 0 && this.state.content.length > 0 && this.state.category.length > 0);
         }
     }
 }
