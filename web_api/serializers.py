@@ -28,12 +28,13 @@ class SubAuthorSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = SubAuthorSerializer(many=False, read_only=True)
-
+    print("SERIALIZER")
     class Meta:
         model = Comment
         fields = ('id', 'content', 'author', 'publish_time', 'post')
 
     def create(self, validated_data):
+        print ("CREATING COMMENT")
         postId = self.context['request'].parser_context.get('kwargs').get('pk')
         post = Post.objects.get(id=postId)
         author = Author.objects.get(user=self.context.get('request').user)

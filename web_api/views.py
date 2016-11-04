@@ -121,7 +121,7 @@ class PersonalAuthorStream(generics.ListAPIView):
         publicPosts = authorPosts.all().filter(visibility="PUBLIC")
         privatePosts = authorPosts.all().filter(visibility="PRIVATE").filter(author__user=user)
         querySet = publicPosts | privatePosts
-        if (author.friends.all().get(user=user)):
+        if (Author.objects.get(user=user) in author.friends.all().filter(user=user)):
             friendQuerySet = authorPosts.filter(visibility="FRIENDS")
             serverQuerySet = authorPosts.filter(visibility="SERVERONLY")
             querySet = querySet | friendQuerySet | serverQuerySet
@@ -329,18 +329,27 @@ class CommentView(generics.ListCreateAPIView):
         'id': UUID
         'content': string
     '''
-    queryset = Post.objects.all()
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     authentication_classes = (BasicAuthentication, )
     permission_classes = (IsAuthenticated, )
     pagination_class = CommentResultsSetPagination
 
+    def get_queryset(self):
+        postID = self.request.parser_context.get('kwargs').get('pk')
+        queryset = Comment.objects.all().filter(post=postID)
+        return queryset
+
     def post(self, request, pk):
-        serializer = CommentSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        print ("CALLING POST")
+        post = Post.objects.get(id=pk)
+        author = Author.objects.get(user=request.user)
+        try:
+            comment = Comment.objects.create(author=author,post=post, **request.data)      
+        except:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class FriendsWith(APIView):
     """
