@@ -343,7 +343,6 @@ class CommentView(generics.ListCreateAPIView):
         return queryset
 
     def post(self, request, pk):
-        print ("CALLING POST")
         post = Post.objects.get(id=pk)
         author = Author.objects.get(user=request.user)
         try:

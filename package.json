@@ -29,10 +29,11 @@
   "license": "",
   "dependencies": {
     "connect": "3.5.0",
-    "react-markdown-editor": "0.4.0",
+    "express": "^4.14.0",
     "react": "^15.3.2",
     "react-bootstrap": "^0.30.3",
     "react-dom": "^15.3.2",
+    "react-markdown-editor": "0.4.0",
     "react-notify-toast ": "^0.1.3",
     "react-redux": "^4.4.5",
     "react-router": "^2.8.1",
