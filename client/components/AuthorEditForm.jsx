@@ -127,7 +127,7 @@ export class AuthorEditForm extends React.Component {
 
 function backToProfile(){
     console.log("return to profile")
-    window.location.assign("http://localhost:8080/profile")
+    window.location.reload()
 }
 
 // export the connected class
