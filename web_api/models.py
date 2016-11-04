@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .utils import ListField
+# from .utils import ListField
 import uuid
 
 # Create your models here.
@@ -39,7 +39,7 @@ class Post(models.Model):
     origin = models.URLField(editable=False)
     description = models.CharField(max_length = 50)
     content = models.TextField()
-    category = ListField(blank=True, default=[])
+    category = models.CharField(blank=True, null=True, default='', max_length = 50)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     text_plain="text/plain"
     text_markdown="text/markdown"
