@@ -10,7 +10,8 @@ export function* postsGetPosts(action) {
         // dispatch the success action with the posts attached
         yield put({
             type: 'posts.getPostsSuccess',
-            posts: posts,
+            posts: posts.posts,
+            count: posts.count ? posts.count : 1
         });
     } catch (error) {
         yield put({

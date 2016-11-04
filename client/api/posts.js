@@ -34,7 +34,7 @@ export default class ApiPosts {
             host = getApi(),
             token = Utils.getToken();
 
-        let query = "",
+        let query = `${host}`,
             post = [];
         // if the method is author, then it'll be /author/posts or author/{author_id}/posts
         if (action.method == "author") {
@@ -43,8 +43,13 @@ export default class ApiPosts {
             query += action.postId ? "posts/" + action.postId  + '/' : "posts/";
             //query += action.comments ? "/comments" : "";
         }
+
+        if (action.page) {
+            query += "?page=" + action.page;
+        }
+
         console.log(query);
-        return fetch(`${host}` + query, {
+        return fetch(query, {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`
@@ -52,7 +57,7 @@ export default class ApiPosts {
         }).then((res) => {
             return Utils.handleErrors(res);
         }).then((response) => {
-            return response.posts;
+            return {posts: response.posts, count: response.count};
         });
     }
 

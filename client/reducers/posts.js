@@ -10,6 +10,7 @@ class reducerClass
     static getPostsSuccess(new_state, action)
     {
         new_state.list = action.posts;
+        new_state.count = action.count;
         new_state.resolved = true;
         return new_state;
     }
@@ -109,6 +110,13 @@ class reducerClass
         new_state.response = undefined;
         new_state.postData = undefined;
         new_state.resolved = undefined;
+        return new_state;
+    }
+
+    static reloadList(new_state, action)
+    {
+        new_state.resolved = false;
+        new_state.list = [];
         return new_state;
     }
 }
