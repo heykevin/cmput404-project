@@ -8,7 +8,7 @@ router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 
 # adding router for public post
-# router.register(r'posts', views.PostView)
+router.register(r'posts', views.PostView)
 
 urlpatterns = [
     # Examples:
