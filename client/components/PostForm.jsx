@@ -155,7 +155,7 @@ export class PostForm extends React.Component {
             description: this.state.description,
             content: this.state.content,
             visibility: document.getElementById("visibility").value, // this is faster -- hackin' my way lol
-            contentType: this.state.isMarkdownContent ? "text/markdown" : "text/plain",
+            contentType: this.state.content_type,
             category: this.state.category
         };
         event.preventDefault();
