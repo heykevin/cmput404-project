@@ -16,7 +16,7 @@ export class ProfileInfo extends React.Component {
         return(
             <div className = "ProfileDisplay">
                 <h1>Your Profile</h1>
-                <Panel header="Display name">{this.props.author.first_name}</Panel>
+                <Panel header="Display name">{this.props.author.displayName}</Panel>
                 <Panel header="First Name">{this.props.author.first_name}</Panel>
                 <Panel header="Last name">{this.props.author.last_name}</Panel>
                 <Panel header="Email">{this.props.author.email}</Panel>

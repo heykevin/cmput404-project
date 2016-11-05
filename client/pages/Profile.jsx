@@ -30,7 +30,9 @@ export class Profile extends React.Component {
                         : "invisible"}/>
 
                 </div>
-                <Button bsStyle="primary" onClick={this.onClick}>Edit your profile</Button>
+                <Button className={this.props.showForm
+                    ? "invisible"
+                    : "visible"} bsStyle="primary" onClick={this.onClick}>Edit your profile</Button>
             </div>
         );
     }
