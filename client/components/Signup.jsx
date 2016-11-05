@@ -19,7 +19,7 @@ export class Signup extends React.Component {
         return (
             <div className="auth-form">
                 <PageHeader> σ ﾟ∀ ﾟ) ﾟ∀ﾟ)σ Sign Up </PageHeader>
-                {!this.state.status && this.state.attempt ? "Username/Password Invalid" : null}
+                <div className={(!this.props.status && this.props.signupAttempt ? "elementToFadeInAndOut" : "good-for-nothing-placeholder") + " auth-error"}>Username and/or password is invalid. Go figure.</div>
                 <Form horizontal onSubmit={this.props.handleSubmit(this.formSubmit)}>
                     <Col smOffset={2} sm={10}>
                         <Field name="username" component={AuthorsignupName} />
@@ -55,7 +55,7 @@ class AuthorsignupName extends React.Component {
             <FormGroup>
                 <Col sm={2}>Username</Col>
                 <InputGroup>
-                    <FormControl {...this.props.input} id="username" type="text" />
+                    <FormControl {...this.props.input} required={true} id="username" type="text" />
                 </InputGroup>
             </FormGroup>
         );
@@ -68,7 +68,7 @@ class AuthorsignupPass extends React.Component {
             <FormGroup>
                 <Col sm={2}>Password</Col>
                     <InputGroup>
-                        <FormControl {...this.props.input} id="password" type="password" placeholder="password"/>
+                        <FormControl {...this.props.input} required={true} id="password" type="password" placeholder="password"/>
                     </InputGroup>
             </FormGroup>
         )
@@ -90,9 +90,9 @@ const signupForm = reduxForm({
 // export the connected class
 function mapStateToProps(state) {
     return {
-        status: state.signup,
-        attempt: state.attempt,
-        error: state.error
+        status: state.auth.signup,
+        signupAttempt: state.auth.signupAttempt,
+        error: state.auth.error
     }
 }
 

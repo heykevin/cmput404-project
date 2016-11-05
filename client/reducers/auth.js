@@ -14,7 +14,7 @@ class reducerClass {
         // console.dir(new_state);
         new_state = action.response.author;
         new_state.login = true;
-        new_state.attempt = true;
+        new_state.loginAttempt = true;
         return new_state;
     }
 
@@ -23,7 +23,7 @@ class reducerClass {
         // new_state = action.author;
         console.log('error', action);
         new_state.login = false;
-        new_state.attempt = true;
+        new_state.loginAttempt = true;
         new_state.error = action;
         console.dir(new_state);
         return new_state;
@@ -43,6 +43,7 @@ class reducerClass {
         console.log('error', action);
         new_state.login = false;
         new_state.error = action;
+        new_state.signupAttempt = true;
         console.dir(new_state);
         return new_state;
     }
