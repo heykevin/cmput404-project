@@ -68,6 +68,7 @@ class reducerClass {
 
     static fetchAuthorProfileSuccess(new_state, action) {
         new_state.author = action.profile;
+        new_state.friends = action.profile.friends;
         new_state.authorResolved = true;
         new_state.sending = false;
         // not safe, need to double check id and such, should be improved later
