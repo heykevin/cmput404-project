@@ -68,9 +68,6 @@ class Post(models.Model):
     publish_time=models.DateTimeField(auto_now=True)
 
     content_type=models.CharField(max_length=15, choices=content_type, default=text_markdown)
-
-    def get_idKey(self):
-        return self.idKey()
         
     def get_count(self):
         return self.objects.count()

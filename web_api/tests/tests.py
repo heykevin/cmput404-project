@@ -1,11 +1,20 @@
 from django.test import TestCase
-import base64
 from rest_framework.test import APITestCase
+from rest_framework.test import APIRequestFactory
 from rest_framework import status
 from requests.auth import HTTPBasicAuth
 from testutils import *
 from ..models import *
 
+import base64
+
+class HostCheckTestCase(APITestCase):
+    
+    def test_host_name(self):
+	request_factory = APIRequestFactory()
+	request = request_factory.get('/posts/',{},format='json')
+	self.assertEqual(request.get_host(),'testserver')
+	
 class AuthorServiceTestCase(APITestCase):
     
     def test_create_author(self):

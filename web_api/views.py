@@ -294,7 +294,7 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
         queryset = get_object_or_404(Post,id=pk)
         # TODO: Refactor this gross code
         if queryset.visibility == "FRIENDS":
-            print queryset.author.friends.all()
+            # print queryset.author.friends.all()
             if queryset.author.friends.all().get(user=request.user):
                 pass
             else:
