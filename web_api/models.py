@@ -5,6 +5,11 @@ import uuid
 
 # Create your models here.
 
+class Node(models.Model):
+    node_url = models.URLField()
+    access_to_posts = models.BooleanField()
+    access_to_images = models.BooleanField()
+
 class Author(models.Model):
     user = models.OneToOneField(User)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
