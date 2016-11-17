@@ -14,6 +14,28 @@ class HostCheckTestCase(APITestCase):
 	request_factory = APIRequestFactory()
 	request = request_factory.get('/posts/',{},format='json')
 	self.assertEqual(request.get_host(),'testserver')
+
+class ActivePermissionTestCase(APITestCase):
+    
+    def test_active_permission(self):
+	
+	userObj = User.objects.create_user(is_active=False, **(USER_LIST[0])) 
+	self.author = Author.objects.create(user=userObj, **(AUTHOR_LIST[0]))
+	
+	self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
+	response = self.client.put('/author/%s/' % self.author.id, {
+	    "displayName": "CoolBears",
+	    "first_name": "Cool",
+	    "last_name": "Bears",
+	    "email": "cool.bears@ualberta.ca",
+	    "bio": "I am a cool bear!",
+	    "host": "http://coolbears.com/mostCoolBear/",
+	    "github_username": "https://github.com/coolbear",
+	    "password": "a1b2c3d4"
+	}, format='json')
+	
+	self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED, response)
+	
 	
 class AuthorServiceTestCase(APITestCase):
     
@@ -32,6 +54,7 @@ class AuthorServiceTestCase(APITestCase):
         self.assertTrue(check201(response.status_code), response)
         self.assertEqual(Author.objects.count(), 1)
         self.assertEqual(Author.objects.all()[0].user.username, 'Ahindle')
+	self.assertFalse(Author.objects.all()[0].user.is_active)
 	
 
     def test_get_author(self):

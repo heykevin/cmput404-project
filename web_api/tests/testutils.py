@@ -82,7 +82,7 @@ def get_post_json(index):
     return POST_LIST[index]
 
 def createAuthor(self, index):
-    self.user = User.objects.create_user(**(USER_LIST[index]))    
+    self.user = User.objects.create_user(is_active=True, **(USER_LIST[index]))    
     return Author.objects.create(user=self.user, **(AUTHOR_LIST[index]))
 
 def getAuthor(self, index):
