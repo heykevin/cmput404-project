@@ -14,9 +14,9 @@ class UserSerializer(serializers.ModelSerializer):
                 'write_only': True
             },
         }
+    
 
-class SubAuthorSerializer(serializers.ModelSerializer):
-
+class AuthorInfoSerializer(serializers.ModelSerializer):
     displayName = serializers.CharField(source='user.username')
     first_name = serializers.CharField(source='user.first_name', allow_blank=True, required=False)
     last_name = serializers.CharField(source='user.last_name', allow_blank=True, required=False)
@@ -26,15 +26,18 @@ class SubAuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ('id', 'displayName', 'first_name', 'last_name',
                   'email', 'bio', 'host', 'github_username')
+        
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = SubAuthorSerializer(many=False, read_only=True)
+    
+    author = AuthorInfoSerializer(many=False, read_only=True)
+    
     class Meta:
         model = Comment
         fields = ('id', 'content', 'author', 'publish_time', 'post')
 
     def create(self, validated_data):
-        print ("CREATING COMMENT")
+        # print ("CREATING COMMENT")
         postId = self.context['request'].parser_context.get('kwargs').get('pk')
         post = Post.objects.get(id=postId)
         author = Author.objects.get(user=self.context.get('request').user)
@@ -49,7 +52,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
 
-    author = SubAuthorSerializer(many = False, read_only = True)
+    author = AuthorInfoSerializer(many = False, read_only = True)
     comments = serializers.SerializerMethodField('getComments')
 
     class Meta:
@@ -82,10 +85,12 @@ class AuthorSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email', allow_blank=True, required=False)
     password = serializers.CharField(source='user.password', write_only=True)
 
-    friends = SubAuthorSerializer(many=True, required=False)
+    friends = AuthorInfoSerializer(many=True, required=False)
+    
+    host = serializers.URLField()
 
-    request_sent = SubAuthorSerializer(source='get_request_sent', many=True, read_only=True)
-    request_received = SubAuthorSerializer(source='get_request_received', many=True, read_only=True)
+    request_sent = AuthorInfoSerializer(source='get_request_sent', many=True, read_only=True)
+    request_received = AuthorInfoSerializer(source='get_request_received', many=True, read_only=True)
 
     class Meta:
         model = Author
@@ -114,7 +119,6 @@ class AuthorSerializer(serializers.ModelSerializer):
         user.save()
 
         author.bio = validated_data.get('bio', author.bio)
-        author.host = validated_data.get('host', author.host)
         author.github_username = validated_data.get('github_username', author.github_username)
         author.save()
 

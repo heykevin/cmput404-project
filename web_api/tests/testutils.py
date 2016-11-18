@@ -31,17 +31,17 @@ AUTHOR_LIST = [
     {
         'github_username': 'coolbears',
         'bio': 'cool',
-        'host': 'www.coolbears.ca'
+        'host': 'http://testserver/'
     },
     {
         'github_username': 'coolcats',
         'bio': 'very cool',
-        'host': 'www.coolcats.ca'
+        'host': 'http://testserver/'
     },
     {
         'github_username': 'cooldogs',
         'bio': 'very very cool',
-        'host': 'www.cooldogs.ca'
+        'host': 'http://testserver/'
     }        
 ]
 

@@ -150,6 +150,7 @@ class AuthorViewSet(APIView):
         id (UUID)
     """    
     def get(self, request):
+        # queryset = Author.objects.all().filter(host="http://"+request.get_host()+"/")
         queryset = Author.objects.all()
         serializer = AuthorSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -396,24 +397,51 @@ class FriendsWith(APIView):
 
 class FriendRequestView(APIView):
     
+    def get_author_info(self, request, key_name):
+        res=dict()
+        node = request.data[key_name]["host"]
+        # print node
+        if(node == 'http://'+request.get_host()+'/' or node == 'http://'+request.get_host()):
+            res["obj"] = Author.objects.get(id=request.data[key_name]["id"])
+            res["is_local"] = True
+        else:
+            
+            foreign_user=User(username=request.data[key_name]["displayName"], is_active=False)
+            foreign_user.save()
+            res["obj"] = Author(user=foreign_user, id=request.data[key_name]["id"], host = node)
+            res["obj"].save()
+            res["is_local"] = False
+        return res
+    
+    
     # Handles the request creation
-    def post_request(self, request_data):
+    def post_request(self, request):
+        sender = self.get_author_info(request, 'author')
+        receiver = self.get_author_info(request, 'friend')
         
-        # This only works with local author at this time.
-        senderObj = Author.objects.get(id=request_data['author']["id"])
-        receiverObj = Author.objects.get(id=request_data['friend']["id"])
+        #if sender==None or receiver==None:
+            #return Response("Request not valid!", status.HTTP_400_BAD_REQUEST)
         
-        # Handle the case which sender and receiver are already friends.        
-        if senderObj.friends.all().filter(id=receiverObj.id).exists():
-            return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
+        if (not sender["is_local"]) and (not receiver["is_local"]):
+            return Response("Who are they?", status.HTTP_400_BAD_REQUEST)
         
-        if FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).exists():
-            return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
+        if sender["is_local"]:
+            if sender["obj"].friends.all().filter(id=receiver["obj"].id).exists():
+                return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
+            if receiver["obj"] in sender["obj"].get_request_sent():
+                return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
+            if receiver["obj"] in sender["obj"].get_request_received():
+                return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)
         
-        if FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).exists():
-            return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)        
+        elif receiver["is_local"]:
+            if receiver["obj"].friends.all().filter(id=sender["obj"].id).exists():
+                return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
+            if sender["obj"] in receiver["obj"].get_request_sent():
+                return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
+            if sender["obj"] in receiver["obj"].get_request_received():
+                return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)              
          
-        friend_request = FriendRequest.objects.create(sender=senderObj, receiver=receiverObj)
+        friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
         friend_request.save()
         
         return Response("Friend request sent.", status.HTTP_200_OK)
@@ -444,7 +472,7 @@ class FriendRequestView(APIView):
     
     def post(self, request):
         if request.data['query'] == 'friendrequest':
-            return self.post_request(request.data)
+            return self.post_request(request)
         elif request.data['query'] == 'friendresponse':
             return self.post_response(request.data)
         elif request.data['query'] == 'unfriend':
