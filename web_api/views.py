@@ -417,7 +417,19 @@ class FriendRequestView(APIView):
     
     def check_empty_foreign_record(self, foreign_author):
         if foreign_author.friends.all().count()==0 and len(foreign_author.get_request_sent())==0 and len(foreign_author.get_request_received())==0:
-            foreign_author.delete()      
+            foreign_author.delete()
+    
+    
+    def talk_to_nodes_then_check_if_need_delete(self, senderObj, receiverObj):
+        if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
+            # TODO send to other server in case of response
+            self.check_empty_foreign_record(senderObj)
+                 
+        elif (senderObj.host == self.myNode or senderObj.host == self.myNode2) and senderObj.host != self.myNode and senderObj.host != self.myNode2:
+            # TODO send to other server in case of unfriend
+            self.check_empty_foreign_record(senderObj)
+        
+        # May be you should modify this to return response?
     
     
     # Handles the request creation
@@ -435,6 +447,8 @@ class FriendRequestView(APIView):
                 return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
             if receiver["obj"] in sender["obj"].get_request_received():
                 return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)
+            # TODO: Forward the request the other server....
+            # TODO: If get response rather than 200 then you might want return frontend an error.
         
         elif receiver["is_local"]:
             if receiver["obj"].friends.all().filter(id=sender["obj"].id).exists():
@@ -449,51 +463,42 @@ class FriendRequestView(APIView):
         
         return Response("Friend request sent.", status.HTTP_200_OK)
     
-    def post_response(self, request_data):
-        senderObj = Author.objects.get(id=request_data['author']["id"])
-        receiverObj = Author.objects.get(id=request_data['friend']["id"])
-        accepted = request_data["accepted"]
+    # In this function, receiver is the response sender! REVERSE!
+    def post_response(self, request):
+        senderObj = Author.objects.get(id=request.data['author']["id"])
+        receiverObj = Author.objects.get(id=request.data['friend']["id"])
+        accepted = request.data["accepted"]
         
         FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
         
         if accepted:
             senderObj.friends.add(receiverObj)
             return Response("Friend added.", status.HTTP_200_OK)
+        else:
+            self.talk_to_nodes_then_check_if_need_delete(senderObj, receiverObj)
         
-        return Response("Friend request declined.", status.HTTP_200_OK)      
+        return Response("Friend request declined.", status.HTTP_200_OK)
     
     def unfriend(self, request):
         senderObj = Author.objects.get(id=request.data["author"]["id"])
         receiverObj = Author.objects.get(id=request.data["friend"]["id"])
         
-        # With or withour slash.
-        myNode = 'http://'+request.get_host()+'/'
-        myNode2 = 'http://'+request.get_host()
+        senderObj.friends.remove(receiverObj)
         
-        if receiverObj.host == myNode or receiverObj.host == myNode2:
-            receiverObj.friends.remove(senderObj)
-            
-            if senderObj.host != myNode and senderObj.host != myNode2:
-                self.check_empty_foreign_record(senderObj)     
-        
-        elif senderObj.host == myNode or senderObj.host == myNode2:
-            senderObj.friends.remove(receiverObj)
-            self.check_empty_foreign_record(receiverObj)
-            # TODO : send unfriend request to other server here or should we?　
-            # just unfriend locally like Hindle said in example_article.json?
-            #　シラナイシラナイシラナイシラナイシラナイシラナイシラナイシラナイシラナイシラナ
-        
-        else:
-            return Response("Who are they?", status.HTTP_400_BAD_REQUEST)
+        self.talk_to_nodes_then_check_if_need_delete(senderObj, receiverObj)
         
         return Response("Unfriend done.", status.HTTP_200_OK)
         
     
     def post(self, request):
+        # With or withour slash.
+        self.myNode = 'http://'+request.get_host()+'/'
+        self.myNode2 = 'http://'+request.get_host()        
+        
         if request.data['query'] == 'friendrequest':
             return self.post_request(request)
         elif request.data['query'] == 'friendresponse':
-            return self.post_response(request.data)
+            return self.post_response(request)
         elif request.data['query'] == 'unfriend':
             return self.unfriend(request)
         else:
