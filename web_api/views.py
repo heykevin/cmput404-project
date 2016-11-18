@@ -425,9 +425,9 @@ class FriendRequestView(APIView):
             # TODO send to other server in case of response
             self.check_empty_foreign_record(senderObj)
                  
-        elif (senderObj.host == self.myNode or senderObj.host == self.myNode2) and senderObj.host != self.myNode and senderObj.host != self.myNode2:
+        elif (senderObj.host == self.myNode or senderObj.host == self.myNode2) and receiverObj.host != self.myNode and receiverObj.host != self.myNode2:
             # TODO send to other server in case of unfriend
-            self.check_empty_foreign_record(senderObj)
+            self.check_empty_foreign_record(receiverObj)
         
         # May be you should modify this to return response?
     
