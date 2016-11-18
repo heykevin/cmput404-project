@@ -405,11 +405,13 @@ class FriendRequestView(APIView):
             res["obj"] = Author.objects.get(id=request.data[key_name]["id"])
             res["is_local"] = True
         else:
-            
-            foreign_user=User(username=request.data[key_name]["displayName"], is_active=False)
-            foreign_user.save()
-            res["obj"] = Author(user=foreign_user, id=request.data[key_name]["id"], host = node)
-            res["obj"].save()
+            if Author.objects.filter(id=request.data[key_name]["id"]).exists():
+                res["obj"] = Author.objects.get(id=request.data[key_name]["id"])
+            else:
+                foreign_user=User(username=request.data[key_name]["displayName"], is_active=False)
+                foreign_user.save()
+                res["obj"] = Author(user=foreign_user, id=request.data[key_name]["id"], host = node)
+                res["obj"].save()
             res["is_local"] = False
         return res
     
