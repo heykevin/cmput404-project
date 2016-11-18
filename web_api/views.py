@@ -447,8 +447,15 @@ class FriendRequestView(APIView):
                 return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
             if receiver["obj"] in sender["obj"].get_request_received():
                 return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)
-            # TODO: Forward the request the other server....
-            # TODO: If get response rather than 200 then you might want return frontend an error.
+            # This is the communicating process to other nodes.
+            if not receiver["is_local"]:
+                remote_host = receiver["obj"].host
+                if remote_host[-1] != '/':
+                    remote_host+='/'
+                r = requests.post(remote_host, data=request.data)
+                if r.status_code != 200:
+                    return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
+            # -------------------------------------------------
         
         elif receiver["is_local"]:
             if receiver["obj"].friends.all().filter(id=sender["obj"].id).exists():
