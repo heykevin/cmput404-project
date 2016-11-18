@@ -180,7 +180,7 @@ class AuthorViewSet(APIView):
         id (UUID)
     """    
     def post(self, request):
-        serializer = AuthorSerializer(data=request.data)
+        serializer = AuthorSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

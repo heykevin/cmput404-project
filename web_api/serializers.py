@@ -88,6 +88,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     friends = AuthorInfoSerializer(many=True, required=False)
     
     host = serializers.URLField(read_only=True)
+    url = serializers.URLField(read_only=True)
 
     request_sent = AuthorInfoSerializer(source='get_request_sent', many=True, read_only=True)
     request_received = AuthorInfoSerializer(source='get_request_received', many=True, read_only=True)
@@ -95,14 +96,17 @@ class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ('id', 'displayName', 'password', 'first_name', 'last_name',
-                  'email', 'bio', 'host', 'github_username', 'friends', 'request_sent', 'request_received')
+                  'email', 'bio', 'host', 'url', 'github_username', 'friends', 'request_sent', 'request_received')
 
     # # Need to be created as User is a nest object of Author.
     # # Returns an author object with user object as an field after extracting data from json.
     def create(self, validated_data):
+        id = uuid.uuid4()
+        host = self.context.get('request').get_host()
+        url = self.context.get('request').build_absolute_uri() + str(id)
         user_data = validated_data.pop('user')
         user_object = User.objects.create_user(is_active=False, **user_data)
-        author = Author.objects.create(user=user_object, **validated_data)
+        author = Author.objects.create(id=id, user=user_object, host=host, url=url, **validated_data)
         author.save()
         return author
 

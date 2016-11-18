@@ -16,7 +16,8 @@ class Author(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     github_username = models.CharField(max_length=35, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
-    host = models.URLField()
+    url = models.URLField(default="http://127.0.0.1:8000")
+    host = models.URLField(default="http://127.0.0.1:8000")
     friends = models.ManyToManyField("self", blank=True)
     
     def get_request_sent(self):
