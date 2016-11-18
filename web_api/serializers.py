@@ -87,7 +87,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     friends = AuthorInfoSerializer(many=True, required=False)
     
-    host = serializers.URLField()
+    host = serializers.URLField(read_only=True)
 
     request_sent = AuthorInfoSerializer(source='get_request_sent', many=True, read_only=True)
     request_received = AuthorInfoSerializer(source='get_request_received', many=True, read_only=True)
