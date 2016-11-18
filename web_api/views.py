@@ -1,9 +1,10 @@
 from django.http import HttpResponse
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User, Group
+from django.conf import settings
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser 
-from rest_framework.authentication import BasicAuthentication 
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.parsers import JSONParser
@@ -13,7 +14,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .permissions import IsAuthorOrReadOnly, IsPostAuthorOrReadOnly
-from .models import Author, Post
+from .models import Author, Post, Image
 from serializers import *
 import json
 
@@ -67,7 +68,7 @@ Response:
     next (string)
     prev (string)
     posts (list of posts with comments)
-"""    
+"""
 class AuthorStream(generics.ListAPIView):
     authentication_classes = (BasicAuthentication, )
     permission_classes = (IsAuthenticated,)
@@ -84,7 +85,7 @@ class AuthorStream(generics.ListAPIView):
         ownQuerySet = Post.objects.all().filter(author__user=user).exclude(visibility="PUBLIC")
         privateQuerySet = Post.objects.all().filter(visibility="PRIVATE").filter(author__user=user)
         querySet = postsQuerySet | privateQuerySet | ownQuerySet
-        
+
         # get friends and foaf posts
         for friend in Author.objects.get(user=user).friends.all():
             friendQuerySet = Post.objects.all().filter(author=friend).filter(visibility="FRIENDS")
@@ -105,7 +106,7 @@ Response:
     next (string)
     prev (string)
     posts (list of posts)
-""" 
+"""
 class PersonalAuthorStream(generics.ListAPIView):
     authentication_classes = (BasicAuthentication, )
     permission_classes = (IsAuthenticated,)
@@ -130,7 +131,7 @@ class PersonalAuthorStream(generics.ListAPIView):
             querySet = querySet | friendQuerySet | serverQuerySet
 
         return querySet
-    
+
 class AuthorViewSet(APIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
@@ -148,7 +149,7 @@ class AuthorViewSet(APIView):
         github_username (string)
         friends (list)
         id (UUID)
-    """    
+    """
     def get(self, request):
         # queryset = Author.objects.all().filter(host="http://"+request.get_host()+"/")
         queryset = Author.objects.all()
@@ -178,14 +179,14 @@ class AuthorViewSet(APIView):
         github_username (string)
         friends (list)
         id (UUID)
-    """    
+    """
     def post(self, request):
         serializer = AuthorSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class AuthorProfileUpdateView(APIView):
     serializer_class = AuthorSerializer
     authentication_classes = (BasicAuthentication, )
@@ -219,7 +220,7 @@ class AuthorProfileUpdateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def get(self, request, pk):
         authorObj = Author.objects.get(id=pk)
         serializer = AuthorSerializer(authorObj)
@@ -278,7 +279,7 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     '''
-    APIView for service/posts/<post_id>/    
+    APIView for service/posts/<post_id>/
 
     response(post_object)
         'id': UUID
@@ -311,7 +312,51 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
         res = dict()
         res["posts"] = serializer.data
         return Response(res, status=status.HTTP_200_OK)
-        
+
+class ImageView(generics.ListCreateAPIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated, )
+    serializer_class = ImageSerializer
+    '''
+    APIView for service/images/
+
+    response(image_object)
+        'id': UUID
+        'user': author
+        'photo': imagefile
+    '''
+
+    def get_queryset(self):
+        return Image.objects.all()
+
+    def post(self, request):
+        '''
+        POST method for images
+        requires(post_object)
+            'id': UUID
+            'user': author
+            'photo': imagefile
+        '''
+        serializer = ImageSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ImageIDView(generics.CreateAPIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated, )
+    serializer_class = ImageSerializer
+
+    def get(self, request, pk, format=None):
+        queryset = get_object_or_404(Image, id=pk)
+        serializer = ImageSerializer(queryset)
+        image = serializer.data['photo']
+        contenttype = image.split('.')[-1]
+        with open(settings.MEDIA_ROOT + '/' + image, "rb") as file:
+            return HttpResponse(file.read(), content_type="image/" + contenttype)
+
+
 class CommentView(generics.ListCreateAPIView):
     '''
     List API view for comment
@@ -348,7 +393,7 @@ class CommentView(generics.ListCreateAPIView):
         post = Post.objects.get(id=pk)
         author = Author.objects.get(user=request.user)
         try:
-            comment = Comment.objects.create(author=author,post=post, **request.data)      
+            comment = Comment.objects.create(author=author,post=post, **request.data)
         except:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer = CommentSerializer(comment)
@@ -359,14 +404,14 @@ class FriendsWith(APIView):
     GET /friends/<authorID>
     Response:
         authors (list): containing friend list of author
-    """ 
+    """
     def get(self, request, pk, format=None):
         queryset = Author.objects.get(id=pk)
         serializer = FriendsWithSerializer(queryset)
         res=serializer.data
         res['query']='friends'
         return Response(res)
-    
+
     """
     POST /friend/<authorID>
     Request:
@@ -381,7 +426,7 @@ class FriendsWith(APIView):
     def post(self, request, pk, format=None):
         if request.data['query'] != 'friends':
             return Response("Incorrect request field: 'query' field should be 'friends'.", status.HTTP_400_BAD_REQUEST)
-        
+
         friend_queryset = Author.objects.get(id=request.data['author']).friends.all()
         request_list = request.data['authors']
         match_list = []
@@ -396,7 +441,7 @@ class FriendsWith(APIView):
         return Response(res)
 
 class FriendRequestView(APIView):
-    
+
     def get_author_info(self, request, key_name):
         res=dict()
         node = request.data[key_name]["host"]
@@ -414,32 +459,32 @@ class FriendRequestView(APIView):
                 res["obj"].save()
             res["is_local"] = False
         return res
-    
+
     def check_empty_foreign_record(self, foreign_author):
         if foreign_author.friends.all().count()==0 and len(foreign_author.get_request_sent())==0 and len(foreign_author.get_request_received())==0:
             foreign_author.delete()
-    
-    
+
+
     def talk_to_nodes_then_check_if_need_delete(self, senderObj, receiverObj):
         if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
             # TODO send to other server in case of response
             self.check_empty_foreign_record(senderObj)
-                 
+
         elif (senderObj.host == self.myNode or senderObj.host == self.myNode2) and receiverObj.host != self.myNode and receiverObj.host != self.myNode2:
             # TODO send to other server in case of unfriend
             self.check_empty_foreign_record(receiverObj)
-        
+
         # May be you should modify this to return response?
-    
-    
+
+
     # Handles the request creation
     def post_request(self, request):
         sender = self.get_author_info(request, 'author')
         receiver = self.get_author_info(request, 'friend')
-        
+
         if (not sender["is_local"]) and (not receiver["is_local"]):
             return Response("Who are they?", status.HTTP_400_BAD_REQUEST)
-        
+
         if sender["is_local"]:
             if sender["obj"].friends.all().filter(id=receiver["obj"].id).exists():
                 return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
@@ -456,52 +501,52 @@ class FriendRequestView(APIView):
                 if r.status_code != 200:
                     return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
             # -------------------------------------------------
-        
+
         elif receiver["is_local"]:
             if receiver["obj"].friends.all().filter(id=sender["obj"].id).exists():
                 return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
             if sender["obj"] in receiver["obj"].get_request_sent():
                 return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
             if sender["obj"] in receiver["obj"].get_request_received():
-                return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)              
-         
+                return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)
+
         friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
         friend_request.save()
-        
+
         return Response("Friend request sent.", status.HTTP_200_OK)
-    
+
     # In this function, receiver is the response sender! REVERSE!
     def post_response(self, request):
         senderObj = Author.objects.get(id=request.data['author']["id"])
         receiverObj = Author.objects.get(id=request.data['friend']["id"])
         accepted = request.data["accepted"]
-        
+
         FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
-        
+
         if accepted:
             senderObj.friends.add(receiverObj)
             return Response("Friend added.", status.HTTP_200_OK)
         else:
             self.talk_to_nodes_then_check_if_need_delete(senderObj, receiverObj)
-        
+
         return Response("Friend request declined.", status.HTTP_200_OK)
-    
+
     def unfriend(self, request):
         senderObj = Author.objects.get(id=request.data["author"]["id"])
         receiverObj = Author.objects.get(id=request.data["friend"]["id"])
-        
+
         senderObj.friends.remove(receiverObj)
-        
+
         self.talk_to_nodes_then_check_if_need_delete(senderObj, receiverObj)
-        
+
         return Response("Unfriend done.", status.HTTP_200_OK)
-        
-    
+
+
     def post(self, request):
         # With or withour slash.
         self.myNode = 'http://'+request.get_host()+'/'
-        self.myNode2 = 'http://'+request.get_host()        
-        
+        self.myNode2 = 'http://'+request.get_host()
+
         if request.data['query'] == 'friendrequest':
             return self.post_request(request)
         elif request.data['query'] == 'friendresponse':
@@ -514,7 +559,7 @@ class FriendRequestView(APIView):
 class FriendCheck(APIView):
     """
     GET /friends/<authorID1>/<authorID2>
-    Response: 
+    Response:
         query (string): "friends"
         authors (string): ids of checked authors
         friends (bool): true iff friends
@@ -541,7 +586,7 @@ class Login(APIView):
     POST /login
     Request:
         encoded login (string): base64 encoded username:password
-    Response: 
+    Response:
         author (object): author of corresponding user
     """
     def post(self, request):

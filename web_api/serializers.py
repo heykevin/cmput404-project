@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
                 'write_only': True
             },
         }
-    
+
 
 class AuthorInfoSerializer(serializers.ModelSerializer):
     displayName = serializers.CharField(source='user.username')
@@ -26,12 +26,12 @@ class AuthorInfoSerializer(serializers.ModelSerializer):
         model = Author
         fields = ('id', 'displayName', 'first_name', 'last_name',
                   'email', 'bio', 'host', 'github_username')
-        
+
 
 class CommentSerializer(serializers.ModelSerializer):
-    
+
     author = AuthorInfoSerializer(many=False, read_only=True)
-    
+
     class Meta:
         model = Comment
         fields = ('id', 'content', 'author', 'publish_time', 'post')
@@ -75,6 +75,21 @@ class PostSerializer(serializers.ModelSerializer):
         serializer = CommentSerializer(commentsQuerySet, many=True)
         return serializer.data
 
+class ImageSerializer(serializers.ModelSerializer):
+    user = AuthorInfoSerializer(many = False, read_only = True)
+
+    class Meta:
+        model = Image
+        fields = ('id', 'user', 'photo')
+
+    def create(self, validated_data):
+        id = uuid.uuid4()
+        user = Author.objects.get(user=self.context.get('request').user)
+        image = Image.objects.create(id=id, user=user, photo=validated_data['photo'])
+        image.save()
+        return image
+
+
 class AuthorSerializer(serializers.ModelSerializer):
     """
     Serializer used for doing author profile related operations.
@@ -86,7 +101,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     password = serializers.CharField(source='user.password', write_only=True)
 
     friends = AuthorInfoSerializer(many=True, required=False)
-    
+
     host = serializers.URLField(read_only=True)
     url = serializers.URLField(read_only=True)
 

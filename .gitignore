@@ -76,3 +76,6 @@ venv/
 
 # sqlite database
 db.sqlite3
+
+# media files uploaded by users
+/c404WebProject/userfiles/
