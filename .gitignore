@@ -79,3 +79,6 @@ db.sqlite3
 
 # media files uploaded by users
 /c404WebProject/userfiles/
+
+# Local Migration files
+web_api/migrations/

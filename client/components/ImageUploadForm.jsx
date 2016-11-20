@@ -13,7 +13,7 @@ import {
 export class ImageUploadForm extends React.Component {
     constructor(props)
     {
-        super(props);   
+        super(props);
         this.uploadImage = this.uploadImage.bind(this);
     }
 
@@ -22,13 +22,12 @@ export class ImageUploadForm extends React.Component {
             <div className="image-form">
                 <Form horizontal onSubmit={this.uploadImage}>
                     <FormGroup controlId='formControlsFile'>
-                        <ControlLabel>File</ControlLabel>
-                        <FormControl type="file" label="File" accept=".gif, .jpg, .png, .jpeg" />
+                        <FormControl type="file" label="File" accept=".gif, .jpg, .png, .jpeg"/>
                         <HelpBlock>Only gifs, jpgs, jpegs, and pngs are accepted.</HelpBlock>
+                        <Button bsStyle="primary" type="submit">
+                            Upload
+                        </Button>
                     </FormGroup>
-                    <Button bsStyle="primary" type="submit">
-                        Upload
-                    </Button>
                 </Form>
             </div>
         );
@@ -36,15 +35,13 @@ export class ImageUploadForm extends React.Component {
     }
 
     uploadImage(form) {
-        console.log(form    );
-        //this.props.dispatch({type: "imageUpload", photo: form.file});
+        console.log(form.target[0].files[0]);
+        this.props.dispatch({type: "imagesUpload", photo: form.target[0].files[0]});
     }
 }
 
 function mapStateToProps(state) {
-    return {
-        status: state.images.status
-    }
+    return {status: state.images.status}
 }
 
 export default connect(mapStateToProps)(ImageUploadForm);

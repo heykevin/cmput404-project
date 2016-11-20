@@ -32,6 +32,12 @@ export class Menu extends React.Component
                             <Glyphicon glyph="user"/>
                         </NavItem>
                     </LinkContainer>
+                    <LinkContainer to="/myimages">
+                        <NavItem className="nav-item float-right">
+                            My Images
+                            <Glyphicon glyph="picture"/>
+                        </NavItem>
+                    </LinkContainer>
                     <LinkContainer to="/myposts">
                         <NavItem className="nav-item float-right">
                             My posts

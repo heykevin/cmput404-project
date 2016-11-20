@@ -712,6 +712,7 @@ span.gha-time {
     margin-left: 22%;
     background: #d43f3a;
 }
+
 .elementToFadeInAndOut {
     background: #d43f3a;
     -webkit-animation: fadeinout 4s linear forwards;
@@ -726,5 +727,29 @@ span.gha-time {
 @keyframes fadeinout {
     50% {
         opacity: 1;
+    }
+}
+
+.image-form {
+    .form-horizontal {
+        background: white;
+        padding: 20px;
+        border-radius: 14px;
+    }
+
+    .form-group {
+        margin: auto;
+        text-align: center;
+        display: flex;
+        align-items: center;
+
+        flex-direction:column;
+
+        input {
+            background: lightgray;
+            padding: 0.5em;
+            border-radius: 4px;
+            display: flex;
+        }
     }
 }

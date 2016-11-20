@@ -24,6 +24,7 @@ import EditPost from './pages/EditPost.jsx';
 import AddPost from './pages/AddPost.jsx';
 import Friends from './pages/Friends.jsx';
 import Profile from './pages/Profile.jsx';
+import Images from './pages/Images.jsx';
 
 // create the store
 const sagaMiddleware = createSagaMiddleware();
@@ -45,21 +46,23 @@ function checkAuth(nextState, replace) {
     }
 }
 
-ReactDOM.render( 
+ReactDOM.render(
     <Provider store={store}>
     <Router history={history}>
         <Route path="/" component={App}>
             <IndexRoute component={Home}/>
             <Route path="/login" component={Login}/>
             <Route path="/signup" component={Signup}/>
-            <Route path="/posts/*" component={Post}/>
             <Route onEnter={checkAuth}>
+                <Route path="/posts/*" component={Post}/>
                 <Router path="/addpost" component={AddPost}/>
                 <Router path="/editpost" component={EditPost}/>
                 <Route path="/dashboard" component={Dashboard}/>
                 <Route path="/myposts" component={MyPosts}/>
                 <Route path="/settings" component={AuthorEdit}/>
                 <Route path="/friends*" component={Friends}/>
+                <Route path="/myimages" component={Images}/>
+                <Route path="/images/*" component={Image}/>
             </Route>
             <Route path="/settings" component={AuthorEdit}/>
             <Route path="/profile" component={Profile}/>

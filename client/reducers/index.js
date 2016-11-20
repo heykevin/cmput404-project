@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import { reducer as formReducer } from 'redux-form';
 
+import images from './images';
 import users from './users';
 import posts from './posts';
 import auth from './auth';
@@ -12,6 +13,7 @@ export const reducers = combineReducers({
     posts: posts,
     auth: auth,
     git: git,
+    images: images,
     routing: routerReducer,
     form: formReducer
 });

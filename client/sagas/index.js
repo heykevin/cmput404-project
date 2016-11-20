@@ -5,6 +5,7 @@ import { usersFetchList, usersFetchFriendsList, usersUnfriendAuthor, usersBefrie
 import { postsGetPosts, postsSavePost, postsDeletePost, postsEditPostRedirect, postsUpdatePost } from './posts';
 import { authLogin, authSignup, authLogout, authEdit } from './auth';
 import { gitGetEvents, gitGetUser } from './git';
+import { imagesUpload } from './images';
 
 /**
  * Main saga generator
@@ -31,7 +32,9 @@ export function* sagas() {
         fork(takeLatest, 'authEdit', authEdit),
 
         fork(takeLatest, 'gitGetEvents', gitGetEvents),
-        fork(takeLatest, 'gitGetUser', gitGetUser)
+        fork(takeLatest, 'gitGetUser', gitGetUser),
+
+        fork(takeLatest, 'imagesUpload', imagesUpload)
 
     ];
 }
