@@ -23,4 +23,19 @@ export default class ApiImages {
             return Utils.handleErrors(response);
         });
     }
+
+	static fetchImages(action) {
+		console.log("api - get current author's all images");
+		const host = getApi(),
+            token = Utils.getToken();
+
+        return fetch(`${host}author/images/`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then((response) => {
+            return Utils.handleErrors(response);
+        });
+	}
 }

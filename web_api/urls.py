@@ -28,6 +28,10 @@ urlpatterns = [
     url(r'^author/$', views.AuthorViewSet.as_view()),
     # Get all posts that author can see
     url(r'^author/posts/$', views.AuthorStream.as_view()),
+    
+    # Images uploaded by currently authenticated author
+    url(r'^author/images/$', views.PersonalImagesView.as_view()),
+
     # Used for updating author profile.
     url(r'^author/(?P<pk>[^/.]+)/$', views.AuthorProfileUpdateView.as_view()),
     # Get all posts you can see from <authorID>

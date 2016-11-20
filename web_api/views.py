@@ -356,6 +356,14 @@ class ImageIDView(generics.CreateAPIView):
         with open(settings.MEDIA_ROOT + '/' + image, "rb") as file:
             return HttpResponse(file.read(), content_type="image/" + contenttype)
 
+class PersonalImagesView(generics.ListAPIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated, )
+    serializer_class = ImageSerializer
+
+    def get_queryset(self):
+        return Image.objects.all().filter(user__user=self.request.user)
+
 
 class CommentView(generics.ListCreateAPIView):
     '''
