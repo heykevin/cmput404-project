@@ -9,6 +9,7 @@ import {
     Col,
     HelpBlock
 } from 'react-bootstrap';
+import { Field, reduxForm } from 'redux-form'
 
 export class ImageUploadForm extends React.Component {
     constructor(props)
@@ -22,7 +23,7 @@ export class ImageUploadForm extends React.Component {
             <div className="image-form">
                 <Form horizontal onSubmit={this.uploadImage}>
                     <FormGroup controlId='formControlsFile'>
-                        <FormControl type="file" label="File" accept=".gif, .jpg, .png, .jpeg"/>
+                        <Field name="file" component="input" type="file" />
                         <HelpBlock>Only gifs, jpgs, jpegs, and pngs are accepted.</HelpBlock>
                         <Button bsStyle="primary" type="submit">
                             Upload
@@ -39,9 +40,12 @@ export class ImageUploadForm extends React.Component {
         this.props.dispatch({type: "imagesUpload", photo: form.target[0].files[0]});
     }
 }
+const uploadForm = reduxForm({
+    form: 'uploadFile'
+})(ImageUploadForm);
 
 function mapStateToProps(state) {
     return {status: state.images.status}
 }
 
-export default connect(mapStateToProps)(ImageUploadForm);
+export default connect(mapStateToProps)(uploadForm);
