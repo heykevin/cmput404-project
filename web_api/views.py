@@ -507,7 +507,9 @@ class FriendRequestView(APIView):
                 remote_host = receiver["obj"].host
                 if remote_host[-1] != '/':
                     remote_host+='/'
-                r = requests.post(remote_host, data=request.data)
+                print 'sending request to: '+remote_host+'friendrequest/'
+                r = requests.post(remote_host+'friendrequest/', data=request.data)
+                print 'Getting ' + r.status
                 if r.status_code != 200 and r.status_code != 201:
                     return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
             # -------------------------------------------------
