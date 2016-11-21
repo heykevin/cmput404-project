@@ -80,12 +80,13 @@ class ImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Image
-        fields = ('id', 'user', 'photo')
+        fields = ('id', 'user', 'origin', 'photo')
 
     def create(self, validated_data):
         id = uuid.uuid4()
         user = Author.objects.get(user=self.context.get('request').user)
-        image = Image.objects.create(id=id, user=user, photo=validated_data['photo'])
+        origin = self.context.get('request').build_absolute_uri() + str(id)
+        image = Image.objects.create(id=id, user=user, origin=origin, photo=validated_data['photo'])
         image.save()
         return image
 

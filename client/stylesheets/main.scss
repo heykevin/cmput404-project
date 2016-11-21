@@ -742,14 +742,35 @@ span.gha-time {
         text-align: center;
         display: flex;
         align-items: center;
-
-        flex-direction:column;
+        flex-direction: column;
 
         input {
             background: lightgray;
             padding: 0.5em;
             border-radius: 4px;
             display: flex;
+        }
+    }
+}
+
+.images {
+    background: white;
+    border-radius: 14px;
+
+    .image-group {
+        display: flex;
+        flex-direction: row;
+        padding: 1em;
+        margin-top: 3em;
+
+        .image {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            img {
+                width: 250px;
+                margin: auto;
+            }
         }
     }
 }

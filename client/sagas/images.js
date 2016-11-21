@@ -27,7 +27,7 @@ export function* imagesFetch(action) {
 
         yield put({
             type: 'images.fetchSuccess',
-            response: response.response
+            response: response
         });
     } catch (error) {
         console.log("Saga caught fetch images error", error);

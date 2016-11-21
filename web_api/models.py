@@ -44,6 +44,7 @@ def folder_name(instance, filename):
 class Image(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(Author, on_delete=models.CASCADE)
+    origin = models.URLField(editable=False, default="http://127.0.0.1:8000")
     photo = models.ImageField(upload_to=folder_name)
 
 class Post(models.Model):
