@@ -17,6 +17,7 @@ from .permissions import IsAuthorOrReadOnly, IsPostAuthorOrReadOnly
 from .models import Author, Post, Image
 from serializers import *
 import json
+import requests
 
 class PostsResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -507,7 +508,7 @@ class FriendRequestView(APIView):
                 if remote_host[-1] != '/':
                     remote_host+='/'
                 r = requests.post(remote_host, data=request.data)
-                if r.status_code != 200:
+                if r.status_code != 200 and r.status_code != 201:
                     return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
             # -------------------------------------------------
 
