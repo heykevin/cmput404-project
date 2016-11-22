@@ -356,7 +356,7 @@ class ImageIDView(generics.CreateAPIView):
         image = serializer.data['photo']
         contenttype = image.split('.')[-1]
         with open(settings.MEDIA_ROOT + '/' + image, "rb") as file:
-            return HttpResponse(file.read(), contentType="image/" + contenttype)
+            return HttpResponse(file.read(), content_type="image/" + contenttype)
 
 class PersonalImagesView(generics.ListAPIView):
     authentication_classes = (BasicAuthentication, )
@@ -480,11 +480,11 @@ class FriendRequestView(APIView):
 
         elif (senderObj.host == self.myNode or senderObj.host == self.myNode2) and receiverObj.host != self.myNode and receiverObj.host != self.myNode2:
             self.check_empty_foreign_record(receiverObj)
-    
+
     def send_to_remote(self, url, data):
         print '\nsending friend request to: '+url
         r = requests.post(url, json=data)
-        print 'Getting ' + str(r.status_code)+' from the remote server.\n' 
+        print 'Getting ' + str(r.status_code)+' from the remote server.\n'
         return r.status_code
 
     # Handles the request creation
@@ -507,9 +507,9 @@ class FriendRequestView(APIView):
                 remote_host = receiver["obj"].host
                 if remote_host[-1] != '/':
                     remote_host+='/'
-                    
+
                 status_code = self.send_to_remote(remote_host+'friendrequest/', request.data)
-                
+
                 if status_code != 200 and status_code != 201:
                     return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
             # -------------------------------------------------
@@ -532,15 +532,15 @@ class FriendRequestView(APIView):
         senderObj = Author.objects.get(id=request.data['author']["id"])
         receiverObj = Author.objects.get(id=request.data['friend']["id"])
         accepted = request.data["accepted"]
-        
+
         # In case of sending request to remote.
         if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
-            
+
             status_code = self.send_to_remote(senderObj.host+'friendrequest/', request.data)
-            
+
             if status_code != 200:
                 return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
-        
+
         FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
 
         if accepted:
@@ -554,15 +554,15 @@ class FriendRequestView(APIView):
     def unfriend(self, request):
         senderObj = Author.objects.get(id=request.data["author"]["id"])
         receiverObj = Author.objects.get(id=request.data["friend"]["id"])
-        
+
         # In case of sending request to remote.
-        if (senderObj.host == self.myNode or senderObj.host == self.myNode2) and (receiverObj.host != self.myNode and receiverObj.host != self.myNode2):     
-            
+        if (senderObj.host == self.myNode or senderObj.host == self.myNode2) and (receiverObj.host != self.myNode and receiverObj.host != self.myNode2):
+
             status_code = self.send_to_remote(receiverObj.host+'friendrequest/', request.data)
-            
+
             if status_code != 200:
-                return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)        
-        
+                return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
+
 
         senderObj.friends.remove(receiverObj)
 
