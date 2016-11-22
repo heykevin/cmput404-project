@@ -474,7 +474,7 @@ class FriendRequestView(APIView):
             foreign_author.delete()
 
 
-    def talk_to_nodes_then_check_if_need_delete(self, senderObj, receiverObj):
+    def check_if_need_delete(self, senderObj, receiverObj):
         if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
             # TODO send to other server in case of response
             self.check_empty_foreign_record(senderObj)
@@ -508,7 +508,6 @@ class FriendRequestView(APIView):
                 
                 print '\nsending friend request to: '+remote_host+'friendrequest/'
                 r = requests.post(remote_host+'friendrequest/', json=request.data)
-                #print r.json()
                 print 'Getting ' + str(r.status_code)+' from the remote server.\n'
                 
                 if r.status_code != 200 and r.status_code != 201:
@@ -533,24 +532,42 @@ class FriendRequestView(APIView):
         senderObj = Author.objects.get(id=request.data['author']["id"])
         receiverObj = Author.objects.get(id=request.data['friend']["id"])
         accepted = request.data["accepted"]
-
+        
+        # In case of sending request to remote.
+        if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
+            
+            print"\nSending friend response to the remote server."
+            r = requests.post(senderObj.host+'friendrequest/', request.data)
+            print 'Getting ' + str(r.status_code)+' from the remote server.\n'
+            if r.status_code != 200 and r.status_code != 201:
+                return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
+        
         FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
 
         if accepted:
             senderObj.friends.add(receiverObj)
             return Response("Friend added.", status.HTTP_200_OK)
         else:
-            self.talk_to_nodes_then_check_if_need_delete(senderObj, receiverObj)
+            self.check_if_need_delete(senderObj, receiverObj)
 
         return Response("Friend request declined.", status.HTTP_200_OK)
 
     def unfriend(self, request):
         senderObj = Author.objects.get(id=request.data["author"]["id"])
         receiverObj = Author.objects.get(id=request.data["friend"]["id"])
+        
+        # In case of sending request to remote.
+        if (senderObj.host == self.myNode or senderObj.host == self.myNode2) and (receiverObj.host != self.myNode and receiverObj.host != self.myNode2):     
+            print"\nSending unfriend message to the remote server."
+            r = requests.post(senderObj.host+'friendrequest/', request.data)
+            print 'Getting ' + str(r.status_code)+' from the remote server.\n'
+            if r.status_code != 200 and r.status_code != 201:
+                return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)        
+        
 
         senderObj.friends.remove(receiverObj)
 
-        self.talk_to_nodes_then_check_if_need_delete(senderObj, receiverObj)
+        self.check_if_need_delete(senderObj, receiverObj)
 
         return Response("Unfriend done.", status.HTTP_200_OK)
 
