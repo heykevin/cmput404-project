@@ -4,6 +4,7 @@ import {push} from 'react-router-redux';
 import {ProgressBar, List, Pagination, ListGroup} from 'react-bootstrap';
 
 import PostListElement from './PostListElement.jsx';
+import Utils from '../utils/utils.js';
 
 export class PostList extends React.Component
 {
@@ -15,6 +16,7 @@ export class PostList extends React.Component
         }
 
         // posts can be retrieve by either author/{AUTHOR_ID}/posts or posts
+        this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: Utils.getAuthor().id});
         this.props.dispatch({type: 'posts.reloadList'});
         this.props.dispatch({type: 'postsGetPosts', method: this.props.method, authorId: this.props.authorId, page: this.props.page || ""});
         this.changePage = this.changePage.bind(this);
@@ -30,12 +32,15 @@ export class PostList extends React.Component
         console.log("changing page ---", this.props.posts);
 
         // render
-        if (!this.props.resolved) {
+        if (!this.props.resolved || !this.props.authorResolved) {
             // show the loading state
             return (<ProgressBar active now={100}/>);
-        } else if (this.props.posts.length) {
+        } else if (this.props.posts.length && this.props.authorResolved) {
             return (
                 <div>
+                    <div className={(this.props.sending ? "visible" : "invisible") + " hide-yall-kids-hide-yall-wife"}>
+                        <i className="fa fa-spinner fa-spin"></i>
+                    </div>
                     <ListGroup className="post-group">
                         {this.props.posts.map((post, index) => {
                             if (index >= 0 && start_count < per_page) {
@@ -78,8 +83,10 @@ function mapStateToProps(state, own_props) {
         path: state.routing.locationBeforeTransitions.pathname,
         resolved: state.posts.resolved || false,
         count: state.posts.count,
+        sending: state.users.sending,
         method: own_props.method,
-        authorId: own_props.authorId
+        authorId: own_props.authorId,
+        authorResolved: state.users.authorResolved,
     };
 }
 export default connect(mapStateToProps)(PostList);

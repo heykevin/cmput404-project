@@ -153,10 +153,23 @@
         }
 
         .post-info {
-            text-align: right;
             padding-right: 5px;
             background: #eee;
             border-radius: 5px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 0.75em;
+
+            button {
+                background: white;
+                width: 20em;
+            }
+
+            strong {
+                border-bottom: 1px dotted #000;
+                font-weight: 700;   
+            }
         }
 
         .post-description {
@@ -768,6 +781,7 @@ span.gha-time {
             width: 300px;
             display: flex;
             flex-direction: column;
+
             img {
                 width: 250px;
                 margin: auto;

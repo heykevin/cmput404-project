@@ -9,7 +9,7 @@ class reducerClass
 
     static getPostsSuccess(new_state, action)
     {
-        new_state.list = action.posts;
+        new_state.list = (action.posts && action.posts.length) ? this.sortPostsByDate(action.posts) : action.posts;
         new_state.count = action.count;
         new_state.resolved = true;
         return new_state;
@@ -118,5 +118,13 @@ class reducerClass
         new_state.resolved = false;
         new_state.list = [];
         return new_state;
+    }
+
+    static sortPostsByDate(posts)
+    {
+        posts.sort(function(a, b) {
+            return new Date(a.published).getTime() - new Date(b.published).getTime();
+        });
+        return posts;
     }
 }
