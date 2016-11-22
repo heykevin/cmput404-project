@@ -17,6 +17,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .permissions import *
 from .models import Author, Post, Image
+from .remoteConnection import RemoteConnection
 from serializers import *
 
 class PostsResultsSetPagination(PageNumberPagination):
@@ -453,33 +454,6 @@ class FriendsWith(APIView):
         return Response(res)
 
 class FriendRequestView(APIView):
-    
-    def check_node_valid(self, request):
-        
-        print "Checking Node."
-        # This first condtion let the test pass as test request don't have this attribute.
-        if not 'REMOTE_HOST' in request.META.keys() or request.META['REMOTE_HOST']=='bloggyblog404.herokuapp.com' or request.META['REMOTE_HOST']=='localhost:8080':
-            print "Frontend host, OK."
-            return True
-        
-        print "Remote node confirmed, checking access permission."
-        for node in Node.objects.all():
-            if request.user == node.user and request.user.is_authenticated():
-                print "Access permission checking successful."
-                return True
-        
-        print "Access permission checking failed."
-        return False
-    
-    def get_node_auth(self, remote_host):
-        
-        print "Getting auth information from DB."
-        for node in Node.objects.all():
-            if remote_host == node.node_url:
-                return (node.user.username, node.user.password)
-        
-        print "Failed..."
-        return None
 
     def get_author_info(self, request, key_name):
         res=dict()
@@ -511,13 +485,6 @@ class FriendRequestView(APIView):
             self.check_empty_foreign_record(receiverObj)
 
     
-    def send_to_remote(self, url, data, auth):
-        if auth == None:
-            return 400
-        print '\nsending friend request to: '+url
-        r = requests.post(url, json=data, auth=auth)
-        print 'Getting ' + str(r.status_code)+' from the remote server.\n' 
-        return r.status_code
 
     # Handles the request creation
     def post_request(self, request):
@@ -539,8 +506,9 @@ class FriendRequestView(APIView):
                 remote_host = receiver["obj"].host
                 if remote_host[-1] != '/':
                     remote_host+='/'
+                remote_host+='friendrequest/'
                    
-                status_code = self.send_to_remote(remote_host+'friendrequest/', request.data, self.get_node_auth(remote_host))
+                status_code = self.rc.send_to_remote(remote_host, request.data, self.rc.get_node_auth(remote_host))
                 
                 if status_code != 200 and status_code != 201:
                     return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
@@ -567,8 +535,8 @@ class FriendRequestView(APIView):
 
         # In case of sending request to remote.
         if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
-            
-            status_code = self.send_to_remote(senderObj.host+'friendrequest/', request.data, self.get_node_auth(remote_host))
+            url = senderObj.host+'friendrequest/'
+            status_code = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
             
             if status_code != 200:
                 return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
@@ -590,7 +558,8 @@ class FriendRequestView(APIView):
         # In case of sending request to remote.
         if (senderObj.host == self.myNode or senderObj.host == self.myNode2) and (receiverObj.host != self.myNode and receiverObj.host != self.myNode2):     
             
-            status_code = self.send_to_remote(receiverObj.host+'friendrequest/', request.data, self.get_node_auth(remote_host))
+            url = receiverObj.host+'friendrequest/'
+            status_code = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
             
             if status_code != 200:
                 return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
@@ -606,8 +575,9 @@ class FriendRequestView(APIView):
         # With or withour slash.
         self.myNode = 'http://'+request.get_host()+'/'
         self.myNode2 = 'http://'+request.get_host()
+        self.rc = RemoteConnection()
         
-        if not self.check_node_valid(request):
+        if not self.rc.check_node_valid(request):
             return Response("What's this node?", status.HTTP_403_FORBIDDEN)
 
         if request.data['query'] == 'friendrequest':
