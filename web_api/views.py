@@ -442,7 +442,7 @@ class FriendsWith(APIView):
         match_list = []
         for friend in request_list:
             if friend_queryset.filter(id=friend).exists():
-                match_list.append(friend)
+                match_list.append(str(friend))
 
         res = dict()
         res['authors'] = match_list
