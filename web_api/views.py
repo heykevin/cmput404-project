@@ -484,15 +484,6 @@ class FriendRequestView(APIView):
             self.check_empty_foreign_record(receiverObj)
 
         # May be you should modify this to return response?
-        
-    def form_forwarding_request_data(self, request_data):
-        data=dict()
-        for key, value in request_data.iteritems():
-            if type(value) == dict:
-                data[str(key)]=self.form_forwarding_request_data(value)
-            else:
-                data[str(key)]=str(value)
-        return data
 
     # Handles the request creation
     def post_request(self, request):
@@ -514,14 +505,12 @@ class FriendRequestView(APIView):
                 remote_host = receiver["obj"].host
                 if remote_host[-1] != '/':
                     remote_host+='/'
-                print 'sending request to: '+remote_host+'friendrequest/'
                 
-                formed_data = self.form_forwarding_request_data(request.data)
-                r = requests.post(remote_host+'friendrequest/', json=formed_data)
+                print '\nsending friend request to: '+remote_host+'friendrequest/'
+                r = requests.post(remote_host+'friendrequest/', json=request.data)
+                #print r.json()
+                print 'Getting ' + str(r.status_code)+' from the remote server.\n'
                 
-                print r.json()
-                
-                print 'Getting ' + str(r.status_code)
                 if r.status_code != 200 and r.status_code != 201:
                     return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
             # -------------------------------------------------
@@ -529,9 +518,9 @@ class FriendRequestView(APIView):
         elif receiver["is_local"]:
             if receiver["obj"].friends.all().filter(id=sender["obj"].id).exists():
                 return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
-            if sender["obj"] in receiver["obj"].get_request_sent():
-                return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
             if sender["obj"] in receiver["obj"].get_request_received():
+                return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
+            if sender["obj"] in receiver["obj"].get_request_sent():
                 return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)
 
         friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])

@@ -200,13 +200,14 @@ class SelfConnectFriendRequestTestCase(APITestCase):
     
     def test_send_remote_friend_request(self):
 	self.sender = createAuthor(self,0)
+	print self.sender.host
 	
 	response = self.client.post('/friendrequest/', {
 	    "query" : "friendrequest",
 	    "author" : {
 	        "id" : self.sender.id,
 	        "host" : self.sender.host,
-	        "displayName" : self.sender.user.username,
+	        "displayName" : self.sender.user.username
 	    },	
 	    "friend": {
 	        "id" : '04952ab1-1cc4-44a0-9c0e-7502c53347ac',
@@ -215,7 +216,39 @@ class SelfConnectFriendRequestTestCase(APITestCase):
 	        "url" : 'http://api-bloggyblog404.herokuapp.com/author/04952ab1-1cc4-44a0-9c0e-7502c53347ac'
 	    }
 	}, format='json')
-		
+	'''
+	response = self.client.post('/friendrequest/', {
+	    "query" : "friendrequest",
+	    "author" : {
+	        "id" : '04952ab1-1cc4-44a0-9c0e-7502c55547ac',
+	        "host" : 'http://api-bloggyblog404.herokuapp.ca/',
+	        "displayName" : 'Abram',
+		"url" : 'http://api-bloggyblog404.herokuapp.com/author/04952ab1-1cc4-44a0-9c0e-7502c53347ac'
+	    },	
+	    "friend": {
+	        "id" : self.sender.id,
+	        "host" : self.sender.host,
+	        "displayName" : self.sender.user.username
+	    }
+	}, format='json')
+
+	response = self.client.post('/friendrequest/', {
+	    "query" : "friendrequest",
+	    "author" : {
+	        "id" : '04952ab1-1cc4-44a0-9c0e-7502c55547ac',
+	        "host" : 'http://api-bloggyblog404.herokuapp.ca/',
+	        "displayName" : 'Abram',
+		"url" : 'http://api-bloggyblog404.herokuapp.com/author/04952ab1-1cc4-44a0-9c0e-7502c53347ac'
+	    },	
+	    "friend": {
+	        "id" : self.sender.id,
+	        "host" : self.sender.host,
+	        "displayName" : self.sender.user.username
+	    }
+	}, format='json')
+	'''
+
+	
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
 	self.assertTrue(FriendRequest.objects.filter(sender=self.sender).exists())
     
