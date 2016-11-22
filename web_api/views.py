@@ -476,14 +476,16 @@ class FriendRequestView(APIView):
 
     def check_if_need_delete(self, senderObj, receiverObj):
         if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
-            # TODO send to other server in case of response
             self.check_empty_foreign_record(senderObj)
 
         elif (senderObj.host == self.myNode or senderObj.host == self.myNode2) and receiverObj.host != self.myNode and receiverObj.host != self.myNode2:
-            # TODO send to other server in case of unfriend
             self.check_empty_foreign_record(receiverObj)
-
-        # May be you should modify this to return response?
+    
+    def send_to_remote(self, url, data):
+        print '\nsending friend request to: '+url
+        r = requests.post(url, json=data)
+        print 'Getting ' + str(r.status_code)+' from the remote server.\n' 
+        return r.status_code
 
     # Handles the request creation
     def post_request(self, request):
@@ -505,12 +507,10 @@ class FriendRequestView(APIView):
                 remote_host = receiver["obj"].host
                 if remote_host[-1] != '/':
                     remote_host+='/'
+                    
+                status_code = self.send_to_remote(remote_host+'friendrequest/', request.data)
                 
-                print '\nsending friend request to: '+remote_host+'friendrequest/'
-                r = requests.post(remote_host+'friendrequest/', json=request.data)
-                print 'Getting ' + str(r.status_code)+' from the remote server.\n'
-                
-                if r.status_code != 200 and r.status_code != 201:
+                if status_code != 200 and status_code != 201:
                     return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
             # -------------------------------------------------
 
@@ -536,10 +536,9 @@ class FriendRequestView(APIView):
         # In case of sending request to remote.
         if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
             
-            print"\nSending friend response to the remote server."
-            r = requests.post(senderObj.host+'friendrequest/', request.data)
-            print 'Getting ' + str(r.status_code)+' from the remote server.\n'
-            if r.status_code != 200 and r.status_code != 201:
+            status_code = self.send_to_remote(senderObj.host+'friendrequest/', request.data)
+            
+            if status_code != 200:
                 return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
         
         FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
@@ -558,10 +557,10 @@ class FriendRequestView(APIView):
         
         # In case of sending request to remote.
         if (senderObj.host == self.myNode or senderObj.host == self.myNode2) and (receiverObj.host != self.myNode and receiverObj.host != self.myNode2):     
-            print"\nSending unfriend message to the remote server."
-            r = requests.post(senderObj.host+'friendrequest/', request.data)
-            print 'Getting ' + str(r.status_code)+' from the remote server.\n'
-            if r.status_code != 200 and r.status_code != 201:
+            
+            status_code = self.send_to_remote(receiverObj.host+'friendrequest/', request.data)
+            
+            if status_code != 200:
                 return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)        
         
 
