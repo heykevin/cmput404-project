@@ -121,7 +121,6 @@ class AuthorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         id = uuid.uuid4()
         host = "http://"+self.context.get('request').get_host()+"/"
-	print host
         url = self.context.get('request').build_absolute_uri() + str(id)
         user_data = validated_data.pop('user')
         user_object = User.objects.create_user(is_active=False, **user_data)

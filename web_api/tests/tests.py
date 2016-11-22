@@ -193,7 +193,10 @@ class FriendRequestTestCase(APITestCase):
 	
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
 	self.assertTrue(Author.objects.get(id=self.receiver.id).friends.all().filter(id=self.sender.id).exists()==False)
-	self.assertTrue(Author.objects.get(id=self.sender.id).friends.all().filter(id=self.receiver.id).exists()==False)	
+	self.assertTrue(Author.objects.get(id=self.sender.id).friends.all().filter(id=self.receiver.id).exists()==False)
+
+class SelfConnectFriendRequestTestCase(APITestCase):
+    pass
 
 class FriendServiceTestCase(APITestCase):
     
