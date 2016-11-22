@@ -118,7 +118,8 @@ class AuthorSerializer(serializers.ModelSerializer):
     # # Returns an author object with user object as an field after extracting data from json.
     def create(self, validated_data):
         id = uuid.uuid4()
-        host = self.context.get('request').get_host()
+        host = "http://"+self.context.get('request').get_host()+"/"
+	print host
         url = self.context.get('request').build_absolute_uri() + str(id)
         user_data = validated_data.pop('user')
         user_object = User.objects.create_user(is_active=False, **user_data)

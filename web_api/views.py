@@ -455,8 +455,7 @@ class FriendRequestView(APIView):
     def get_author_info(self, request, key_name):
         res=dict()
         node = request.data[key_name]["host"]
-        # print node
-        if(node == 'http://'+request.get_host()+'/' or node == 'http://'+request.get_host()):
+        if(node == self.myNode or node == self.myNode2):
             res["obj"] = Author.objects.get(id=request.data[key_name]["id"])
             res["is_local"] = True
         else:
