@@ -506,9 +506,9 @@ class FriendRequestView(APIView):
                 remote_host = receiver["obj"].host
                 if remote_host[-1] != '/':
                     remote_host+='/'
-                remote_host+='friendrequest/'
+                url = remote_host+'friendrequest/'
                    
-                status_code = self.rc.send_to_remote(remote_host, request.data, self.rc.get_node_auth(remote_host))
+                status_code = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
                 
                 if status_code != 200 and status_code != 201:
                     return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
