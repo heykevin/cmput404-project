@@ -246,8 +246,8 @@ class PostView(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     pagination_class = PostsResultsSetPagination
-    authentication_classes = (BasicAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    # authentication_classes = (BasicAuthentication, )
+    # permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         return Post.objects.all().filter(visibility="PUBLIC")
