@@ -195,8 +195,30 @@ class FriendRequestTestCase(APITestCase):
 	self.assertTrue(Author.objects.get(id=self.receiver.id).friends.all().filter(id=self.sender.id).exists()==False)
 	self.assertTrue(Author.objects.get(id=self.sender.id).friends.all().filter(id=self.receiver.id).exists()==False)
 
+# Some tests of this section is hardcoded.
 class SelfConnectFriendRequestTestCase(APITestCase):
-    pass
+    
+    def test_send_remote_friend_request(self):
+	self.sender = createAuthor(self,0)
+	
+	response = self.client.post('/friendrequest/', {
+	    "query" : "friendrequest",
+	    "author" : {
+	        "id" : self.sender.id,
+	        "host" : self.sender.host,
+	        "displayName" : self.sender.user.username,
+	    },	
+	    "friend": {
+	        "id" : '04952ab1-1cc4-44a0-9c0e-7502c53347ac',
+	        "host" : 'http://api-bloggyblog404.herokuapp.com/',
+	        "displayName" : 'Abram',
+	        "url" : 'http://api-bloggyblog404.herokuapp.com/author/04952ab1-1cc4-44a0-9c0e-7502c53347ac'
+	    }
+	}, format='json')
+		
+	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+	self.assertTrue(FriendRequest.objects.filter(sender=self.sender).exists())
+    
 
 class FriendServiceTestCase(APITestCase):
     

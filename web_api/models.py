@@ -79,10 +79,9 @@ class Post(models.Model):
     )
 
     visibility=models.CharField(max_length=20, choices=visibility_choice, default=public)
-
     published=models.DateTimeField(auto_now=True)
-
     contentType=models.CharField(max_length=15, choices=contentType, default=text_markdown)
+
 
     def get_count(self):
         return self.objects.count()

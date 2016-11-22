@@ -49,18 +49,8 @@ REMOTE_AUTHOR_LIST = [
     {
         'github_username': 'coolbears',
         'bio': 'cool',
-        'host': 'http://testserver/'
+        'host': 'http://api-bloggyblog404.herokuapp.com/'
     },
-    {
-        'github_username': 'coolcats',
-        'bio': 'very cool',
-        'host': 'http://testserver/'
-    },
-    {
-        'github_username': 'cooldogs',
-        'bio': 'very very cool',
-        'host': 'http://testserver/'
-    }        
 ]
 
 
