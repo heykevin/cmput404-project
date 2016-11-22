@@ -108,11 +108,13 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     request_sent = AuthorInfoSerializer(source='get_request_sent', many=True, read_only=True)
     request_received = AuthorInfoSerializer(source='get_request_received', many=True, read_only=True)
+    is_active = serializers.BooleanField(source='user.is_active', read_only=True)
+
 
     class Meta:
         model = Author
         fields = ('id', 'displayName', 'password', 'first_name', 'last_name',
-                  'email', 'bio', 'host', 'url', 'github_username', 'friends', 'request_sent', 'request_received')
+                  'email', 'bio', 'host', 'url', 'github_username', 'friends', 'request_sent', 'request_received', 'is_active')
 
     # # Need to be created as User is a nest object of Author.
     # # Returns an author object with user object as an field after extracting data from json.

@@ -19,7 +19,7 @@ export class Login extends React.Component {
         return (
             <div className="auth-form">
                 <PageHeader className="text-center"> ( ˘･з･) Log In </PageHeader>
-                <div className={(!this.props.status && this.props.loginAttempt ? "elementToFadeInAndOut" : "good-for-nothing-placeholder") + " auth-error"}>Username and/or password is invalid. Go figure.</div>
+                <div className={(!this.props.status && this.props.loginAttempt ? "elementToFadeInAndOut" : "good-for-nothing-placeholder") + " auth-error"}>Username and/or password is invalid. Or you don't have permission to view our prestigous posts. Go figure.</div>
                 <Form horizontal onSubmit={this.props.handleSubmit(this.formSubmit)}>
                     <Col smOffset={2} sm={10}>
                         <Field name="username" component={AuthorLoginName} />

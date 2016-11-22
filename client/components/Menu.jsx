@@ -14,9 +14,11 @@ export class Menu extends React.Component
 
     render()
     {
-        if (Utils.getToken()) {
-            const author = Utils.getAuthor(),
-                authorName = author && author.displayName ? author.displayName : "my friend";
+        const author = Utils.getAuthor(),
+            isActive = Utils.getAuthor().is_active,
+            authorName = author && author.displayName ? author.displayName : "my friend";
+
+        if (Utils.getToken() && isActive) {
             return (
                 <Nav bsStyle="pills" onSelect={this.handleSelect}>
                     <NavItem className="nav-item">
@@ -62,6 +64,18 @@ export class Menu extends React.Component
                             <Glyphicon glyph="dashboard"/>
                         </NavItem>
                     </LinkContainer>
+                </Nav>
+            );
+        } else if (Utils.getToken() && !isActive) {
+            return (
+                <Nav bsStyle="pills" onSelect={this.handleSelect}>
+                    <NavItem className="nav-item">
+                        Hello, {authorName}!
+                    </NavItem>
+                    <NavItem className="nav-item float-right" eventKey={"logOut"}>
+                        Log Out
+                        <Glyphicon glyph="log-out"/>
+                    </NavItem>
                 </Nav>
             );
         } else {
