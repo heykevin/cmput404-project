@@ -1,3 +1,6 @@
+import json
+import requests
+from requests.auth import HTTPBasicAuth
 from django.http import HttpResponse
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User, Group
@@ -6,18 +9,15 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.decorators import permission_classes, authentication_classes
+from rest_framework.decorators import permission_classes, authentication_classes, detail_route
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, generics
 from rest_framework import status
-from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .permissions import IsAuthorOrReadOnly, IsPostAuthorOrReadOnly
 from .models import Author, Post, Image
 from serializers import *
-import json
-import requests
 
 class PostsResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -86,7 +86,6 @@ class AuthorStream(generics.ListAPIView):
         ownQuerySet = Post.objects.all().filter(author__user=user).exclude(visibility="PUBLIC")
         privateQuerySet = Post.objects.all().filter(visibility="PRIVATE").filter(author__user=user)
         querySet = postsQuerySet | privateQuerySet | ownQuerySet
-
         # get friends and foaf posts
         for friend in Author.objects.get(user=user).friends.all():
             friendQuerySet = Post.objects.all().filter(author=friend).filter(visibility="FRIENDS")
@@ -250,6 +249,9 @@ class PostView(generics.ListCreateAPIView):
     # permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
+        r = requests.get('https://cmput404f16t04dev.herokuapp.com/api/posts/', auth=HTTPBasicAuth('admin', 'cmput404'))
+        print r.text
+        print "GETTING REQUEST"
         return Post.objects.all().filter(visibility="PUBLIC")
 
     def post(self,request):
