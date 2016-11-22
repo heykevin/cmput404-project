@@ -198,8 +198,8 @@ class FriendRequestTestCase(APITestCase):
 # Some tests of this section is hardcoded.
 class SelfConnectFriendRequestTestCase(APITestCase):
     
-    def test_send_remote_friend_request(self):
-	user=User(username="Joshua", is_active=False)
+    def test_remote_friend_request(self):
+	user=User(username="Josh", is_active=True)
 	user.save()
 	Author.objects.create(id='11111ab1-1cc4-11a0-9c0e-7502c53347ac',user=user)
 	
@@ -208,7 +208,7 @@ class SelfConnectFriendRequestTestCase(APITestCase):
 	    "author" : {
 	        "id" : '11111ab1-1cc4-11a0-9c0e-7502c53347ac',
 	        "host" : 'http://testserver/',
-	        "displayName" : 'Joshua'
+	        "displayName" : 'Josh'
 	    },	
 	    "friend": {
 	        "id" : '04952ab1-1cc4-44a0-9c0e-7502c53347ac',
@@ -219,7 +219,51 @@ class SelfConnectFriendRequestTestCase(APITestCase):
 	}, format='json')
 	
 	if response.status_code!=status.HTTP_200_OK and response.status_code!=status.HTTP_400_BAD_REQUEST:
-	    self.assertTrue(False)    
+	    self.assertTrue(False)
+    '''
+    # This test can only be test once after a total setup!!!!!!!
+    def test_remote_friend_response_and_unfriend(self):
+	print "This test can only be test once after a total setup."
+	print "If this test fail it means you may didn't setup hardcode part as well as remote so don't worry."
+	
+	user=User(username="Joshua", is_active=True)
+	user.save()
+	Author.objects.create(id='a2e7ce12-2b90-4503-8460-02524f6608dc',user=user,host='http://fbi.us/')	
+	
+	response = self.client.post('/friendrequest/', {
+	    "query" : "friendrequest",
+	    "author" : {
+	        "id" : '04952ab1-1cc4-44a0-9c0e-7502c53347ac',
+	        "host" : 'http://api-bloggyblog404.herokuapp.com/',
+	        "displayName" : 'Abram'
+	    },	
+	    "friend": {
+	        "id" : 'a2e7ce12-2b90-4503-8460-02524f6608dc',
+	        "host" : 'http://fbi.us/',
+	        "displayName" : 'Joshua',
+	        # url does not matter, for now.
+	        "url" : 'https://fbi.us/agent/joshua'
+	    }
+	}, format='json')
+	
+	print "Friend request from the remote, status code: "+str(response.status_code)
+	print "Sending friend response to the remote."
+	
+	response = self.client.post('/friendrequest/', {
+	    "query" : "friendresponse",
+	    "author" : {
+	        "id" : '04952ab1-1cc4-44a0-9c0e-7502c53347ac',
+	    },	
+	    "friend": {
+	        "id" : 'a2e7ce12-2b90-4503-8460-02524f6608dc',
+	    },
+	    "accepted" : True
+	}, format='json')
+	
+	print "Friend response from the remote, status code: "+str(response.status_code)
+	self.assertTrue(Author.objects.get(id='04952ab1-1cc4-44a0-9c0e-7502c53347ac').friends.all().filter(id='a2e7ce12-2b90-4503-8460-02524f6608dc').exists())
+    '''
+	
 
 class FriendServiceTestCase(APITestCase):
     
