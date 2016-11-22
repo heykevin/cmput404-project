@@ -323,7 +323,7 @@ class PostTestCase(APITestCase):
 				'content': 'comp sci 404 project, blah blah blah',
 				'category': 'compsci',
 				'visibility_choice': 'Public',
-				'content_type': 'text/markdown'
+				'contentType': 'text/markdown'
 			}, format='json'
 		)
 		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
@@ -337,7 +337,7 @@ class PostTestCase(APITestCase):
 				'content': 'lab for next week will have 3 hours of exam',
 				'category': 'compsci',
 				'visibility_choice': 'private',
-				'content_type': 'text/markdown'
+				'contentType': 'text/markdown'
 			}, format='json'
 		)
 		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
@@ -351,7 +351,7 @@ class PostTestCase(APITestCase):
 				'content': 'class this week is cancelled due to flu',
 				'category': 'compsci',
 				'visibility_choice': 'public',
-				'content_type': 'text/markdown'
+				'contentType': 'text/markdown'
 			}, format='json'
 		)
 		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
@@ -365,7 +365,7 @@ class PostTestCase(APITestCase):
 				'content': 'comp sci 404 project, blah blah blah',
 				'category': 'compsci',
 				'visibility_choice': 'something',
-				'content_type': 'text/json'
+				'contentType': 'text/json'
 			}, format='json'
 		)
 		self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response)
@@ -420,7 +420,7 @@ class CommentTestCase(APITestCase):
 				'content': 'comp sci 404 project, blah blah blah',
 				'category': 'compsci',
 				'visibility_choice': 'Public',
-				'content_type': 'text/markdown'
+				'contentType': 'text/markdown'
 			}, format='json'
 		)
 		self.pId1 = response.data['id']

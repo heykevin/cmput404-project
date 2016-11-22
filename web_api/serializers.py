@@ -34,7 +34,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'content', 'author', 'publish_time', 'post')
+        fields = ('id', 'content', 'author', 'published', 'post')
 
     def create(self, validated_data):
         # print ("CREATING COMMENT")
@@ -58,7 +58,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'source', 'origin', 'description', 'content',
-            'category', 'author', 'visibility', 'publish_time', 'content_type', 'comments')
+            'category', 'author', 'visibility', 'published', 'contentType', 'comments')
 
     def create(self, validated_data):
         id = uuid.uuid4()
@@ -70,7 +70,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     # Returns a list of comments
     def getComments(self, obj):
-        commentsQuerySet = Comment.objects.all().filter(post__id=obj.id).order_by('publish_time')[:5]
+        commentsQuerySet = Comment.objects.all().filter(post__id=obj.id).order_by('published')[:5]
 
         serializer = CommentSerializer(commentsQuerySet, many=True)
         return serializer.data

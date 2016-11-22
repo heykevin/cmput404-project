@@ -59,7 +59,7 @@ class Post(models.Model):
     text_plain="text/plain"
     text_markdown="text/markdown"
 
-    content_type=(
+    contentType=(
         (text_plain, 'text/plain'),
         (text_markdown, 'text/markdown')
     )
@@ -80,9 +80,9 @@ class Post(models.Model):
 
     visibility=models.CharField(max_length=20, choices=visibility_choice, default=public)
 
-    publish_time=models.DateTimeField(auto_now=True)
+    published=models.DateTimeField(auto_now=True)
 
-    content_type=models.CharField(max_length=15, choices=content_type, default=text_markdown)
+    contentType=models.CharField(max_length=15, choices=contentType, default=text_markdown)
 
     def get_count(self):
         return self.objects.count()
@@ -95,4 +95,4 @@ class Comment(models.Model):
     content = models.TextField(default="")
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    publish_time = models.DateTimeField(auto_now=True)
+    published = models.DateTimeField(auto_now=True)

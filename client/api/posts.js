@@ -15,7 +15,7 @@ export default class ApiPosts {
         body.append('content', action.postData.content);
         body.append('category', action.postData.category);
         body.append('visibility', action.postData.visibility);
-        body.append('content_type', action.postData.contentType);
+        body.append('contentType', action.postData.contentType);
         console.log(body);
         return body;
     }

@@ -34,9 +34,9 @@ export class PostListElement extends React.Component
             return null;
         }
 
-        time = new Date(post.publish_time).toString();
+        time = new Date(post.published).toString();
         href = this.props.preview ? '/posts/' + post.id : "#";
-        content = post.content_type.toLowerCase() === "text/markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
+        content = post.contentType.toLowerCase() === "text/markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
         // render
         return (
                 <ListGroupItem data-id={post.id}>

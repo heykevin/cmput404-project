@@ -356,7 +356,7 @@ class ImageIDView(generics.CreateAPIView):
         image = serializer.data['photo']
         contenttype = image.split('.')[-1]
         with open(settings.MEDIA_ROOT + '/' + image, "rb") as file:
-            return HttpResponse(file.read(), content_type="image/" + contenttype)
+            return HttpResponse(file.read(), contentType="image/" + contenttype)
 
 class PersonalImagesView(generics.ListAPIView):
     authentication_classes = (BasicAuthentication, )

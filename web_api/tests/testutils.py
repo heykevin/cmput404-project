@@ -73,7 +73,7 @@ POST_LIST =[
         "content": "I am a cool bear!",
         "category": "bear",
         "visibility": "PUBLIC",
-        "content_type": "text/plain"
+        "contentType": "text/plain"
     },
     {
         "title": "Very Cool Bear",
@@ -83,7 +83,7 @@ POST_LIST =[
         "content": "I am a very cool bear!",
         "category": "bear",
         "visibility": "PRIVATE",
-        "content_type": "text/plain"
+        "contentType": "text/plain"
     },
     {
         "title": "Very Very Cool Bear",
@@ -93,7 +93,7 @@ POST_LIST =[
         "content": "I am a very very cool bear!",
         "category": "bear",
         "visibility": "FRIENDS",
-        "content_type": "text/plain"
+        "contentType": "text/plain"
     }        
 ]
 

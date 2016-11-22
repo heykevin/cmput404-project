@@ -19,7 +19,7 @@ export class PostForm extends React.Component {
             content: "",
             visibility: "PUBLIC",
             disableButton: true,
-            content_type: "text/markdown",
+            contentType: "text/markdown",
             edited: false,
             editorModeOverride: false,
             category: "",
@@ -155,7 +155,7 @@ export class PostForm extends React.Component {
             description: this.state.description,
             content: this.state.content,
             visibility: document.getElementById("visibility").value, // this is faster -- hackin' my way lol
-            contentType: this.state.content_type,
+            contentType: this.state.contentType,
             category: this.state.category
         };
         event.preventDefault();
@@ -173,7 +173,7 @@ export class PostForm extends React.Component {
     {
         this.setState({
             editorModeOverride: true,
-            content_type: isMarkdownContent ? "text/markdown" : "text/plain",
+            contentType: isMarkdownContent ? "text/markdown" : "text/plain",
             edited: true
         });
     }
@@ -190,7 +190,7 @@ export class PostForm extends React.Component {
     {
 
         this.setState({
-            content: this.state.content_type === "text/markdown" ? content : content.target.value,
+            content: this.state.contentType === "text/markdown" ? content : content.target.value,
             edited: true,
             disableButton: this.isButtonDisabled()
         });
@@ -225,7 +225,7 @@ export class PostForm extends React.Component {
     }
 
     getEditorMode() {
-        return this.state.editorModeOverride ? this.state.content_type === "text/markdown" : (this.props.post.content_type && this.props.post.content_type ? this.props.post.content_type ==="text/markdown" : true);
+        return this.state.editorModeOverride ? this.state.contentType === "text/markdown" : (this.props.post.contentType && this.props.post.contentType ? this.props.post.contentType ==="text/markdown" : true);
     }
 
     isButtonDisabled() {
