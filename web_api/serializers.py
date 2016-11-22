@@ -4,6 +4,14 @@ from rest_framework import serializers
 from rest_framework.decorators import detail_route
 from .models import *
 
+class NodeSerializer(serializers.ModelSerializer):
+    nodeName = serializers.CharField(source='user.username')
+    nodePassword = serializers.CharField(source='user.password', write_only=True)
+    
+    class Meta:
+        mode = Node
+        fields = ('node_url', 'access_to_posts', 'access_to_images', 'nodeName', 'nodePassword')
+
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -121,7 +129,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         id = uuid.uuid4()
         host = "http://"+self.context.get('request').get_host()+"/"
-        url = self.context.get('request').build_absolute_uri() + str(id)
+        url = self.context.get('request').build_absolute_uri() + str(id) + '/'
         user_data = validated_data.pop('user')
         user_object = User.objects.create_user(is_active=False, **user_data)
         author = Author.objects.create(id=id, user=user_object, host=host, url=url, **validated_data)

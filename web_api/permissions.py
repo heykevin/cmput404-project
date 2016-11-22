@@ -14,7 +14,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         admin = request.user and request.user.is_staff
         # Instance must have an attribute named `owner`.
         return admin or obj.user == request.user
-
+    
 class IsPostAuthorOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to only allow owners of an object to edit it.
