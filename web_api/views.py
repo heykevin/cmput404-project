@@ -553,6 +553,13 @@ class FriendRequestView(APIView):
             friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
             friend_request.save()
             return Response("Friend request sent.", status.HTTP_200_OK)
+    
+    def reject_request(self, request):
+        senderObj = Author.objects.get(id=request.data["author"]["id"])
+        receiverObj = Author.objects.get(id=request.data["friend"]["id"])        
+        
+        FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
+        return Response("Friend request rejected.", status.HTTP_200_OK)
 
     def unfriend(self, request):
         senderObj = Author.objects.get(id=request.data["author"]["id"])
@@ -579,6 +586,9 @@ class FriendRequestView(APIView):
 
         if request.data['query'] == 'friendrequest':
             return self.post_request(request)
+        
+        if request.data['query'] == 'rejectrequest':
+            return self.reject_request(request)        
         
         elif request.data['query'] == 'unfriend':
             return self.unfriend(request)

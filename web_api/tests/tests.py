@@ -158,6 +158,39 @@ class FriendRequestTestCase(APITestCase):
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
 	self.assertTrue(Author.objects.get(id=self.receiver.id).friends.all().filter(id=self.sender.id).exists())
     
+    def test_reject(self):
+	self.sender = createAuthor(self,0)
+	self.receiver = createAuthor(self,1)
+	
+	response = self.client.post('/friendrequest/', {
+	    "query" : "friendrequest",
+	    "author" : {
+	        "id" : self.sender.id,
+	        "host" : self.sender.host,
+	        "displayName" : self.sender.user.username,
+	    },	
+	    "friend": {
+	        "id" : self.receiver.id,
+	        "host" : self.receiver.host,
+	        "displayName" : self.receiver.user.username,
+	        "url" : self.receiver.host+"author/"+str(self.receiver.id)
+	    }
+	}, format='json')
+	
+	response = self.client.post('/friendrequest/', {
+	    "query" : "rejectrequest",
+	    "author" : {
+	        "id" : self.sender.id,
+	    },	
+	    "friend": {
+	        "id" : self.receiver.id,
+	    }
+	}, format='json')	
+	
+	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+	self.assertFalse(FriendRequest.objects.filter(sender=self.sender, receiver=self.receiver).exists())
+	self.assertTrue(Author.objects.get(id=self.receiver.id).friends.all().filter(id=self.sender.id).exists()==False)
+    
 	
     def test_unfriend(self):
 	self.sender = createAuthor(self,0)
