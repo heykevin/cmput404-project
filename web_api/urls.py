@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^posts/$', views.PostView.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/comments/$', views.CommentView.as_view()),
     url(r'^posts/(?P<pk>[^/.]+)/$', views.PostIDView.as_view()),
+    url(r'^foreignposts/$', views.ForeignPostView.as_view()),
 
     # Image
     url(r'^images/$', views.ImageView.as_view()),

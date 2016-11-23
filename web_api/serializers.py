@@ -2,6 +2,7 @@ import uuid
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from rest_framework.decorators import detail_route
+from django.core.exceptions import ObjectDoesNotExist
 from .models import *
 
 class NodeSerializer(serializers.ModelSerializer):
@@ -24,7 +25,6 @@ class UserSerializer(serializers.ModelSerializer):
             },
         }
 
-
 class AuthorInfoSerializer(serializers.ModelSerializer):
     displayName = serializers.CharField(source='user.username')
     first_name = serializers.CharField(source='user.first_name', allow_blank=True, required=False)
@@ -34,8 +34,53 @@ class AuthorInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ('id', 'displayName', 'first_name', 'last_name',
-                  'email', 'bio', 'host', 'github_username')
+                  'email', 'bio', 'host', 'github_username', 'url')
 
+class ForeignAuthorInfoSerializer(serializers.ModelSerializer):
+    displayName = serializers.CharField(source='user.username')
+    first_name = serializers.CharField(source='user.first_name', allow_blank=True, required=False)
+    last_name = serializers.CharField(source='user.last_name', allow_blank=True, required=False)
+    email = serializers.CharField(source='user.email', allow_blank=True, required=False)
+
+    class Meta:
+        model = Author
+        fields = ('id', 'displayName', 'first_name', 'last_name',
+                  'email', 'bio', 'host', 'github_username', 'url')
+
+class ForeignPostSerializer(serializers.ModelSerializer):
+    author = ForeignAuthorInfoSerializer(many = False)
+
+    class Meta:
+        model = ForeignPost
+        fields = ('id', 'title', 'source', 'author', 'origin', 'description', 'content',
+            'category', 'visibility', 'published', 'contentType')
+
+    def create(self, validated_data):
+        print "CREATING"
+        print validated_data
+        id = uuid.uuid4()
+        origin = validated_data.get('origin')
+        content_type = validated_data.pop('contentType')
+        author = validated_data.pop('author')
+        foreignuser = author.pop('user')
+        print author
+        try:
+            author = Author.objects.get(url=author.get('url'))
+        except ObjectDoesNotExist:
+            user = User.objects.create(username="__"+foreignuser.get('username'))
+            author = Author.objects.create(user=user, **author)
+            user.save()
+            author.save()
+
+        if content_type == "type/x-markdown":
+            content_type = "type/markdown"
+        try:
+            post = ForeignPost.objects.get(origin=origin)
+        except ObjectDoesNotExist:
+            print "SAVINGG"
+            post = ForeignPost.objects.create(id=id, author=author, contentType=content_type, **validated_data)
+            post.save()
+        return post
 
 class CommentSerializer(serializers.ModelSerializer):
 

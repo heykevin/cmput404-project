@@ -16,7 +16,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .permissions import *
-from .models import Author, Post, Image
+from .models import Author, Post, Image, ForeignPost
 from .remoteConnection import RemoteConnection
 from serializers import *
 
@@ -250,9 +250,6 @@ class PostView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
-        r = requests.get('https://cmput404f16t04dev.herokuapp.com/api/posts/', auth=HTTPBasicAuth('admin', 'cmput404'))
-        print r.text
-        print "GETTING REQUEST"
         return Post.objects.all().filter(visibility="PUBLIC")
 
     def post(self,request):
@@ -276,6 +273,37 @@ class PostView(generics.ListCreateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+'''
+A viewset for service/foreignposts/
+public posts from foreign nodes
+
+response(post_object)
+    'id': UUID
+    'title': string
+    'source': URL
+    'origin': URL
+    'description': string
+    'content': string
+    'category': string
+    'visibility': choice selection
+    'content type': choice selection
+'''
+class ForeignPostView(generics.ListAPIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated, )
+    queryset = ForeignPost.objects.all()
+    serializer_class = ForeignPostSerializer
+
+    def get(self, request, format=None):
+        source = self.request.get_host()
+        r = requests.get('https://cmput404f16t04dev.herokuapp.com/api/posts/', auth=HTTPBasicAuth('admin', 'cmput404'))
+        serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
+        if serializer.is_valid():
+            serializer.save()
+        # print json.loads(r.text).get('posts')
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class PostIDView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (BasicAuthentication, )
