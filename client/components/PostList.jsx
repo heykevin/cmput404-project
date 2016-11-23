@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
-import {ProgressBar, List, Pagination, ListGroup} from 'react-bootstrap';
+import {ProgressBar, List, ListGroup} from 'react-bootstrap';
 
 import PostListElement from './PostListElement.jsx';
 import Utils from '../utils/utils.js';
@@ -18,38 +18,45 @@ export class PostList extends React.Component
         // posts can be retrieve by either author/{AUTHOR_ID}/posts or posts
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: Utils.getAuthor().id});
         this.props.dispatch({type: 'posts.reloadList'});
-        this.props.dispatch({type: 'postsGetPosts', method: this.props.method, authorId: this.props.authorId, page: this.props.page || ""});
-        this.changePage = this.changePage.bind(this);
+        if (this.props.foreign) {
+            this.props.dispatch({type: 'postsGetForeignPosts', method: this.props.method, page: this.props.page || ""});
+        } else {
+            this.props.dispatch({type: 'postsGetPosts', method: this.props.method, authorId: this.props.authorId, page: this.props.page || ""});
+        }
     }
 
     render()
     {
-        // pagination
-        const per_page = 10;
-        const pages = Math.ceil(this.props.count / per_page);
-        const current_page = this.props.page;
-        let start_count = 0;
-        console.log("changing page ---", this.props.posts);
+        let start_count = 0, posts, resolved, count;
+        if (this.props.foreign) {
+            posts = this.props.foreignPosts;
+            resolved = this.props.foreignResolved;
+            count = this.props.foreignCount;
+        } else {
+            posts = this.props.posts;
+            resolved = this.props.resolved;
+            count = this.props.count;
+        }
+
+        console.dir(this.props);
 
         // render
-        if (!this.props.resolved || !this.props.authorResolved) {
+        if (!resolved || !this.props.authorResolved) {
             // show the loading state
             return (<ProgressBar active now={100}/>);
-        } else if (this.props.posts.length && this.props.authorResolved) {
+        } else if (posts.length && this.props.authorResolved) {
             return (
                 <div>
                     <div className={(this.props.sending ? "visible" : "invisible") + " hide-yall-kids-hide-yall-wife"}>
                         <i className="fa fa-spinner fa-spin"></i>
                     </div>
                     <ListGroup className="post-group">
-                        {this.props.posts.map((post, index) => {
-                            if (index >= 0 && start_count < per_page) {
-                                start_count++;
-                                return (<PostListElement key={post.id} id={post.id} preview={true} canEdit={this.props.canEdit}/>);
+                        {posts.map((post, index) => {
+                            if (index >= 0 && index < posts.length) {
+                                return (<PostListElement key={post.id} id={post.id} preview={true} foreign={this.props.foreign} canEdit={this.props.canEdit}/>);
                             }
                         })}
                     </ListGroup>
-                    <Pagination className="users-pagination pull-right" bsSize="medium" maxButtons={10} first last next prev boundaryLinks items={pages} activePage={current_page} onSelect={this.changePage}/>
                 </div>
             );
         } else {
@@ -63,15 +70,6 @@ export class PostList extends React.Component
             );
         }
     }
-
-    changePage(page)
-    {
-        console.log("changing page ---", this.props.nextUrl);
-        console.dir(this.props);
-        this.props.dispatch({type: 'posts.reloadList'});
-        this.props.dispatch(push(this.props.path+'?page=' + page));
-        this.props.dispatch({type: 'postsGetPosts', method: this.props.method, authorId: this.props.authorId, page: page});
-    }
 }
 
 // export the connected class
@@ -79,13 +77,15 @@ function mapStateToProps(state, own_props) {
     console.log(state.routing.locationBeforeTransitions.query);
     return {
         posts: state.posts.list || [],
-        page: Number(state.routing.locationBeforeTransitions.query.page) || 1,
-        path: state.routing.locationBeforeTransitions.pathname,
+        foreignPosts: state.posts.foreignList || [],
         resolved: state.posts.resolved || false,
+        foreignResolved: state.posts.foreignResolved || false,
         count: state.posts.count,
+        foreignCount: state.posts.foreignCount,
         sending: state.users.sending,
         method: own_props.method,
         authorId: own_props.authorId,
+        foreign: own_props.foreign,
         authorResolved: state.users.authorResolved,
     };
 }

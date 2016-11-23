@@ -24,8 +24,13 @@ export default class Dashboard extends React.Component
                     <div className="git-stream">
                         <GithubStream/>
                     </div>
-                    <div className="posts-stream">
-                        <PostList className="posts-stream" method="author" canEdit={false}/>
+                    <div>
+                        <div className="posts-stream">
+                            <PostList className="posts-stream" method="author" canEdit={false}/>
+                        </div>
+                        <div className="posts-stream">
+                            <PostList className="posts-stream" method="author" foreign={true} canEdit={false}/>
+                        </div>
                     </div>
                 </div>
             );

@@ -61,6 +61,23 @@ export default class ApiPosts {
         });
     }
 
+    static getForeignPosts(action) {
+        console.log("get posts api");
+        const token = "YWRtaW46Y21wdXQ0MDQ=";
+
+        let query = "http://cmput404f16t04dev.herokuapp.com/api/posts/";
+        return fetch(query, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Basic YWRtaW46Y21wdXQ0MDQ=`
+            }
+        }).then((res) => {
+            return Utils.handleErrors(res);
+        }).then((response) => {
+            return {posts: response.posts, count: response.count};
+        });
+    }
+
     static savePost(action) {
         console.log("api - save post");
         const host = getApi(),

@@ -21,6 +21,24 @@ export function* postsGetPosts(action) {
     }
 }
 
+export function* postsGetForeignPosts(action) {
+    try {
+        // call the api to get the posts list
+        console.log("saga -- Fetch posts");
+        const posts = yield call(ApiPosts.getForeignPosts, action);
+        // dispatch the success action with the posts attached
+        yield put({
+            type: 'posts.getForeignPostsSuccess',
+            posts: posts.posts,
+            count: posts.count ? posts.count : 1
+        });
+    } catch (error) {
+        yield put({
+            type: 'posts.getForeignPostsFailure',
+            error: error,
+        });
+    }
+}
 export function* postsSavePost(action) {
     console.log("sage -- save post");
     // dispatch success action with response and also action.postData in

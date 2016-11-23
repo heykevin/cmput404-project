@@ -25,12 +25,13 @@ export class PostListElement extends React.Component
     {
         // get the post element data
         let post, href, time, content, friendStatus, buttonText, disabled;
-        const sendFriendRequestText = "Send a friend request to";
-
+        const sendFriendRequestText = "Send a friend request to",
+        posts = this.props.foreign ? this.props.foreignPosts : this.props.posts;
+        console.log(this.props.foreignPosts);
         if (this.props.view === "view" && ! (this.props.posts instanceof Array)) {
             post = this.props.posts;
-        } else if (this.props.posts.length > 0){
-            for (const val of this.props.posts) {
+        } else if (posts.length > 0){
+            for (const val of posts) {
                 if (val.id === this.props.id) {
                     post = val;
                     break;
@@ -43,7 +44,7 @@ export class PostListElement extends React.Component
         }
 
         time = new Date(post.published).toLocaleString();
-        href = this.props.preview ? '/posts/' + post.id : "#";
+        href = this.props.foreign ? post.origin : this.props.preview ? '/posts/' + post.id : "#";
         content = post.contentType.toLowerCase() === "text/markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
 
         buttonText = (this.isFriendWith(post.author) ? "Alreayd friends with" : this.sentFriendRequestTo(post.author) ? "Friend request sent to" : this.receivedFriendRequestFrom(post.author) ? "Friend request received from" : sendFriendRequestText);
@@ -165,7 +166,9 @@ export class PostListElement extends React.Component
 function mapStateToProps(state, own_props) {
     return {
         posts: state.posts.list || [],
-        id: own_props.id
+        foreignPosts: state.posts.foreignList || [],
+        id: own_props.id,
+        foreign: own_props.foreign
     }
 }
 export default connect(mapStateToProps)(PostListElement);

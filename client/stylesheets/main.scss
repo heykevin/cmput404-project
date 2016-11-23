@@ -86,7 +86,7 @@
     }
 
     .posts-stream {
-        width: 70%;
+        // width: 70%;
     }
 
     .post-editor {
@@ -130,6 +130,11 @@
     .post-group {
         line-height: 2em;
 
+        span {
+            margin-bottom: 15px;
+            border-radius: 0.5em;
+        }
+
         a,
         a:active,
         a:focus,
@@ -168,7 +173,7 @@
 
             strong {
                 border-bottom: 1px dotted #000;
-                font-weight: 700;   
+                font-weight: 700;
             }
         }
 

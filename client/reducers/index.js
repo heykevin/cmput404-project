@@ -29,10 +29,6 @@ export function reducerCall(state, action, reducerClass) {
         }
     });
 
-    if (action.type === "setAuth") {
-        return {state, loggedIn:1};
-    }
-
     // check if the action method exists in the static class
     if (methods.find(x => x === method)) {
         // clone the state/sub-state

@@ -22,6 +22,21 @@ class reducerClass
         return new_state;
     }
 
+    static getForeignPostsSuccess(new_state, action)
+    {
+        new_state.foreignList = (action.posts && action.posts.length) ? this.sortPostsByDate(action.posts) : action.posts;
+        new_state.foreignCount = action.count;
+        new_state.foreignResolved = true;
+        return new_state;
+    }
+
+    static getForeignPostsFailure(new_state, action)
+    {
+        new_state.error = action.error;
+        new_state.foreignResolved = true;
+        return new_state;
+    }
+
     static savePostSuccess(new_state, action)
     {
         new_state.response = action.response;
@@ -123,7 +138,7 @@ class reducerClass
     static sortPostsByDate(posts)
     {
         posts.sort(function(a, b) {
-            return new Date(a.published).getTime() - new Date(b.published).getTime();
+            return new Date(b.published).getTime() - new Date(a.published).getTime();
         });
         return posts;
     }
