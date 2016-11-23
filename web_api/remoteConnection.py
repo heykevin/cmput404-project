@@ -36,8 +36,9 @@ class RemoteConnection:
                 print "\nAccess permission checking successful."
                 return True
         
-        print "\nAccess permission checking failed."
-        return False
+        print "\nAccess permission checking failed, assuming sender is from REST."
+        print "\nBut if you see above message when sending from client or remote means there's a problem."
+        return True
     
     def get_node_auth(self, remote_host):
         
