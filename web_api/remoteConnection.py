@@ -23,36 +23,36 @@ from serializers import *
 class RemoteConnection:
     
     def check_node_valid(self, request):
-        
-        print "Checking Node."
+        print "\nChecking Node."
         # This first condtion let the test pass as test request don't have this attribute.
         if not 'REMOTE_HOST' in request.META.keys() or request.META['REMOTE_HOST']=='bloggyblog404.herokuapp.com' or request.META['REMOTE_HOST']=='localhost:8080':
             print "Frontend or testing client, OK."
             return True
         
-        print "Remote node confirmed, checking access permission."
+        print "\nRemote node confirmed, checking access permission."
         for node in Node.objects.all():
-            if request.user == node.user and request.user.is_authenticated():
-                print "Access permission checking successful."
+            print request.user.username
+            if "http://"+request.get_host()+"/" == node.node_url and request.user.is_authenticated():
+                print "\nAccess permission checking successful."
                 return True
         
-        print "Access permission checking failed."
+        print "\nAccess permission checking failed."
         return False
     
     def get_node_auth(self, remote_host):
         
-        print "Getting auth information from DB."
+        print "\nGetting auth information from DB."
         for node in Node.objects.all():
             if remote_host == node.node_url:
-                return (node.user.username, node.user.password)
+                return (node.user.username, node.password)
         
-        print "Failed..."
+        print "\nFailed..."
         return None
     
     def send_to_remote(self, url, data, auth):
         if auth == None:
-            print "No auth information."
+            print "\nNo auth information."
         print '\nSending request to: '+url
         r = requests.post(url, json=data, auth=auth)
-        print 'Getting ' + str(r.status_code)+' from the remote server.\n' 
+        print '\nGetting ' + str(r.status_code)+' from the remote server.' 
         return r.status_code    
