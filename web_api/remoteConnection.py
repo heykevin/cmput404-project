@@ -31,7 +31,7 @@ class RemoteConnection:
         
         print "\nRemote node confirmed, checking access permission."
         for node in Node.objects.all():
-            print request.user.username
+            # print request.user.username
             if "http://"+request.get_host()+"/" == node.node_url and request.user.is_authenticated():
                 print "\nAccess permission checking successful."
                 return True
