@@ -42,18 +42,18 @@ export class PostListElement extends React.Component
         if (!post) {
             return null;
         }
-
+        const displayName = this.props.foreign && post.author.displayName.length > 2 ? post.author.displayName.substr(2) : post.author.displayName;
         time = new Date(post.published).toLocaleString();
         href = this.props.foreign ? post.origin : this.props.preview ? '/posts/' + post.id : "#";
         content = post.contentType.toLowerCase() === "text/markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
 
         buttonText = (this.isFriendWith(post.author) ? "Alreayd friends with" : this.sentFriendRequestTo(post.author) ? "Friend request sent to" : this.receivedFriendRequestFrom(post.author) ? "Friend request received from" : sendFriendRequestText);
         disabled = buttonText !== sendFriendRequestText;
-        buttonText += " " + post.author.displayName;
-        friendStatus = <Button bsStyle="default" data-host={post.author.host} data-id={post.author.id} data-display-name={post.author.displayName} onClick={this.sendFriendRequest} disabled={disabled}>{buttonText}</Button>;
+        buttonText += " " + displayName;
+        friendStatus = <Button bsStyle="default" data-host={post.author.host} data-id={post.author.id} data-display-name={displayName} onClick={this.sendFriendRequest} disabled={disabled}>{buttonText}</Button>;
         const popoverHoverFocus =
                 <Popover title="Profile" id={post.author.id}>
-                    <strong>Display Name</strong>: {post.author.displayName} <br/>
+                    <strong>Display Name</strong>: {displayName} <br/>
                     <strong>Host</strong>: {post.author.host} <br/>
                     <strong>Bio</strong>: {post.author.bio || ""} <br/>
                 </Popover>;
@@ -75,7 +75,7 @@ export class PostListElement extends React.Component
                         </div>
                     </a>
                     <div className="post-info">
-                        <span>Posted as {post.visibility} by <OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{post.author.displayName}</strong></OverlayTrigger> on {time}</span><br/>
+                        <span>Posted as {post.visibility} by <OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{displayName}</strong></OverlayTrigger> on {time}</span><br/>
                         <span className={post.author.id === Utils.getAuthor().id || !this.props.preview? "invisible" : "visible"}>{friendStatus}</span>
                     </div>
                     <a href={href}>
