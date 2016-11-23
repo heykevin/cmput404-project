@@ -246,8 +246,8 @@ class PostView(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     pagination_class = PostsResultsSetPagination
-    # authentication_classes = (BasicAuthentication, )
-    # permission_classes = (IsAuthenticated, )
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         r = requests.get('https://cmput404f16t04dev.herokuapp.com/api/posts/', auth=HTTPBasicAuth('admin', 'cmput404'))

@@ -52,7 +52,7 @@ class Image(models.Model):
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=500)
-    source = models.URLField()
+    source = models.URLField(blank=True,)
     origin = models.URLField(editable=False)
     description = models.CharField(max_length = 50)
     content = models.TextField()
