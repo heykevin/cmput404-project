@@ -485,17 +485,27 @@ class FriendRequestView(APIView):
 
     def get_author_info(self, request, key_name):
         res=dict()
+        
         node = request.data[key_name]["host"]
+        author_id = request.data[key_name]["id"]
+        
         if(node == self.myNode or node == self.myNode2):
-            res["obj"] = Author.objects.get(id=request.data[key_name]["id"])
+            res["obj"] = Author.objects.get(id=author_id)
             res["is_local"] = True
         else:
-            if Author.objects.filter(id=request.data[key_name]["id"]).exists():
-                res["obj"] = Author.objects.get(id=request.data[key_name]["id"])
+            if Author.objects.filter(id = author_id).exists():
+                res["obj"] = Author.objects.get(id = author_id)
             else:
-                foreign_user=User(username=request.data[key_name]["displayName"], is_active=False)
+                foreign_user=User(username = "__" + request.data[key_name]["displayName"], is_active=False)
                 foreign_user.save()
-                res["obj"] = Author(user=foreign_user, id=request.data[key_name]["id"], host = node)
+                
+                url = node
+                if node[-1] != '/':
+                    url += '/'
+                
+                url += (str(author_id)+'/')
+                
+                res["obj"] = Author(user=foreign_user, id=request.data[key_name]["id"], host = node, url = url)
                 res["obj"].save()
             res["is_local"] = False
         return res

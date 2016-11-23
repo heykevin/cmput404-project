@@ -9,7 +9,7 @@ class Node(models.Model):
     access_to_posts = models.BooleanField()
     access_to_images = models.BooleanField()
     
-    password = models.CharField(max_length=35)
+    password = models.CharField(max_length=35, null=True)
     
     user = models.OneToOneField(User)
 

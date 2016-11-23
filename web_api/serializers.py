@@ -36,16 +36,9 @@ class AuthorInfoSerializer(serializers.ModelSerializer):
         fields = ('id', 'displayName', 'first_name', 'last_name',
                   'email', 'bio', 'host', 'github_username', 'url')
 
-class ForeignAuthorInfoSerializer(serializers.ModelSerializer):
-    displayName = serializers.CharField(source='user.username')
-    first_name = serializers.CharField(source='user.first_name', allow_blank=True, required=False)
-    last_name = serializers.CharField(source='user.last_name', allow_blank=True, required=False)
-    email = serializers.CharField(source='user.email', allow_blank=True, required=False)
-
-    class Meta:
-        model = Author
-        fields = ('id', 'displayName', 'first_name', 'last_name',
-                  'email', 'bio', 'host', 'github_username', 'url')
+class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
+    # Extend the same class will be fine I guess.
+    pass
 
 class ForeignPostSerializer(serializers.ModelSerializer):
     author = ForeignAuthorInfoSerializer(many = False)
@@ -56,19 +49,20 @@ class ForeignPostSerializer(serializers.ModelSerializer):
             'category', 'visibility', 'published', 'contentType')
 
     def create(self, validated_data):
-        print "CREATING"
-        print validated_data
+        print "CREATING FOREIGN POST..."
+        # print validated_data
         id = uuid.uuid4()
         origin = validated_data.get('origin')
         content_type = validated_data.pop('contentType')
-        author = validated_data.pop('author')
-        foreignuser = author.pop('user')
-        print author
+        foreign_author = validated_data.pop('author')
+        foreign_user = foreign_author.pop('user')
+        # print author
+        
         try:
-            author = Author.objects.get(url=author.get('url'))
+            author = Author.objects.get(url=foreign_author.get('url'))
         except ObjectDoesNotExist:
-            user = User.objects.create(username="__"+foreignuser.get('username'))
-            author = Author.objects.create(user=user, **author)
+            user = User.objects.create(username="__"+foreign_user.get('username'))
+            author = Author.objects.create(user=user, **foreign_author)
             user.save()
             author.save()
 
@@ -77,7 +71,7 @@ class ForeignPostSerializer(serializers.ModelSerializer):
         try:
             post = ForeignPost.objects.get(origin=origin)
         except ObjectDoesNotExist:
-            print "SAVINGG"
+            print "SAVING FOREIGN POST..."
             post = ForeignPost.objects.create(id=id, author=author, contentType=content_type, **validated_data)
             post.save()
         return post
