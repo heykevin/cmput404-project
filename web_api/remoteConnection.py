@@ -49,10 +49,28 @@ class RemoteConnection:
         print "\nFailed..."
         return None
     
-    def send_to_remote(self, url, data, auth):
+    def post_to_remote(self, url, data, auth):
+        print '\nSending post request to: '+url
+        r = None
+        
         if auth == None:
             print "\nNo auth information."
-        print '\nSending request to: '+url
-        r = requests.post(url, json=data, auth=auth)
-        print '\nGetting ' + str(r.status_code)+' from the remote server.' 
-        return r.status_code    
+            r = requests.post(url, json=data)
+        else:
+            r = requests.post(url, json=data, auth=auth)
+        
+        print '\nGetting ' + str(r.status_code)+' from the remote server.'
+        return r
+    
+    def get_from_remote(self, url, auth):
+        print '\nSending get request to: '+url
+        r=None
+        
+        if auth == None:
+            print "\nNo auth information."
+            r = requests.get(url)
+        else:
+            r = requests.get(url, auth=auth)
+        
+        print '\nGetting ' + str(r.status_code)+' from the remote server.'       
+        return r        

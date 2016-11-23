@@ -508,9 +508,9 @@ class FriendRequestView(APIView):
                     remote_host+='/'
                 url = remote_host+'friendrequest/'
                    
-                status_code = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
+                r = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
                 
-                if status_code != 200 and status_code != 201:
+                if r.status_code != 200 and r.status_code != 201:
                     return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
             # -------------------------------------------------
 
@@ -536,9 +536,9 @@ class FriendRequestView(APIView):
         # In case of sending request to remote.
         if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
             url = senderObj.host+'friendrequest/'
-            status_code = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
+            r = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
             
-            if status_code != 200:
+            if r.status_code != 200:
                 return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
 
         FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
@@ -559,9 +559,9 @@ class FriendRequestView(APIView):
         if (senderObj.host == self.myNode or senderObj.host == self.myNode2) and (receiverObj.host != self.myNode and receiverObj.host != self.myNode2):     
             
             url = receiverObj.host+'friendrequest/'
-            status_code = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
+            r = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
             
-            if status_code != 200:
+            if r.status_code != 200:
                 return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
 
         senderObj.friends.remove(receiverObj)
