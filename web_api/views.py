@@ -508,7 +508,7 @@ class FriendRequestView(APIView):
                     remote_host+='/'
                 url = remote_host+'friendrequest/'
                    
-                r = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
+                r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
                 
                 if r.status_code != 200 and r.status_code != 201:
                     return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
@@ -536,7 +536,7 @@ class FriendRequestView(APIView):
         # In case of sending request to remote.
         if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
             url = senderObj.host+'friendrequest/'
-            r = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
+            r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
             
             if r.status_code != 200:
                 return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
@@ -559,7 +559,7 @@ class FriendRequestView(APIView):
         if (senderObj.host == self.myNode or senderObj.host == self.myNode2) and (receiverObj.host != self.myNode and receiverObj.host != self.myNode2):     
             
             url = receiverObj.host+'friendrequest/'
-            r = self.rc.send_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
+            r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
             
             if r.status_code != 200:
                 return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
