@@ -32,7 +32,7 @@ class RemoteConnection:
         print "\nRemote node confirmed, checking access permission."
         for node in Node.objects.all():
             # print request.user.username
-            if "http://"+request.get_host()+"/" == node.node_url and request.user.is_authenticated():
+            if "http://"+request.META['REMOTE_HOST']+"/" == node.node_url and request.user.is_authenticated():
                 print "\nAccess permission checking successful."
                 return True
         
@@ -58,6 +58,7 @@ class RemoteConnection:
             print "\nNo auth information."
             r = requests.post(url, json=data)
         else:
+            print "\nSever access auth: {" + auth[0] + " : " + auth[1] + "}"
             r = requests.post(url, json=data, auth=auth)
         
         print '\nGetting ' + str(r.status_code)+' from the remote server.'

@@ -509,19 +509,11 @@ class FriendRequestView(APIView):
                 res["obj"].save()
             res["is_local"] = False
         return res
-
+    
+    # May need to use this !
     def check_empty_foreign_record(self, foreign_author):
         if foreign_author.friends.all().count()==0 and len(foreign_author.get_request_sent())==0 and len(foreign_author.get_request_received())==0:
             foreign_author.delete()
-
-
-    def check_if_need_delete(self, senderObj, receiverObj):
-        if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
-            self.check_empty_foreign_record(senderObj)
-
-        elif (senderObj.host == self.myNode or senderObj.host == self.myNode2) and receiverObj.host != self.myNode and receiverObj.host != self.myNode2:
-            self.check_empty_foreign_record(receiverObj)
-
     
 
     # Handles the request creation
@@ -530,81 +522,48 @@ class FriendRequestView(APIView):
         receiver = self.get_author_info(request, 'friend')
 
         if (not sender["is_local"]) and (not receiver["is_local"]):
-            return Response("Who are they?", status.HTTP_400_BAD_REQUEST)
+            return Response("Who are they?", status.HTTP_400_BAD_REQUEST) 
 
-        if sender["is_local"]:
-            if sender["obj"].friends.all().filter(id=receiver["obj"].id).exists():
-                return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
-            if receiver["obj"] in sender["obj"].get_request_sent():
-                return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
-            if receiver["obj"] in sender["obj"].get_request_received():
-                return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)
-            # This is the communicating process to other nodes.
-            if not receiver["is_local"]:
-                remote_host = receiver["obj"].host
-                if remote_host[-1] != '/':
-                    remote_host+='/'
-                url = remote_host+'friendrequest/'
-                   
-                r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
-                
-                if r.status_code != 200 and r.status_code != 201:
-                    return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
-            # -------------------------------------------------
-
-        elif receiver["is_local"]:
-            if receiver["obj"].friends.all().filter(id=sender["obj"].id).exists():
-                return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
-            if sender["obj"] in receiver["obj"].get_request_received():
-                return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
-            if sender["obj"] in receiver["obj"].get_request_sent():
-                return Response("Friend request sent by receiver.", status.HTTP_400_BAD_REQUEST)
-
-        friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
-        friend_request.save()
-
-        return Response("Friend request sent.", status.HTTP_200_OK)
-
-    # In this function, receiver is the response sender! REVERSE!
-    def post_response(self, request):
-        senderObj = Author.objects.get(id=request.data['author']["id"])
-        receiverObj = Author.objects.get(id=request.data['friend']["id"])
-        accepted = request.data["accepted"]
-
-        # In case of sending request to remote.
-        if (receiverObj.host == self.myNode or receiverObj.host == self.myNode2) and (senderObj.host != self.myNode and senderObj.host != self.myNode2):
-            url = senderObj.host+'friendrequest/'
+        if receiver["obj"].friends.all().filter(id=sender["obj"].id).exists():
+            return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
+        
+        if sender["obj"] in receiver["obj"].get_request_received():
+            return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
+        
+        # This is the communicating process to other nodes.
+        if (sender["is_local"]) and (not receiver["is_local"]):
+            remote_host = receiver["obj"].host
+            if remote_host[-1] != '/':
+                remote_host+='/'
+            url = remote_host+'friendrequest/'
+                          
             r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
-            
-            if r.status_code != 200:
-                return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
-
-        FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
-
-        if accepted:
-            senderObj.friends.add(receiverObj)
+                        
+            if r.status_code != 200 and r.status_code != 201:
+                return Response("Not getting 200 or 201 from the remote.", status.HTTP_400_BAD_REQUEST)
+        # -------------------------------------------------           
+        
+        # If sender already send a request then just add friend.
+        if receiver["obj"] in sender["obj"].get_request_received(): 
+            FriendRequest.objects.filter(sender=sender['obj'], receiver=receiver['obj']).delete()
+            sender['obj'].friends.add(receiver['obj'])
             return Response("Friend added.", status.HTTP_200_OK)
+        # Otherwise get the request object created.
         else:
-            self.check_if_need_delete(senderObj, receiverObj)
-
-        return Response("Friend request declined.", status.HTTP_200_OK)
+            friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
+            friend_request.save()
+            return Response("Friend request sent.", status.HTTP_200_OK)
 
     def unfriend(self, request):
         senderObj = Author.objects.get(id=request.data["author"]["id"])
         receiverObj = Author.objects.get(id=request.data["friend"]["id"])
 
-        # In case of sending request to remote.
-        if (senderObj.host == self.myNode or senderObj.host == self.myNode2) and (receiverObj.host != self.myNode and receiverObj.host != self.myNode2):     
-            
-            url = receiverObj.host+'friendrequest/'
-            r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
-            
-            if r.status_code != 200:
-                return Response("Maybe the remote server crashed.", status.HTTP_400_BAD_REQUEST)
-
         senderObj.friends.remove(receiverObj)
-
-        self.check_if_need_delete(senderObj, receiverObj)
+        
+        if receiverObj.host != self.myNode and receiverObj.host != self.myNode2:
+            self.check_empty_foreign_record(receiverObj)
+        if senderObj.host != self.myNode and senderObj.host != self.myNode2:
+            self.check_empty_foreign_record(senderObj)
 
         return Response("Unfriend done.", status.HTTP_200_OK)
 
@@ -620,10 +579,10 @@ class FriendRequestView(APIView):
 
         if request.data['query'] == 'friendrequest':
             return self.post_request(request)
-        elif request.data['query'] == 'friendresponse':
-            return self.post_response(request)
+        
         elif request.data['query'] == 'unfriend':
             return self.unfriend(request)
+        
         else:
             return Response("Bad request header.", status.HTTP_400_BAD_REQUEST)
 
