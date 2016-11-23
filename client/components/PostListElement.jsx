@@ -44,8 +44,9 @@ export class PostListElement extends React.Component
         }
         const displayName = this.props.foreign && post.author.displayName.length > 2 ? post.author.displayName.substr(2) : post.author.displayName;
         time = new Date(post.published).toLocaleString();
-        href = this.props.foreign ? post.origin : this.props.preview ? '/posts/' + post.id : "#";
-        content = post.contentType.toLowerCase() === "text/markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
+        // href = this.props.foreign ? post.origin : this.props.preview ? '/posts/' + post.id : "#";
+        href = "#";
+        content = post.contentType.toLowerCase() === "text/markdown" || post.contentType.toLowerCase() === "text/x-markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
 
         buttonText = (this.isFriendWith(post.author) ? "Alreayd friends with" : this.sentFriendRequestTo(post.author) ? "Friend request sent to" : this.receivedFriendRequestFrom(post.author) ? "Friend request received from" : sendFriendRequestText);
         disabled = buttonText !== sendFriendRequestText;
@@ -57,6 +58,8 @@ export class PostListElement extends React.Component
                     <strong>Host</strong>: {post.author.host} <br/>
                     <strong>Bio</strong>: {post.author.bio || ""} <br/>
                 </Popover>;
+
+        //className={this.props.preview ? "invisible" : "visible post-content"}
         return (
                 <ListGroupItem data-id={post.id}>
                     <div className={this.props.canEdit ? "visible float-right buttons" : "invisible"}>
@@ -83,7 +86,7 @@ export class PostListElement extends React.Component
                             {post.description}
                         </div>
                     </a>
-                    <div className={this.props.preview ? "invisible" : "visible post-content"}>
+                    <div>
                         {content}
                     </div>
 
