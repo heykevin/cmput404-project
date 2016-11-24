@@ -14,11 +14,11 @@ export class PostListElement extends React.Component
         super(props);
         this.modalDeleteShow = this.modalDeleteShow.bind(this);
         this.redirectToEditor = this.redirectToEditor.bind(this);
-        this.finder = this.finder.bind(this);
-        this.isFriendWith = this.isFriendWith.bind(this);
-        this.sentFriendRequestTo = this.sentFriendRequestTo.bind(this);
-        this.receivedFriendRequestFrom = this.receivedFriendRequestFrom.bind(this);
-        this.sendFriendRequest = this.sendFriendRequest.bind(this);
+        // this.finder = this.finder.bind(this);
+        // this.isFriendWith = this.isFriendWith.bind(this);
+        // this.sentFriendRequestTo = this.sentFriendRequestTo.bind(this);
+        // this.receivedFriendRequestFrom = this.receivedFriendRequestFrom.bind(this);
+        // this.sendFriendRequest = this.sendFriendRequest.bind(this);
     }
 
     render()
@@ -44,14 +44,14 @@ export class PostListElement extends React.Component
         }
         const displayName = this.props.foreign && post.author.displayName.length > 2 ? post.author.displayName.substr(2) : post.author.displayName;
         time = new Date(post.published).toLocaleString();
-        // href = this.props.foreign ? post.origin : this.props.preview ? '/posts/' + post.id : "#";
+        href = this.props.foreign ? post.origin : this.props.preview ? '/posts/' + post.id : "#";
         href = "#";
         content = post.contentType.toLowerCase() === "text/markdown" || post.contentType.toLowerCase() === "text/x-markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
-
-        buttonText = (this.isFriendWith(post.author) ? "Alreayd friends with" : this.sentFriendRequestTo(post.author) ? "Friend request sent to" : this.receivedFriendRequestFrom(post.author) ? "Friend request received from" : sendFriendRequestText);
-        disabled = buttonText !== sendFriendRequestText;
-        buttonText += " " + displayName;
-        friendStatus = <Button bsStyle="default" data-host={post.author.host} data-id={post.author.id} data-display-name={displayName} onClick={this.sendFriendRequest} disabled={disabled}>{buttonText}</Button>;
+        // 
+        // buttonText = (this.isFriendWith(post.author) ? "Alreayd friends with" : this.sentFriendRequestTo(post.author) ? "Friend request sent to" : this.receivedFriendRequestFrom(post.author) ? "Friend request received from" : sendFriendRequestText);
+        // disabled = buttonText !== sendFriendRequestText;
+        // buttonText += " " + displayName;
+        // friendStatus = <Button bsStyle="default" data-host={post.author.host} data-id={post.author.id} data-display-name={displayName} onClick={this.sendFriendRequest} disabled={disabled}>{buttonText}</Button>;
         const popoverHoverFocus =
                 <Popover title="Profile" id={post.author.id}>
                     <strong>Display Name</strong>: {displayName} <br/>
@@ -79,7 +79,6 @@ export class PostListElement extends React.Component
                     </a>
                     <div className="post-info">
                         <span>Posted as {post.visibility} by <OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{displayName}</strong></OverlayTrigger> on {time}</span><br/>
-                        <span className={post.author.id === Utils.getAuthor().id || !this.props.preview? "invisible" : "visible"}>{friendStatus}</span>
                     </div>
                     <a href={href}>
                         <div className="post-description">
@@ -112,56 +111,58 @@ export class PostListElement extends React.Component
         });
     }
 
-    // Needs refactoring
-    isFriendWith(user) {
-        const author = Utils.getAuthor();
-        return this.finder(author.friends, user.id);
-    }
+    // // Needs refactoring
+    // isFriendWith(user) {
+    //     const author = Utils.getAuthor();
+    //     return this.finder(author.friends, user.id);
+    // }
+    //
+    // sentFriendRequestTo(user) {
+    //     const author = Utils.getAuthor();
+    //     return this.finder(author.request_sent, user.id);
+    // }
+    //
+    // receivedFriendRequestFrom(user) {
+    //     const author = Utils.getAuthor();
+    //     return this.finder(author.request_received, user.id);
+    // }
+    //
+    // finder(sourceList, targetId) {
+    //     if (sourceList) {
+    //         for (const source of sourceList) {
+    //             if (source.id === targetId) {
+    //                 return true;
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }
+    //
+    // sendFriendRequest(event) {
+    //     const author = Utils.getAuthor();
+    //     const target = {
+    //             id: event.target.dataset.id,
+    //             displayName: event.target.dataset.displayName,
+    //             host: event.target.dataset.host
+    //         },
+    //         actor = {
+    //             id: author.id,
+    //             displayName: author.displayName,
+    //             host: author.host
+    //         };
+    //
+    //     if (!target.id) {
+    //         return;
+    //     }
+    //
+    //     this.props.dispatch({type: 'users.sendingRequest', targetId: target.id});
+    //
+    //     this.props.dispatch({type: 'usersBefriendAuthor', actor, target});
+    //
+    //     this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: author.id});
+    // }
+    // <span className={post.author.id === Utils.getAuthor().id || !this.props.preview? "invisible" : "visible"}>{friendStatus}</span>
 
-    sentFriendRequestTo(user) {
-        const author = Utils.getAuthor();
-        return this.finder(author.request_sent, user.id);
-    }
-
-    receivedFriendRequestFrom(user) {
-        const author = Utils.getAuthor();
-        return this.finder(author.request_received, user.id);
-    }
-
-    finder(sourceList, targetId) {
-        if (sourceList) {
-            for (const source of sourceList) {
-                if (source.id === targetId) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    sendFriendRequest(event) {
-        const author = Utils.getAuthor();
-        const target = {
-                id: event.target.dataset.id,
-                displayName: event.target.dataset.displayName,
-                host: event.target.dataset.host
-            },
-            actor = {
-                id: author.id,
-                displayName: author.displayName,
-                host: author.host
-            };
-
-        if (!target.id) {
-            return;
-        }
-
-        this.props.dispatch({type: 'users.sendingRequest', targetId: target.id});
-
-        this.props.dispatch({type: 'usersBefriendAuthor', actor, target});
-
-        this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: author.id});
-    }
 
 }
 

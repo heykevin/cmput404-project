@@ -66,14 +66,14 @@ export default class ApiUsers {
         });
     }
 
-    static postFriendRequestResponse(action) {
+    static declinetFriendRequest(action) {
         const host = getApi();
         const body = JSON.stringify({
-                query: "friendresponse",
+                query: "rejectrequest",
                 author: action.target,
                 friend: action.actor,
-                accepted: action.accepted
         });
+
         console.log(body);
         return fetch(`${host}friendrequest/`, {
             method: 'POST',

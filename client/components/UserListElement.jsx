@@ -62,16 +62,16 @@ export class UserListElement extends React.Component
         switch (this.props.view) {
             case "myfriends":
                 // friend requests view
-                template = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} onClick={this.sendUnfriendRequest}>Unfriend<Glyphicon glyph="remove-sign"/>
+                template = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} data-url={user.url}  onClick={this.sendUnfriendRequest}>Unfriend<Glyphicon glyph="remove-sign"/>
                 </Button>;
                 break;
             case "friendrequests":
                 // friend requests view
                 template = <div>
-                    <Button bsStyle="danger" data-id={user.id} data-display-name={user.displayName} data-host={user.host} onClick={this.declineFriendRequest}>
+                    <Button bsStyle="danger" data-id={user.id} data-display-name={user.displayName} data-host={user.host} data-url={user.url}  onClick={this.declineFriendRequest}>
                         Decline<Glyphicon glyph="remove-circle"/>
                     </Button>
-                    <Button bsStyle="success" data-id={user.id} data-display-name={user.displayName} data-host={user.host} onClick={this.acceptFriendRequest}>
+                    <Button bsStyle="success" data-id={user.id} data-display-name={user.displayName} data-host={user.host} data-url={user.url}  onClick={this.sendFriendRequest}>
                         Accept<Glyphicon glyph="ok-circle"/>
 
                     </Button>
@@ -88,18 +88,16 @@ export class UserListElement extends React.Component
                 console.log(user.displayName, 'requestSent', requestSent, 'requestReceived', requestReceived);
                 let waitAction = <Button bsStyle="info" disabled={true}>Request has been sent<Glyphicon glyph="send"/></Button>,
                     viewAction = <Button bsStyle="default" href="/friends?view=friendrequests">View request from {user.displayName}<Glyphicon glyph="eye-open"/></Button>,
-                    sendAction = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} onClick={this.sendFriendRequest}>
+                    sendAction = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} data-url={user.url} onClick={this.sendFriendRequest}>
                         Send a friend request<Glyphicon glyph="plus-sign"/>
                     </Button>;
                 if (isMyFriend) {
-                    template = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} onClick={this.sendUnfriendRequest}>Unfriend<Glyphicon glyph="remove-sign"/>
+                    template = <Button bsStyle="default" data-id={user.id} data-display-name={user.displayName} data-host={user.host} data-url={user.url} onClick={this.sendUnfriendRequest}>Unfriend<Glyphicon glyph="remove-sign"/>
                     </Button>;
-                } else if (requestSent && requestReceived) {
-                    template = <div>{waitAction}{viewAction}</div>;
                 } else if (requestSent) {
                     template = waitAction;
                 } else if (requestReceived) {
-                    template = <div>{sendAction}{viewAction}</div>;
+                    template = <div>{viewAction}</div>;
                 } else {
                     template = sendAction;
                 }
@@ -122,12 +120,14 @@ export class UserListElement extends React.Component
         const target = {
                 id: event.target.dataset.id,
                 displayName: event.target.dataset.displayName,
-                host: event.target.dataset.host
+                host: event.target.dataset.host,
+                url: event.target.dataset.url
             },
             actor = {
                 id: this.props.author.id,
                 displayName: this.props.author.displayName,
-                host: this.props.author.host
+                host: this.props.author.host,
+                url: event.target.dataset.url
             };
         console.log(target, actor);
         return {target, actor};
@@ -167,7 +167,7 @@ export class UserListElement extends React.Component
 
         this.props.dispatch({type: 'users.sendingRequest', targetId: target.id});
 
-        this.props.dispatch({type: 'usersDeclineFriendRequest', target, actor, accepted: 'false'});
+        this.props.dispatch({type: 'usersDeclineFriendRequest', target, actor});
 
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
     }
