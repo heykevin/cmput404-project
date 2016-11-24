@@ -92,7 +92,7 @@ class RemoteConnection:
         return r
     
 
-    @background(schedule=30)
+    @background(schedule=5)
     def check_remote_friend_list(local_author_id, remote_friend_id, remote_host):
         print "Checking remote friend list..."
         rc = RemoteConnection()
