@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import PostDelete from './PostDelete.jsx';
 import Utils from '../utils/utils.js';
 import CommentForm from './CommentForm.jsx';
+import CommentBox from './CommentBox.jsx';
 
 import {getApi} from '../config.js';
 
@@ -51,6 +52,7 @@ export class PostListElement extends React.Component
         href = "#";
         content = post.contentType.toLowerCase() === "text/markdown" || post.contentType.toLowerCase() === "text/x-markdown" ?  <ReactMarkdown source={post.content} /> : post.content,
         origin = [getApi(), "http://localhost:8000", "http://127.0.0.1:8000"].indexOf(post.author.host) > -1 ? "Bloggy Blog" : post.author.host;
+        content = post.contentType.toLowerCase() === "text/markdown" || post.contentType.toLowerCase() === "text/x-markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
 
         //
         // buttonText = (this.isFriendWith(post.author) ? "Alreayd friends with" : this.sentFriendRequestTo(post.author) ? "Friend request sent to" : this.receivedFriendRequestFrom(post.author) ? "Friend request received from" : sendFriendRequestText);
@@ -88,7 +90,8 @@ export class PostListElement extends React.Component
                             {content}
                         </div>
                     </div>
-                    <CommentForm/>
+                    <CommentBox postId={post.Id}/>
+                    <CommentForm postId={post.Id}/>
                     <PostDelete/>
                 </ListGroupItem>
         );

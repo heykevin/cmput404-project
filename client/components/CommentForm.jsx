@@ -4,8 +4,9 @@ import {Link} from 'react-router';
 import {Button, Glyphicon, ListGroupItem, Popover, OverlayTrigger} from 'react-bootstrap';
 import Utils from '../utils/utils.js';
 
+//https://github.com/reactjs/react-tutorial/blob/master/public/scripts/example.js
 
-class CommentForm extends React.Component
+export class CommentForm extends React.Component
 {
     constructor(props)
     {
@@ -17,22 +18,16 @@ class CommentForm extends React.Component
 
     onSubmit(event) {
         console.log("Submitting comment");
-    //     // e.preventDefault();
-    //     // var postId = this.props.postId;
-    //     // var author = Utils.getAuthor().displayName;
-    //     // var authorId = Utils.getAuthor().id;
-    //     // var text = this.state.text.trim();
-    //     //
-    //     // console.log("Can you get PostID --> " + this.props.postId);
-    //     //
-    //     // if (!text) {
-    //     //     return;
-    //     // }
-    //     //
-    //     // handleCommentSubmit({author: author, text: text, authorId: authorId, postId: postId});
-    //     // this.setState({author: '', text: '', postId: '', authorId: '', postId:''});
+        e.preventDefault();
+
+        this.props.dispatch({
+            type: "commentsAddComment",
+            content: this.state.content,
+            postId: this.props.postId
+        });
+    this.setState({content: '', postId: ''});
     }
-    //
+
     handleContentChange(event) {
         let content = event.target.value;
         this.setState({content: content});
@@ -45,7 +40,7 @@ class CommentForm extends React.Component
               <Form onSubmit={this.onSubmit.bind(this)}>
                 <FormControl
                     onChange={this.handleContentChange}
-                    place
+                    placeholder = "Write comment"
                     type="text"
                     value={this.state.content}
                     />
