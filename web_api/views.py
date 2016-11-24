@@ -552,15 +552,15 @@ class FriendRequestView(APIView):
         if receiver["obj"] in sender["obj"].get_request_received(): 
             
             sender['obj'].friends.add(receiver['obj'])
+            FriendRequest.objects.filter(sender=receiver['obj'], receiver=sender['obj']).delete()
             
             if not sender['is_local']:
                 print 'Starts sync with remote...'
-                self.rc.check_remote_friend_list(receiver['obj'].id, sender['obj'].id, self.rc.makesure_host_with_slash(sender["obj"].host), repeat=5)
+                self.rc.check_remote_friend_list(str(receiver['obj'].id), str(sender['obj'].id), self.rc.makesure_host_with_slash(sender["obj"].host), repeat=5)
             elif not receiver['is_local']:
                 print 'Starts sync with remote...'
-                self.rc.check_remote_friend_list(sender['obj'].id, receiver['obj'].id, self.rc.makesure_host_with_slash(receiver["obj"].host), repeat=5)
+                self.rc.check_remote_friend_list(str(sender['obj'].id), str(receiver['obj'].id), self.rc.makesure_host_with_slash(receiver["obj"].host), repeat=5)
             
-            FriendRequest.objects.filter(sender=receiver['obj'], receiver=sender['obj']).delete()
             return Response("Friend added.", status.HTTP_200_OK)
         # Otherwise get the request object created.
         else:

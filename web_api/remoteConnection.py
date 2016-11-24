@@ -97,7 +97,11 @@ class RemoteConnection:
         print "Checking remote friend list..."
         rc = RemoteConnection()
         r = rc.get_from_remote(remote_host+local_author_id+'/'+remote_friend_id+'/',rc.get_node_auth(remote_host))
-        is_friend = json.loads(r.text).get('friends')
+        # is_friend = json.loads(r.text).get('friends')
+        
+        print r.content.get('friends')
+        
+        is_friend = True
     
         if not is_friend:
             Author.objects.get(id = local_author_id).friend.remove(Author.objects.get(id = remote_friend_id))
