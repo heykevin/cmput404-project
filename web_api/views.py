@@ -490,7 +490,7 @@ class FriendRequestView(APIView):
         author_id = request.data[key_name]["id"]
         
         if(node == self.myNode or node == self.myNode2):
-            res["obj"] = Author.objects.get(id=author_id)
+            res["obj"] = Author.objects.get(id = author_id)
             res["is_local"] = True
         else:
             if Author.objects.filter(id = author_id).exists():
@@ -513,7 +513,7 @@ class FriendRequestView(APIView):
     # May need to use this !
     def check_empty_foreign_record(self, foreign_author):
         if foreign_author.friends.all().count()==0 and len(foreign_author.get_request_sent())==0 and len(foreign_author.get_request_received())==0:
-            foreign_author.delete()
+            foreign_author.user.delete()
     
 
     # Handles the request creation
@@ -545,8 +545,8 @@ class FriendRequestView(APIView):
         
         # If sender already send a request then just add friend.
         if receiver["obj"] in sender["obj"].get_request_received(): 
-            FriendRequest.objects.filter(sender=sender['obj'], receiver=receiver['obj']).delete()
             sender['obj'].friends.add(receiver['obj'])
+            FriendRequest.objects.filter(sender=receiver['obj'], receiver=sender['obj']).delete()
             return Response("Friend added.", status.HTTP_200_OK)
         # Otherwise get the request object created.
         else:
@@ -567,6 +567,7 @@ class FriendRequestView(APIView):
 
         senderObj.friends.remove(receiverObj)
         
+        print receiverObj.host, senderObj.host, self.myNode
         if receiverObj.host != self.myNode and receiverObj.host != self.myNode2:
             self.check_empty_foreign_record(receiverObj)
         if senderObj.host != self.myNode and senderObj.host != self.myNode2:

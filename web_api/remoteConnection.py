@@ -23,7 +23,7 @@ from serializers import *
 class RemoteConnection:
     
     def check_node_valid(self, request):
-        print "\nChecking Node."
+        print "\nChecking node from: "+request.META['REMOTE_HOST']
         # This first condtion let the test pass as test request don't have this attribute.
         if not 'REMOTE_HOST' in request.META.keys() or request.META['REMOTE_HOST']=='bloggyblog404.herokuapp.com' or request.META['REMOTE_HOST']=='localhost:8080':
             print "Frontend or testing client, OK."
