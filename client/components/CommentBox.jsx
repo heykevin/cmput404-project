@@ -6,73 +6,58 @@ import ReactMarkdown from 'react-markdown';
 
 import PostDelete from './PostDelete.jsx';
 import Utils from '../utils/utils.js';
+import Comment from './Comment.jsx';
 
 
 //https://github.com/reactjs/react-tutorial/blob/master/public/scripts/example.js
 
-var Comment = React.createClass({
-  rawMarkup: function() {
-    var md = new Remarkable();
-    var rawMarkup = md.render(this.props.children.toString());
-    return { __html: rawMarkup };
-  },
+export class CommentBox extends React.createClass{
 
-  render: function() {
-    return (
-      <div className="comment">
-        <h2 className="commentAuthor">
-          {this.props.author}
-        </h2>
-        <span dangerouslySetInnerHTML={this.rawMarkup()} />
-      </div>
-    );
-  }
-});
+    constructor(props)
+    {
+        super(props);
+        this.state = {comments:[]}
+    }
 
-var CommentList = React.createClass({
-  render: function() {
-      try {
-          var commentNodes = this.props.data.map(function(comment) {
-              return (
-                  <Comment author={comment.author} key={comment.id}>
-                      {comment.text}
-                  </Comment>
-              );
-          });
-      }
-      catch (err){
-          var commentNodes = "No comments yet"
-      }
-    return (
-      <div className="commentList">
-        {commentNodes}
-      </div>
-    );
-  }
-});
+    loadCommentsFromServer()
+    {
+      this.props.dispatch({
+          type: "commentsGetComment",
+          postId: this.props.postId
+      });
+    }
 
-export class CommentBox extends React.Component{
-  loadCommentsFromServer() {
+    componentDidMount()
+    {
+        this.loadCommentsFromServer();
+        setInterval(this.loadCommentsFromServer, 1000);
+    }
 
-    this.props.dispatch({
-        type: "commentsGetComment",
-        postId: this.props.postId
-    });
+    render()
+    {
 
+        loadCommentsFromServer();
+        let comments = this.props.comments;
+        if (comments.length) {
+            return (
+                <ListGroup className="comment-group">
+                    <h1>Comments</h1>
+                    {comments.map((comment,index) => {
+                        if (index >= 0 && index < comments.length) {
+                            return (<Comment content={comment.content} author={comment.author}/>)
+                        }
+                    })}
+                </ListGroup>
+            );
+        } else {
+            return (<div>
+                <h1>Comments</h1>
+                <h1>No comments yet</h1>
+            </div>);
+        }
+    }
 }
- componentDidMount() {
-   this.loadCommentsFromServer();
-   setInterval(this.loadCommentsFromServer, 1000);
-}
-  render() {
-      return(
-          <div>
-              <h1>Comments</h1>
-              <CommentLists/>
-        </div>
-      );
-  }
-}
+
 
 // export the connected class
 function mapStateToProps(state, props) {
@@ -81,4 +66,5 @@ function mapStateToProps(state, props) {
         comment: state.comment,
     }
 }
+
 export default connect(mapStateToProps)(CommentBox);
