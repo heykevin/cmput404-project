@@ -567,7 +567,7 @@ class FriendRequestView(APIView):
 
         senderObj.friends.remove(receiverObj)
         
-        print receiverObj.host, senderObj.host, self.myNode
+        # print receiverObj.host, senderObj.host, self.myNode
         if receiverObj.host != self.myNode and receiverObj.host != self.myNode2:
             self.check_empty_foreign_record(receiverObj)
         if senderObj.host != self.myNode and senderObj.host != self.myNode2:
