@@ -17,8 +17,9 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .permissions import *
 from .models import Author, Post, Image, ForeignPost
-from .remoteConnection import RemoteConnection
+from .remoteConnection import *
 from serializers import *
+from background_task import background
 
 class PostsResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -304,7 +305,7 @@ class ForeignPostView(generics.ListAPIView):
                 r = self.rc.get_from_remote(node.node_url+"posts/", auth = self.rc.get_node_auth(node.node_url))
             except:
                 continue
-            serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), context={'request': request}, many=True)
+            serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
             if serializer.is_valid():
                 serializer.save()
             # print json.loads(r.text).get('posts')
@@ -492,7 +493,6 @@ class FriendRequestView(APIView):
     def get_author_info(self, request, key_name):
         res=dict()
         node = self.rc.sync_hostname_if_local(request.data[key_name]["host"])
-        print node, self.myNode
         author_id = request.data[key_name]["id"]
         
         if(node == self.myNode or node == self.myNode2):
@@ -517,10 +517,11 @@ class FriendRequestView(APIView):
         return res
     
     # May need to use this !
+    '''
     def check_empty_foreign_record(self, foreign_author):
         if foreign_author.friends.all().count()==0 and len(foreign_author.get_request_sent())==0 and len(foreign_author.get_request_received())==0:
             foreign_author.user.delete()
-    
+    '''
 
     # Handles the request creation
     def post_request(self, request):
@@ -538,9 +539,7 @@ class FriendRequestView(APIView):
         
         # This is the communicating process to other nodes.
         if (sender["is_local"]) and (not receiver["is_local"]):
-            remote_host = receiver["obj"].host
-            if remote_host[-1] != '/':
-                remote_host+='/'
+            remote_host = self.rc.makesure_host_with_slash(receiver["obj"].host)
             url = remote_host+'friendrequest/'
                           
             r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
@@ -551,7 +550,16 @@ class FriendRequestView(APIView):
         
         # If sender already send a request then just add friend.
         if receiver["obj"] in sender["obj"].get_request_received(): 
+            
             sender['obj'].friends.add(receiver['obj'])
+            
+            if not sender['is_local']:
+                print 'Starts sync with remote...'
+                self.rc.check_remote_friend_list(receiver['obj'].id, sender['obj'].id, self.rc.makesure_host_with_slash(sender["obj"].host), repeat=5)
+            elif not receiver['is_local']:
+                print 'Starts sync with remote...'
+                self.rc.check_remote_friend_list(sender['obj'].id, receiver['obj'].id, self.rc.makesure_host_with_slash(receiver["obj"].host), repeat=5)
+            
             FriendRequest.objects.filter(sender=receiver['obj'], receiver=sender['obj']).delete()
             return Response("Friend added.", status.HTTP_200_OK)
         # Otherwise get the request object created.
@@ -574,10 +582,12 @@ class FriendRequestView(APIView):
         senderObj.friends.remove(receiverObj)
         
         # print receiverObj.host, senderObj.host, self.myNode
+        '''
         if receiverObj.host != self.myNode and receiverObj.host != self.myNode2:
             self.check_empty_foreign_record(receiverObj)
         if senderObj.host != self.myNode and senderObj.host != self.myNode2:
             self.check_empty_foreign_record(senderObj)
+        '''
 
         return Response("Unfriend done.", status.HTTP_200_OK)
 

@@ -18,9 +18,14 @@ from django.shortcuts import get_object_or_404
 from .permissions import *
 from .models import *
 from serializers import *
-
+from background_task import background
 
 class RemoteConnection:
+    
+    def makesure_host_with_slash(self, host):
+        if host[-1]!='/':
+            host+='/'
+        return host
     
     def sync_hostname_if_local(self, host):
         splitted = host.split(":")
@@ -84,4 +89,15 @@ class RemoteConnection:
             r = requests.get(url, auth=auth)
         
         print '\nGetting ' + str(r.status_code)+' from the remote server.'       
-        return r        
+        return r
+    
+
+    @background(schedule=30)
+    def check_remote_friend_list(local_author_id, remote_friend_id, remote_host):
+        print "Checking remote friend list..."
+        rc = RemoteConnection()
+        r = rc.get_from_remote(remote_host+local_author_id+'/'+remote_friend_id+'/',rc.get_node_auth(remote_host))
+        is_friend = json.loads(r.text).get('friends')
+    
+        if not is_friend:
+            Author.objects.get(id = local_author_id).friend.remove(Author.objects.get(id = remote_friend_id))
