@@ -1,11 +1,12 @@
 import React from 'react';
+import Router from 'react-router';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
 import {Button, Glyphicon, ListGroupItem, Popover, OverlayTrigger} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
-
 import PostDelete from './PostDelete.jsx';
 import Utils from '../utils/utils.js';
+import CommentForm from './CommentForm.jsx';
 
 import {getApi} from '../config.js';
 
@@ -87,7 +88,7 @@ export class PostListElement extends React.Component
                             {content}
                         </div>
                     </div>
-
+                    <CommentForm/>
                     <PostDelete/>
                 </ListGroupItem>
         );

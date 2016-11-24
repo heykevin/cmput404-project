@@ -7,6 +7,7 @@ import users from './users';
 import posts from './posts';
 import auth from './auth';
 import git from './git';
+import comments from './comments';
 
 export const reducers = combineReducers({
     users: users,
@@ -15,7 +16,8 @@ export const reducers = combineReducers({
     git: git,
     images: images,
     routing: routerReducer,
-    form: formReducer
+    form: formReducer,
+    comments: comments
 });
 
 export function reducerCall(state, action, reducerClass) {
