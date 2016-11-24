@@ -294,14 +294,20 @@ class ForeignPostView(generics.ListAPIView):
     permission_classes = (IsAuthenticated, )
     queryset = ForeignPost.objects.all()
     serializer_class = ForeignPostSerializer
+    
+    rc = RemoteConnection()
 
     def get(self, request, format=None):
         source = self.request.get_host()
-        r = requests.get('https://cmput404f16t04dev.herokuapp.com/api/posts/', auth=HTTPBasicAuth('admin', 'cmput404'))
-        serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
-        if serializer.is_valid():
-            serializer.save()
-        # print json.loads(r.text).get('posts')
+        for node in Node.objects.all():
+            try:
+                r = self.rc.get_from_remote(node.node_url+"posts/", auth = self.rc.get_node_auth(node.node_url))
+            except:
+                continue
+            serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
+            if serializer.is_valid():
+                serializer.save()
+            # print json.loads(r.text).get('posts')
         
         return Response(serializer.data, status=status.HTTP_200_OK)
 
