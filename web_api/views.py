@@ -304,7 +304,7 @@ class ForeignPostView(generics.ListAPIView):
                 r = self.rc.get_from_remote(node.node_url+"posts/", auth = self.rc.get_node_auth(node.node_url))
             except:
                 continue
-            serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
+            serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), context={'request': request}, many=True)
             if serializer.is_valid():
                 serializer.save()
             # print json.loads(r.text).get('posts')

@@ -50,19 +50,21 @@ class ForeignPostSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         print "CREATING FOREIGN POST..."
-        # print validated_data
-        id = uuid.uuid4()
         origin = validated_data.get('origin')
         content_type = validated_data.pop('contentType')
         foreign_author = validated_data.pop('author')
         foreign_user = foreign_author.pop('user')
-        # print author
+        
+        print self.context.get('request')
+        
+        url = foreign_author.get('url')
+        author_id = url.split('/')[-2]
         
         try:
-            author = Author.objects.get(url=foreign_author.get('url'))
+            author = Author.objects.get(url=url)
         except ObjectDoesNotExist:
             user = User.objects.create(username="__"+foreign_user.get('username'))
-            author = Author.objects.create(user=user, **foreign_author)
+            author = Author.objects.create(id=author_id, user=user, **foreign_author)
             user.save()
             author.save()
 
@@ -72,7 +74,7 @@ class ForeignPostSerializer(serializers.ModelSerializer):
             post = ForeignPost.objects.get(origin=origin)
         except ObjectDoesNotExist:
             print "SAVING FOREIGN POST..."
-            post = ForeignPost.objects.create(id=id, author=author, contentType=content_type, **validated_data)
+            post = ForeignPost.objects.create(id=foreign_author.get('id'), author=author, contentType=content_type, **validated_data)
             post.save()
         return post
 
