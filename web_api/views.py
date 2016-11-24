@@ -491,8 +491,8 @@ class FriendRequestView(APIView):
 
     def get_author_info(self, request, key_name):
         res=dict()
-        
-        node = request.data[key_name]["host"]
+        node = self.rc.sync_hostname_if_local(request.data[key_name]["host"])
+        print node, self.myNode
         author_id = request.data[key_name]["id"]
         
         if(node == self.myNode or node == self.myNode2):
@@ -582,11 +582,11 @@ class FriendRequestView(APIView):
         return Response("Unfriend done.", status.HTTP_200_OK)
 
 
-    def post(self, request):       
-        # With or withour slash.
-        self.myNode = 'http://'+request.get_host()+'/'
-        self.myNode2 = 'http://'+request.get_host()
+    def post(self, request):
         self.rc = RemoteConnection()
+        # With or withour slash.
+        self.myNode = self.rc.sync_hostname_if_local('http://'+request.get_host()+'/')
+        self.myNode2 = self.rc.sync_hostname_if_local('http://'+request.get_host())
         
         if not self.rc.check_node_valid(request):
             return Response("What's this node?", status.HTTP_403_FORBIDDEN)

@@ -22,12 +22,21 @@ from serializers import *
 
 class RemoteConnection:
     
+    def sync_hostname_if_local(self, host):
+        splitted = host.split(":")
+        if splitted[1] == '//localhost':
+            sync_host = splitted[0] +'://127.0.0.1:' + splitted[2]
+            return sync_host
+        else:
+            return host
+    
     def check_node_valid(self, request):
-        print "\nChecking node from: "+request.META['REMOTE_HOST']
         # This first condtion let the test pass as test request don't have this attribute.
         if not 'REMOTE_HOST' in request.META.keys() or request.META['REMOTE_HOST']=='bloggyblog404.herokuapp.com' or request.META['REMOTE_HOST']=='localhost:8080':
             print "Frontend or testing client, OK."
             return True
+        
+        print "\nChecking node from: "+request.META['REMOTE_HOST']
         
         print "\nRemote node confirmed, checking access permission."
         for node in Node.objects.all():
