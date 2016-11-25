@@ -81,7 +81,7 @@ export class PostListElement extends React.Component
                             {post.title}
                         </div>
                         <div className="post-info">
-                            Posted on {origin} as {post.visibility} by <OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{displayName}</strong></OverlayTrigger> on {time}
+                            Posted on {origin} as {post.visibility} by <OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{displayName}</strong></OverlayTrigger><br/>on {time}
                         </div>
                         <div className="post-content">
                             {content}
