@@ -7,6 +7,8 @@ import ReactMarkdown from 'react-markdown';
 import PostDelete from './PostDelete.jsx';
 import Utils from '../utils/utils.js';
 
+import {getApi} from '../config.js';
+
 export class PostListElement extends React.Component
 {
     constructor(props)
@@ -47,7 +49,7 @@ export class PostListElement extends React.Component
         href = this.props.foreign ? post.origin : this.props.preview ? '/posts/' + post.id : "#";
         href = "#";
         content = post.contentType.toLowerCase() === "text/markdown" || post.contentType.toLowerCase() === "text/x-markdown" ?  <ReactMarkdown source={post.content} /> : post.content,
-        origin = this.props.foreign ? "Bloggy Blog" : post.author.host;
+        origin = [getApi(), "http://localhost:8000", "http://127.0.0.1:8000"].indexOf(post.author.host) > -1 ? "Bloggy Blog" : post.author.host;
 
         //
         // buttonText = (this.isFriendWith(post.author) ? "Alreayd friends with" : this.sentFriendRequestTo(post.author) ? "Friend request sent to" : this.receivedFriendRequestFrom(post.author) ? "Friend request received from" : sendFriendRequestText);
