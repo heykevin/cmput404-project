@@ -39,21 +39,22 @@ class RemoteConnection:
         print "Checking the reuqest sender host..."
         
         # This first condtion let the test pass as test request don't have this attribute.
-        if not 'HTTP_HOST' in request.META.keys():
+        if not 'HTTP_ORIGIN' in request.META.keys():
             print "Remote host not found, assuming system is running tests?"
             return True
         
+        print "\nChecking remote node (HTTP ORIGIN) of: "+request.META['HTTP_ORIGIN']+"/"
+        
         # Client case.
-        if request.META['HTTP_HOST']=='bloggyblog404.herokuapp.com' or request.META['HTTP_HOST']=='localhost:8080':
+        if request.META['HTTP_ORIGIN']+'/'=='http://bloggyblog404.herokuapp.com/' or request.META['HTTP_ORIGIN']+'/'=='http://localhost:8080/':
             print "Frontend url confirmed, OK."
             return True
         
         print "\nRemote node confirmed, checking access permission."
-        print "\nChecking remote node (HTTP HOST) of: "+request.META['HTTP_HOST']
         
         for node in Node.objects.all():
             # print request.user.username
-            if "http://"+request.META['HTTP_HOST']+"/" == node.node_url and request.user.is_authenticated():
+            if request.META['HTTP_ORIGIN']+"/" == node.node_url and request.user.is_authenticated():
                 print "\nAccess permission checking successful."
                 return True
         
