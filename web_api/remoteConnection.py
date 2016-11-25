@@ -17,7 +17,8 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .permissions import *
 from .models import *
-from serializers import *
+from serializers import *        
+        
 
 class RemoteConnection:
     
@@ -89,3 +90,27 @@ class RemoteConnection:
         
         print '\nGetting ' + str(r.status_code)+' from the remote server.'       
         return r
+
+
+class SyncFriend:
+    
+    rc = RemoteConnection()
+    
+    def syncfriend(self, request, is_from_client = False):
+        for local_author in Author.objects.filter(host = 'http://'+request.get_host()+'/'):
+            for friend in local_author.friends.all():
+                if friend.host != 'http://'+request.get_host()+'/' and friend.host != 'http://'+request.get_host():
+                    self.check_remote_friend_list(str(local_author.id), str(friend.id), friend.host)
+        if is_from_client:        
+            return Response("Sync done.", status.HTTP_200_OK)
+        else:
+            return None
+    
+    def check_remote_friend_list(self, local_author_id, remote_friend_id, remote_host):
+        print "Checking remote friend list..."
+        r = self.rc.get_from_remote(remote_host+"friends/"+local_author_id+'/'+remote_friend_id+'/', self.rc.get_node_auth(remote_host))
+        is_friend = json.loads(r.text).get('friends')
+                        
+        if not is_friend:
+            print "Author which no longer be friend found, removing from list..."
+            Author.objects.get(id = local_author_id).friends.remove(Author.objects.get(id = remote_friend_id)) 

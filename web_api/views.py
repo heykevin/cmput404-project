@@ -456,6 +456,9 @@ class FriendsWith(APIView):
         authors (list): containing friend list of author
     """
     def get(self, request, pk, format=None):
+        sf = SyncFriend()
+        sf.syncfriend(request)
+        
         queryset = Author.objects.get(id=pk)
         serializer = FriendsWithSerializer(queryset)
         res=serializer.data
@@ -474,6 +477,9 @@ class FriendsWith(APIView):
         authors (list): list of authors that are friends
     """
     def post(self, request, pk, format=None):
+        sf = SyncFriend()
+        sf.syncfriend(request)
+        
         if request.data['query'] != 'friends':
             return Response("Incorrect request field: 'query' field should be 'friends'.", status.HTTP_400_BAD_REQUEST)
 
@@ -610,24 +616,10 @@ class FriendRequestView(APIView):
 
 class FriendSyncView(APIView):
     
-    rc = RemoteConnection()
-    
     def get(self, request):
-        for local_author in Author.objects.filter(host = 'http://'+request.get_host()+'/'):
-            for friend in local_author.friends.all():
-                if friend.host != 'http://'+request.get_host()+'/' and friend.host != 'http://'+request.get_host():
-                    self.check_remote_friend_list(str(local_author.id), str(friend.id), friend.host)
-        
-        return Response("Sync done.", status.HTTP_200_OK)
-    
-    def check_remote_friend_list(self, local_author_id, remote_friend_id, remote_host):
-        print "Checking remote friend list..."
-        r = self.rc.get_from_remote(remote_host+"friends/"+local_author_id+'/'+remote_friend_id+'/',self.rc.get_node_auth(remote_host))
-        is_friend = json.loads(r.text).get('friends')
-                        
-        if not is_friend:
-            print "Author which no longer be friend found, removing from list..."
-            Author.objects.get(id = local_author_id).friends.remove(Author.objects.get(id = remote_friend_id))        
+        sf = SyncFriend()
+        return sf.syncfriend(request, is_from_client=True)
+            
 
 class FriendCheck(APIView):
     """
@@ -637,7 +629,14 @@ class FriendCheck(APIView):
         authors (string): ids of checked authors
         friends (bool): true iff friends
     """
+    
+    rc = RemoteConnection()
+    
+    
     def get(self, request, id1, id2, format=None):
+        sf = SyncFriend()
+        sf.syncfriend(request)
+        
         res = dict()
         res['authors'] = [id1, id2]
         res['query'] = "friends"        
