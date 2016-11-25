@@ -337,16 +337,11 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
         queryset = get_object_or_404(Post,id=pk)
         # TODO: Refactor this gross code
         if queryset.visibility == "FRIENDS":
-            # print queryset.author.friends.all()
-            if queryset.author.friends.all().get(user=request.user):
-                pass
-            else:
+            if not queryset.author.friends.all().get(user=request.user) and not (queryset.author.user==request.user):
                 return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
 
         if queryset.visibility == "PRIVATE":
-            if (queryset.author.user==request.user):
-                pass
-            else:
+            if not (queryset.author.user==request.user):
                 return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
 
         serializer = PostSerializer(queryset)
@@ -600,7 +595,7 @@ class FriendRequestView(APIView):
         self.myNode2 = self.rc.sync_hostname_if_local('http://'+request.get_host())
 
         if not self.rc.check_node_valid(request):
-            return Response("What's this node?", status.HTTP_403_FORBIDDEN)
+            return Response("What's this node?", status.HTTP_401_UNAUTHORIZED)
 
         if request.data['query'] == 'friendrequest':
             return self.post_request(request)

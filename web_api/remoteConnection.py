@@ -36,23 +36,29 @@ class RemoteConnection:
             return host
     
     def check_node_valid(self, request):
+        print "Checking the reuqest sender host..."
+        
         # This first condtion let the test pass as test request don't have this attribute.
-        if not 'REMOTE_HOST' in request.META.keys() or request.META['REMOTE_HOST']=='bloggyblog404.herokuapp.com' or request.META['REMOTE_HOST']=='localhost:8080':
-            print "Frontend or testing client, OK."
+        if not 'REMOTE_HOST' in request.META.keys():
+            print "Remote host not found, assuming system is running tests."
             return True
         
-        print "\nChecking node from: "+request.META['REMOTE_HOST']
+        # Client case.
+        if request.META['REMOTE_HOST']=='bloggyblog404.herokuapp.com' or request.META['REMOTE_HOST']=='localhost:8080':
+            print "Frontend url confirmed, OK."
+            return True
         
         print "\nRemote node confirmed, checking access permission."
+        print "\nChecking remote node of: "+request.META['REMOTE_HOST']
+        
         for node in Node.objects.all():
             # print request.user.username
             if "http://"+request.META['REMOTE_HOST']+"/" == node.node_url and request.user.is_authenticated():
                 print "\nAccess permission checking successful."
                 return True
         
-        print "\nAccess permission checking failed, assuming sender is from REST."
-        print "\nBut if you see above message when sending from client or remote means there's a problem."
-        return True
+        print "\nAccess permission checking failed."
+        return False
     
     def get_node_auth(self, remote_host):
         
