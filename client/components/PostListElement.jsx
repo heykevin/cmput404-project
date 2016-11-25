@@ -24,7 +24,7 @@ export class PostListElement extends React.Component
     render()
     {
         // get the post element data
-        let post, href, time, content, friendStatus, buttonText, disabled;
+        let post, href, time, content, friendStatus, buttonText, disabled, origin;
         const sendFriendRequestText = "Send a friend request to",
         posts = this.props.foreign ? this.props.foreignPosts : this.props.posts;
         console.log(this.props.foreignPosts);
@@ -46,8 +46,10 @@ export class PostListElement extends React.Component
         time = new Date(post.published).toLocaleString();
         href = this.props.foreign ? post.origin : this.props.preview ? '/posts/' + post.id : "#";
         href = "#";
-        content = post.contentType.toLowerCase() === "text/markdown" || post.contentType.toLowerCase() === "text/x-markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
-        // 
+        content = post.contentType.toLowerCase() === "text/markdown" || post.contentType.toLowerCase() === "text/x-markdown" ?  <ReactMarkdown source={post.content} /> : post.content,
+        origin = this.props.foreign ? "Bloggy Blog" : post.author.host;
+
+        //
         // buttonText = (this.isFriendWith(post.author) ? "Alreayd friends with" : this.sentFriendRequestTo(post.author) ? "Friend request sent to" : this.receivedFriendRequestFrom(post.author) ? "Friend request received from" : sendFriendRequestText);
         // disabled = buttonText !== sendFriendRequestText;
         // buttonText += " " + displayName;
@@ -78,7 +80,7 @@ export class PostListElement extends React.Component
                         </div>
                     </a>
                     <div className="post-info">
-                        <span>Posted as {post.visibility} by <OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{displayName}</strong></OverlayTrigger> on {time}</span><br/>
+                        <span>Posted on {origin} as {post.visibility} by <OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{displayName}</strong></OverlayTrigger> on {time}</span><br/>
                     </div>
                     <a href={href}>
                         <div className="post-description">
