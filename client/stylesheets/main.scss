@@ -15,6 +15,14 @@
     text-align: center;
 }
 
+.info-text {
+    background: #5bc0de;
+    padding: 2em;
+    border-radius: 10px;
+    color: white;
+    margin: 1em;
+}
+
 .visible {
     display: block;
 }
@@ -86,7 +94,7 @@
     }
 
     .posts-stream {
-        // width: 70%;
+        width: 100%;
     }
 
     .post-editor {

@@ -295,22 +295,25 @@ class ForeignPostView(generics.ListAPIView):
     permission_classes = (IsAuthenticated, )
     queryset = ForeignPost.objects.all()
     serializer_class = ForeignPostSerializer
-    
+
     rc = RemoteConnection()
 
     def get(self, request, format=None):
         source = self.request.get_host()
+        serializer = None
         for node in Node.objects.all():
             try:
                 r = self.rc.get_from_remote(node.node_url+"posts/", auth = self.rc.get_node_auth(node.node_url))
+                print 'testing:' + r.text
             except:
                 continue
-            serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
-            if serializer.is_valid():
-                serializer.save()
+            if 'posts' in r.text:
+                serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), context={'request': request}, many=True)
+                if serializer.is_valid():
+                    serializer.save()
             # print json.loads(r.text).get('posts')
-        
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response((serializer.data if serializer else []), status=status.HTTP_200_OK)
 
 class PostIDView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (BasicAuthentication, )
@@ -494,7 +497,7 @@ class FriendRequestView(APIView):
         res=dict()
         node = self.rc.sync_hostname_if_local(request.data[key_name]["host"])
         author_id = request.data[key_name]["id"]
-        
+
         if(node == self.myNode or node == self.myNode2):
             res["obj"] = Author.objects.get(id = author_id)
             res["is_local"] = True
@@ -504,18 +507,18 @@ class FriendRequestView(APIView):
             else:
                 foreign_user=User(username = "__" + request.data[key_name]["displayName"], is_active=False)
                 foreign_user.save()
-                
+
                 url = node
                 if node[-1] != '/':
                     url += '/'
-                
+
                 url += (str(author_id)+'/')
-                
+
                 res["obj"] = Author(user=foreign_user, id=request.data[key_name]["id"], host = node, url = url)
                 res["obj"].save()
             res["is_local"] = False
         return res
-    
+
     # May need to use this !
     '''
     def check_empty_foreign_record(self, foreign_author):
@@ -529,49 +532,48 @@ class FriendRequestView(APIView):
         receiver = self.get_author_info(request, 'friend')
 
         if (not sender["is_local"]) and (not receiver["is_local"]):
-            return Response("Who are they?", status.HTTP_400_BAD_REQUEST) 
+            return Response("Who are they?", status.HTTP_400_BAD_REQUEST)
 
         if receiver["obj"].friends.all().filter(id=sender["obj"].id).exists():
             return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
-        
+
         if sender["obj"] in receiver["obj"].get_request_received():
             return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
-        
+
         # This is the communicating process to other nodes.
         if (sender["is_local"]) and (not receiver["is_local"]):
             remote_host = self.rc.makesure_host_with_slash(receiver["obj"].host)
             url = remote_host+'friendrequest/'
-                          
+
             r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
-                        
+
             if r.status_code != 200 and r.status_code != 201:
                 return Response("Not getting 200 or 201 from the remote.", status.HTTP_400_BAD_REQUEST)
-        # -------------------------------------------------           
-        
+        # -------------------------------------------------
+
         # If sender already send a request then just add friend.
-        if receiver["obj"] in sender["obj"].get_request_received(): 
-            
+        if receiver["obj"] in sender["obj"].get_request_received():
             sender['obj'].friends.add(receiver['obj'])
             FriendRequest.objects.filter(sender=receiver['obj'], receiver=sender['obj']).delete()
-            
+
             if not sender['is_local']:
                 print 'Starts sync with remote...'
                 self.rc.check_remote_friend_list(str(receiver['obj'].id), str(sender['obj'].id), self.rc.makesure_host_with_slash(sender["obj"].host), repeat=5)
             elif not receiver['is_local']:
                 print 'Starts sync with remote...'
                 self.rc.check_remote_friend_list(str(sender['obj'].id), str(receiver['obj'].id), self.rc.makesure_host_with_slash(receiver["obj"].host), repeat=5)
-            
+
             return Response("Friend added.", status.HTTP_200_OK)
         # Otherwise get the request object created.
         else:
             friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
             friend_request.save()
             return Response("Friend request sent.", status.HTTP_200_OK)
-    
+
     def reject_request(self, request):
         senderObj = Author.objects.get(id=request.data["author"]["id"])
-        receiverObj = Author.objects.get(id=request.data["friend"]["id"])        
-        
+        receiverObj = Author.objects.get(id=request.data["friend"]["id"])
+
         FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
         return Response("Friend request rejected.", status.HTTP_200_OK)
 
@@ -580,7 +582,7 @@ class FriendRequestView(APIView):
         receiverObj = Author.objects.get(id=request.data["friend"]["id"])
 
         senderObj.friends.remove(receiverObj)
-        
+
         # print receiverObj.host, senderObj.host, self.myNode
         '''
         if receiverObj.host != self.myNode and receiverObj.host != self.myNode2:
@@ -597,19 +599,19 @@ class FriendRequestView(APIView):
         # With or withour slash.
         self.myNode = self.rc.sync_hostname_if_local('http://'+request.get_host()+'/')
         self.myNode2 = self.rc.sync_hostname_if_local('http://'+request.get_host())
-        
+
         if not self.rc.check_node_valid(request):
             return Response("What's this node?", status.HTTP_403_FORBIDDEN)
 
         if request.data['query'] == 'friendrequest':
             return self.post_request(request)
-        
+
         if request.data['query'] == 'rejectrequest':
-            return self.reject_request(request)        
-        
+            return self.reject_request(request)
+
         elif request.data['query'] == 'unfriend':
             return self.unfriend(request)
-        
+
         else:
             return Response("Bad request header.", status.HTTP_400_BAD_REQUEST)
 

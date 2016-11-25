@@ -56,6 +56,15 @@ export class UserList extends React.Component
                     <div className={(this.props.sending ? "visible" : "invisible") + " hide-yall-kids-hide-yall-wife"}>
                         <i className="fa fa-spinner fa-spin"></i>
                     </div>
+                        <div className={(view === "friendrequests" ? "visible" : "invisible") + " info-text"}>
+                            <span>
+                                Here are authors, who are following you. <br/>
+                                <ul>
+                                    <li>If you <strong>accept</strong> an author's friend request, that means you'll start following the author, and you guys would become friends. Isn't that nice? σ ﾟ∀ ﾟ) ﾟ∀ﾟ)σ</li>
+                                    <li>If you <strong>decline</strong> an author's friend request, we will stop the author from following <i>(stalking)</i> you to protect your privacy. How considerate we are! (⌐■_■)</li>
+                                </ul>
+                            </span>
+                        </div>
                         <Table bordered hover responsive striped>
                             <thead>
                                 <tr>
