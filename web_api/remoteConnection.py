@@ -38,30 +38,33 @@ class RemoteConnection:
     def check_node_valid(self, request):
         print "Checking the reuqest sender host..."
         
-        # print request.META['REMOTE_HOST']
-        # print request.META['HTTP_ORIGIN']
+        # for key,val in request.META.items():
+            # print key, val
         
-        # This first condtion let the test pass as test request don't have this attribute.
-        if not 'HTTP_ORIGIN' in request.META.keys():
-            print "Remote host not found, assuming system is running tests?"
+        if request.META['REMOTE_ADDR'] == '127.0.0.1':
+            print "\nLocalhost found, assuming you are sending request from local."
             return True
         
-        print "\nChecking remote node (HTTP ORIGIN) of: "+request.META['HTTP_ORIGIN']+"/"
+        if request.META['REMOTE_HOST'].isspace():
+            print "\nRemote host field found empty...Error"
+            return False
+        
+        print "\nRequest from host: "+request.META['REMOTE_HOST']
         
         # Client case.
-        if request.META['HTTP_ORIGIN']+'/'=='http://bloggyblog404.herokuapp.com/' or request.META['HTTP_ORIGIN']+'/'=='http://localhost:8080/':
-            print "Frontend url confirmed, OK."
+        if request.META['REMOTE_HOST']=='bloggyblog404.herokuapp.com':
+            print "\nFrontend url confirmed, OK."
             return True
         
         print "\nRemote node confirmed, checking access permission."
         
         for node in Node.objects.all():
             # print request.user.username
-            if request.META['HTTP_ORIGIN']+"/" == node.node_url and request.user.is_authenticated():
+            if "http://"+request.META['REMOTE_HOST']+"/" == node.node_url and request.user.is_authenticated():
                 print "\nAccess permission checking successful."
                 return True
         
-        print "\nAccess permission checking failed."
+        print "\nRemote node access permission checking failed."
         return False
     
     def get_node_auth(self, remote_host):
