@@ -642,7 +642,10 @@ class FriendCheck(APIView):
             queryset1 = Author.objects.get(id=id1)
             queryset2 = Author.objects.get(id=id2)
         except Author.DoesNotExist:
-            return Response('', 404)
+            res['authors'] = [id1, id2]
+            res['query'] = "friends"
+            res['friends'] = False           
+            return Response(res)
 
         list1 = [str(id['id']) for id in queryset1.friends.all().values('id')]
         list2 = [str(id['id']) for id in queryset2.friends.all().values('id')]
