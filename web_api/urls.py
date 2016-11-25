@@ -47,4 +47,6 @@ urlpatterns = [
     url(r'^login/', views.Login.as_view()),
     # Used for sending friend requests.
     url(r'^friendrequest/$', views.FriendRequestView.as_view()),
+    
+    url(r'^friendsync/$', views.FriendSyncView.as_view()),
 ]

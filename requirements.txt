@@ -9,4 +9,3 @@ requests==2.11.1
 whitenoise==2.0.6
 wsgiref==0.1.2
 Pillow==3.4.2
-django-background-tasks

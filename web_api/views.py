@@ -19,7 +19,6 @@ from .permissions import *
 from .models import Author, Post, Image, ForeignPost
 from .remoteConnection import *
 from serializers import *
-from background_task import background
 
 class PostsResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -552,17 +551,11 @@ class FriendRequestView(APIView):
         # -------------------------------------------------
 
         # If sender already send a request then just add friend.
-        if receiver["obj"] in sender["obj"].get_request_received():
+
+        if receiver["obj"] in sender["obj"].get_request_received(): 
             sender['obj'].friends.add(receiver['obj'])
             FriendRequest.objects.filter(sender=receiver['obj'], receiver=sender['obj']).delete()
-
-            if not sender['is_local']:
-                print 'Starts sync with remote...'
-                self.rc.check_remote_friend_list(str(receiver['obj'].id), str(sender['obj'].id), self.rc.makesure_host_with_slash(sender["obj"].host), repeat=5)
-            elif not receiver['is_local']:
-                print 'Starts sync with remote...'
-                self.rc.check_remote_friend_list(str(sender['obj'].id), str(receiver['obj'].id), self.rc.makesure_host_with_slash(receiver["obj"].host), repeat=5)
-
+            
             return Response("Friend added.", status.HTTP_200_OK)
         # Otherwise get the request object created.
         else:
@@ -614,6 +607,27 @@ class FriendRequestView(APIView):
 
         else:
             return Response("Bad request header.", status.HTTP_400_BAD_REQUEST)
+
+class FriendSyncView(APIView):
+    
+    rc = RemoteConnection()
+    
+    def get(self, request):
+        for local_author in Author.objects.filter(host = 'http://'+request.get_host()+'/'):
+            for friend in local_author.friends.all():
+                if friend.host != 'http://'+request.get_host()+'/' and friend.host != 'http://'+request.get_host():
+                    self.check_remote_friend_list(str(local_author.id), str(friend.id), friend.host)
+        
+        return Response("Sync done.", status.HTTP_200_OK)
+    
+    def check_remote_friend_list(self, local_author_id, remote_friend_id, remote_host):
+        print "Checking remote friend list..."
+        r = self.rc.get_from_remote(remote_host+"friends/"+local_author_id+'/'+remote_friend_id+'/',self.rc.get_node_auth(remote_host))
+        is_friend = json.loads(r.text).get('friends')
+                        
+        if not is_friend:
+            print "Author which no longer be friend found, removing from list..."
+            Author.objects.get(id = local_author_id).friend.remove(Author.objects.get(id = remote_friend_id))        
 
 class FriendCheck(APIView):
     """
