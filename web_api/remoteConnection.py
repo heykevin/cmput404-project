@@ -38,6 +38,9 @@ class RemoteConnection:
     def check_node_valid(self, request):
         print "Checking the reuqest sender host..."
         
+        print request.META['REMOTE_HOST']
+        print request.META['REMOTE_ORIGIN']
+        
         # This first condtion let the test pass as test request don't have this attribute.
         if not 'HTTP_ORIGIN' in request.META.keys():
             print "Remote host not found, assuming system is running tests?"
