@@ -71,8 +71,8 @@
     }
 
     .git-stream {
-        width: 45%;
-        margin-right: 15px;
+        width: 40%;
+        padding-right: 15px;
         border-radius: 5px;
 
         .git-group {
@@ -94,7 +94,16 @@
     }
 
     .posts-stream {
-        width: 100%;
+        width: 60%;
+        padding: 0 1em;
+        background: white;
+        height: 100%;
+        border-radius: 0.25em;
+
+        .nav {
+            margin: 0 !important;
+            padding: 1em 0 0 !important;
+        }
     }
 
     .post-editor {
@@ -139,8 +148,18 @@
         line-height: 2em;
 
         span {
-            margin-bottom: 15px;
-            border-radius: 0.5em;
+            border-top: none;
+            border-bottom: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            margin-bottom: 0 !important;
+            border-radius: 0px !important;
+        }
+
+        span:last-child {
+            border-bottom: solid lightgrey 0.01em;
+            border-bottom-left-radius: 0.45em;
+            border-bottom-right-radius: 0.45em;
         }
 
         a,
@@ -151,6 +170,12 @@
             text-decoration: none;
         }
 
+        .post-body {
+            background: #337ab7;
+            border-radius: 0.45em;
+            border: solid lightgrey 0.01em;
+        }
+
         .post-title {
             padding: 8px;
             background: #337ab7;
@@ -158,21 +183,20 @@
             font-weight: bolder;
             border-radius: 5px;
             margin-bottom: 0 !important;
-
-            .post-title-font {
-                font-size: 1.25em;
-                color: white;
-            }
+            font-size: 1.25em;
+            color: white;
         }
 
         .post-info {
             padding-right: 5px;
+            border-radius: 0;
             background: #eee;
-            border-radius: 5px;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
+            text-align: right;
+            margin-top: -4px;
             padding: 0.75em;
+            z-index: 1;
+            position: relative;
+            display: block;
 
             button {
                 background: white;
@@ -191,8 +215,11 @@
         }
 
         .post-content {
-            padding-top: 15px;
-            padding-left: 40px;
+            overflow-wrap: break-word;
+            background: white;
+            padding: 1em;
+            border-radius: 0.45em;
+            margin-top: -0.75em;
         }
 
         .buttons {

@@ -57,7 +57,7 @@ ReactDOM.render(
                 <Route path="/posts/*" component={Post}/>
                 <Router path="/addpost" component={AddPost}/>
                 <Router path="/editpost" component={EditPost}/>
-                <Route path="/dashboard" component={Dashboard}/>
+                <Route path="/dashboard*" component={Dashboard}/>
                 <Route path="/myposts" component={MyPosts}/>
                 <Route path="/settings" component={AuthorEdit}/>
                 <Route path="/friends*" component={Friends}/>

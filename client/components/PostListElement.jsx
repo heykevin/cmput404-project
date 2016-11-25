@@ -74,21 +74,16 @@ export class PostListElement extends React.Component
                             Delete <Glyphicon data-id={post.id} data-title={post.title} glyph="remove-circle"/>
                         </Button>
                     </div>
-                    <a href={href} className="post-body">
+                    <div className="post-body">
                         <div className="post-title">
-                            <span className="post-title-font">{post.title}</span>
+                            {post.title}
                         </div>
-                    </a>
-                    <div className="post-info">
-                        <span>Posted on {origin} as {post.visibility} by <OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{displayName}</strong></OverlayTrigger> on {time}</span><br/>
-                    </div>
-                    <a href={href}>
-                        <div className="post-description">
-                            {post.description}
+                        <div className="post-info">
+                            Posted on {origin} as {post.visibility} by <OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{displayName}</strong></OverlayTrigger> on {time}
                         </div>
-                    </a>
-                    <div>
-                        {content}
+                        <div className="post-content">
+                            {content}
+                        </div>
                     </div>
 
                     <PostDelete/>

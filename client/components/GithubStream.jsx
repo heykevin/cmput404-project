@@ -91,7 +91,7 @@ export class GithubStream extends React.Component
             return (    <div className="gha-header">
                             <div className="gha-github-icon"><span className="octicon octicon-mark-github"></span></div>
                                 <div className="git-warning">
-                                    <span>ლ(´•д• ̀ლ Sorry! Something's up with Github!</span>
+                                    <span>ლ(´•д• ̀)ლ Sorry! Something's up with Github!</span>
                                 </div>
                         </div>
                     );
