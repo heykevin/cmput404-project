@@ -638,20 +638,18 @@ class FriendCheck(APIView):
         friends (bool): true iff friends
     """
     def get(self, request, id1, id2, format=None):
+        res = dict()
+        res['authors'] = [id1, id2]
+        res['query'] = "friends"        
         try:
             queryset1 = Author.objects.get(id=id1)
             queryset2 = Author.objects.get(id=id2)
         except Author.DoesNotExist:
-            res['authors'] = [id1, id2]
-            res['query'] = "friends"
             res['friends'] = False           
             return Response(res)
 
         list1 = [str(id['id']) for id in queryset1.friends.all().values('id')]
         list2 = [str(id['id']) for id in queryset2.friends.all().values('id')]
-        res = dict()
-        res['authors'] = [id1, id2]
-        res['query'] = "friends"
         res['friends'] = (id1 in list2 and id2 in list1)
         return Response(res)
 
