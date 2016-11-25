@@ -118,6 +118,7 @@ export class UserList extends React.Component
     {
         if (this.props.toastMessage && !this.props.error && this.props.sending === false) {
             notify.show(this.props.toastMessage, "success", 3000);
+            window.setTimeout(function() { this.props.dispatch({type: 'users.clearToastMessage'});}.bind(this), 100);
         }
     }
 
