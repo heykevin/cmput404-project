@@ -45,8 +45,8 @@ class RemoteConnection:
             print "\nLocalhost found, assuming you are sending request from local."
             return True
         
-        if request.META['REMOTE_HOST'].isspace():
-            print "\nRemote host field found empty...Error"
+        if not 'REMOTE_HOST' in request.META.keys():
+            print "\nRemote host field found empty...but still return True for now."
             return False
         
         print "\nRequest from host: "+request.META['REMOTE_HOST']
