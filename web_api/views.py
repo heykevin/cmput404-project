@@ -627,7 +627,7 @@ class FriendSyncView(APIView):
                         
         if not is_friend:
             print "Author which no longer be friend found, removing from list..."
-            Author.objects.get(id = local_author_id).friend.remove(Author.objects.get(id = remote_friend_id))        
+            Author.objects.get(id = local_author_id).friends.remove(Author.objects.get(id = remote_friend_id))        
 
 class FriendCheck(APIView):
     """
