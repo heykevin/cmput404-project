@@ -45,16 +45,18 @@ class RemoteConnection:
             print "\nLocalhost found, assuming you are sending request from local."
             return True
         
+        if 'HTTP_ORIGIN' in request.META.keys():
+            if request.META['HTTP_ORIGIN'] == 'http://bloggyblog404.herokuapp.com' or request.META['HTTP_ORIGIN'] == 'https://bloggyblog404.herokuapp.com':
+                print "Request from our own client, OK."
+                return True
+        
         if not 'REMOTE_HOST' in request.META.keys():
-            print "\nRemote host field found empty...but still return True for now."
+            print "\nRemote host field found empty...rejecting request."
             return False
         
         print "\nRequest from host: "+request.META['REMOTE_HOST']
         
         # Client case.
-        if request.META['REMOTE_HOST']=='bloggyblog404.herokuapp.com':
-            print "\nFrontend url confirmed, OK."
-            return True
         
         print "\nRemote node confirmed, checking access permission."
         
@@ -65,7 +67,8 @@ class RemoteConnection:
                 return True
         
         print "\nRemote node access permission checking failed."
-        return True
+        return False
+    
     def get_node_auth(self, remote_host):
         
         print "\nGetting auth information from DB."
