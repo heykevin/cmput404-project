@@ -300,6 +300,9 @@ class ForeignPostView(generics.ListAPIView):
     def get(self, request, format=None):
         source = self.request.get_host()
         serializer = None
+        
+        res = []
+        
         for node in Node.objects.all():
             try:
                 if node.node_url == 'http://secure-springs-85403.herokuapp.com/':
@@ -309,13 +312,16 @@ class ForeignPostView(generics.ListAPIView):
                 # print 'testing:' + r.text
             except:
                 continue
+            
             if 'posts' in r.text:
                 serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), context={'request': request}, many=True)
                 if serializer.is_valid():
                     serializer.save()
+                
+                res.append(serializer.data)
             # print json.loads(r.text).get('posts')
 
-        return Response((serializer.data if serializer else []), status=status.HTTP_200_OK)
+        return Response(res, status=status.HTTP_200_OK)
 
 class PostIDView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (BasicAuthentication, )
