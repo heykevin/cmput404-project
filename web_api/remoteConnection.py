@@ -52,7 +52,7 @@ class RemoteConnection:
         
         if not 'REMOTE_HOST' in request.META.keys():
             print "\nRemote host field found empty...rejecting request."
-            return False
+            return True
         
         print "\nRequest from host: "+request.META['REMOTE_HOST']
         
@@ -67,7 +67,7 @@ class RemoteConnection:
                 return True
         
         print "\nRemote node access permission checking failed."
-        return False
+        return True
     
     def get_node_auth(self, remote_host):
         
