@@ -75,7 +75,7 @@ class ForeignPostSerializer(serializers.ModelSerializer):
             post = ForeignPost.objects.get(origin=origin)
         except ObjectDoesNotExist:
             print "SAVING FOREIGN POST..."
-            post = ForeignPost.objects.create(id=foreign_author.get('id'), author = AuthorInfoSerializer(author), contentType=content_type, **validated_data)
+            post = ForeignPost.objects.create(id=foreign_author.get('id'), author = author, contentType=content_type, **validated_data)
             post.save()
         return post
 
