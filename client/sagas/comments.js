@@ -5,35 +5,40 @@ import ApiComments from '../api/comments';
 export function* commentsAddComment(action) {
     try {
         console.log("saga -- add comment");
-        const posts = yield call(ApiComments.addComment, action);
-        console.log("Add comment saga success");
+        const comments = yield call(ApiComments.addComment, action);
         yield put({
             type: 'comments.addCommentSuccess',
-            response: repsonse,
+            response: response,
             content: action.content
         });
     } catch (error) {
         yield put({
             type: 'comments.addCommentFailure',
             error: error,
-            content: action.content
+            content: action.content,
+            response: response
         });
     }
 }
 
 export function* commentsGetComment(action) {
     try {
-        console.log("saga -- get comment");
-        const posts = yield call(ApiComments.getComment, action);
+        console.log("saga -- get comment", action);
+        const comments = yield call(ApiComments.getComment, action);
         console.log("get comment saga success");
+        console.log("Saga comments --> ", comments);
+        console.log("Saga comments.comments --> ", comments.comments);
         yield put({
             type: 'comments.getCommentSuccess',
-            comments: comments.comments,
-        });
+            comments: comments.comments
+    });
     } catch (error) {
+        console.log("get comments fail");
+        console.log("error -- > " + error);
         yield put({
             type: 'comments.getCommentFailure',
             error: error,
+            response: response
         });
     }
 }

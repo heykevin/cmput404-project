@@ -15,22 +15,18 @@ export default class Comment extends React.Component
     constructor(props)
     {
         super(props);
-        this.state = {
-            author: '',
-            content: ''
-        }
     }
 
-  render() {
-    return (
-      <div className="comment">
-        <h2 className="commentAuthor">
-          {this.props.comments.author}
-        </h2>
-        <h2>
-            {this.props.comments.content}
-        </h2>
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div className="comment">
+                <h2 className="commentAuthor">
+                    {this.props.author}
+                </h2>
+                <h2>
+                    {this.props.content}
+                </h2>
+            </div>
+        );
+    }
 }

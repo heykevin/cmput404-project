@@ -7,7 +7,6 @@ import ReactMarkdown from 'react-markdown';
 import PostDelete from './PostDelete.jsx';
 import Utils from '../utils/utils.js';
 import CommentForm from './CommentForm.jsx';
-import CommentBox from './CommentBox.jsx';
 
 import {getApi} from '../config.js';
 
@@ -90,8 +89,7 @@ export class PostListElement extends React.Component
                             {content}
                         </div>
                     </div>
-                    <CommentBox postId={post.Id}/>
-                    <CommentForm postId={post.Id}/>
+                    <CommentForm postId={post.id}/>
                     <PostDelete/>
                 </ListGroupItem>
         );

@@ -10,7 +10,7 @@ export default class ApiComments{
         let body = new FormData();
         const host = getApi();
         body.append('content', action.content);
-        console.log(body);
+        console.log("Body of comment in api compose --> " + action.content);
         return body;
     }
 
@@ -18,9 +18,10 @@ export default class ApiComments{
     static addComment(action) {
         console.log("api - save comments");
         const host = getApi(),
-            token = Utils.getToken();
+            token = Utils.getToken(),
+            query = host + "posts/" + action.postId + "/comments/";
 
-        return fetch(`${host}posts/{action.postId}/comments/`, {
+        return fetch(query, {
             method: 'POST',
             headers: {
                 'Authorization': `Basic ${token}`
@@ -34,15 +35,31 @@ export default class ApiComments{
     static getComment(action) {
         console.log("api - get comment");
         const host = getApi(),
-            token = Utils.getToken();
+            token = Utils.getToken(),
+            query = host + "posts/" + action.postId + "/comments/";
 
-        return fetch(`${host}posts/{action.postId}/comments/`, {
+            console.log("Double check you query --> " + query);
+
+            let comments = [];
+
+        return fetch(query, {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`
             }
+        }).then((res) => {
+            return Utils.handleErrors(res);
         }).then((response) => {
-            return Utils.handleErrors(response);
+            return {comments: response.comments}
         });
     }
+
+    static handleEmptyResponse(response) {
+        if (!response.ok) {
+            console.log("error", response);
+            throw new Error(response.statusText);
+        }
+        return response;
+    }
+
 }
