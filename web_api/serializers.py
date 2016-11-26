@@ -37,10 +37,10 @@ class AuthorInfoSerializer(serializers.ModelSerializer):
                   'email', 'bio', 'host', 'github_username', 'url')
 
 class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
-    displayName = serializers.CharField()
+    pass
 
 class ForeignPostSerializer(serializers.ModelSerializer):
-    # author = ForeignAuthorInfoSerializer(many = False)
+    author = ForeignAuthorInfoSerializer(many = False)
 
     class Meta:
         model = ForeignPost
@@ -75,7 +75,7 @@ class ForeignPostSerializer(serializers.ModelSerializer):
             post = ForeignPost.objects.get(origin=origin)
         except ObjectDoesNotExist:
             print "SAVING FOREIGN POST..."
-            post = ForeignPost.objects.create(id=foreign_author.get('id'), author=author, contentType=content_type, **validated_data)
+            post = ForeignPost.objects.create(id=foreign_author.get('id'), author = AuthorInfoSerializer(author), contentType=content_type, **validated_data)
             post.save()
         return post
 
@@ -92,7 +92,7 @@ class CommentSerializer(serializers.ModelSerializer):
         postId = self.context['request'].parser_context.get('kwargs').get('pk')
         post = Post.objects.get(id=postId)
         author = Author.objects.get(user=self.context.get('request').user)
-        comment = Comment.objects.create(author=author,post=post, **validated_data)
+        comment = Comment.objects.create(author=author, post=post, **validated_data)
         comment.save()
         return comment
 
