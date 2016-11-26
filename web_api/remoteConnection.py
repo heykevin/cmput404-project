@@ -113,19 +113,42 @@ class SyncFriend:
     
     def syncfriend(self, request, is_from_client = False):
         for local_author in Author.objects.filter(host = 'http://'+request.get_host()+'/'):
+            
             for friend in local_author.friends.all():
                 if friend.host != 'http://'+request.get_host()+'/' and friend.host != 'http://'+request.get_host():
-                    self.check_remote_friend_list(str(local_author.id), str(friend.id), friend.host)
+                    self.sync_removed_friends(str(local_author.id), str(friend.id), friend.host)
+            
+            for pending_friend in local_author.get_request_sent():
+                if friend.host != 'http://'+request.get_host()+'/' and friend.host != 'http://'+request.get_host():
+                    self.sync_pending_friends(str(local_author.id), str(friend.id), friend.host)              
+        
         if is_from_client:        
             return Response("Sync done.", status.HTTP_200_OK)
         else:
             return None
     
-    def check_remote_friend_list(self, local_author_id, remote_friend_id, remote_host):
-        print "Checking remote friend list..."
+    def sync_pending_friends(self, local_author_id, remote_friend_id, remote_host):
+        print "Checking remote friend list with removed friends..."
+        r = self.rc.get_from_remote(remote_host+"friends/"+local_author_id+'/'+remote_friend_id+'/', self.rc.get_node_auth(remote_host))
+        is_friend = json.loads(r.text).get('friends')
+        
+                            
+        if is_friend:
+            print "Author already being friend found, removing from pending list and adding friend..."
+            author = Author.objects.get(id = local_author_id)
+            remote_friend = Author.objects.get(id = remote_friend_id)            
+            
+            FriendRequest.objects.filter(sender=author, receiver=remote_friend).delete()
+            author.friends.add(remote_friend)     
+    
+    def sync_removed_friends(self, local_author_id, remote_friend_id, remote_host):
+        print "Checking remote friend list with removed friends..."
         r = self.rc.get_from_remote(remote_host+"friends/"+local_author_id+'/'+remote_friend_id+'/', self.rc.get_node_auth(remote_host))
         is_friend = json.loads(r.text).get('friends')
                         
         if not is_friend:
             print "Author which no longer be friend found, removing from list..."
-            Author.objects.get(id = local_author_id).friends.remove(Author.objects.get(id = remote_friend_id)) 
+            author = Author.objects.get(id = local_author_id)
+            remote_friend = Author.objects.get(id = remote_friend_id)            
+            
+            author.friends.remove(remote_friend) 
