@@ -40,7 +40,7 @@ class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
     displayName = serializers.CharField()
 
 class ForeignPostSerializer(serializers.ModelSerializer):
-    author = ForeignAuthorInfoSerializer(many = False)
+    # author = ForeignAuthorInfoSerializer(many = False)
 
     class Meta:
         model = ForeignPost
@@ -58,6 +58,8 @@ class ForeignPostSerializer(serializers.ModelSerializer):
         
         url = foreign_author.get('url')
         author_id = url.split('/')[-2]
+        
+        author = None
         
         try:
             author = Author.objects.get(url = url)
