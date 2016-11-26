@@ -18,7 +18,7 @@ export class UserListElement extends React.Component
         this.sentFriendRequestTo = this.sentFriendRequestTo.bind(this);
         this.receivedFriendRequestFrom = this.receivedFriendRequestFrom.bind(this);
         this.declineFriendRequest = this.declineFriendRequest.bind(this);
-        this.acceptFriendRequest = this.acceptFriendRequest.bind(this);
+        // this.acceptFriendRequest = this.acceptFriendRequest.bind(this);
         this.finder = this.finder.bind(this);
         this.composeData = this.composeData.bind(this);
     }
@@ -147,6 +147,8 @@ export class UserListElement extends React.Component
 
         this.props.dispatch({type: 'usersBefriendAuthor', actor, target});
 
+        this.props.dispatch({type: 'usersSyncRemoteFriends'});
+
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
     }
 
@@ -159,6 +161,8 @@ export class UserListElement extends React.Component
         this.props.dispatch({type: 'users.sendingRequest', targetId: target.id});
 
         this.props.dispatch({type: 'usersUnfriendAuthor', actor, target});
+
+        this.props.dispatch({type: 'usersSyncRemoteFriends'});
 
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
     }
@@ -173,21 +177,25 @@ export class UserListElement extends React.Component
 
         this.props.dispatch({type: 'usersDeclineFriendRequest', target, actor});
 
-        this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
-    }
-
-    acceptFriendRequest(event) {
-        const {target, actor} = this.composeData(event);
-        if (!target.id) {
-            return;
-        }
-
-        this.props.dispatch({type: 'users.sendingRequest', targetId: target.id});
-
-        this.props.dispatch({type: 'usersAcceptFriendRequest', target, actor, accepted: 'true'});
+        this.props.dispatch({type: 'usersSyncRemoteFriends'});
 
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
     }
+
+    // acceptFriendRequest(event) {
+    //     const {target, actor} = this.composeData(event);
+    //     if (!target.id) {
+    //         return;
+    //     }
+    //
+    //     this.props.dispatch({type: 'users.sendingRequest', targetId: target.id});
+    //
+    //     this.props.dispatch({type: 'usersAcceptFriendRequest', target, actor, accepted: 'true'});
+    //
+    //     this.props.dispatch({type: 'usersSyncRemoteFriends'});
+    //
+    //     this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
+    // }
 
     isFriendWith(user) {
         return this.finder(this.props.friends, user.id);

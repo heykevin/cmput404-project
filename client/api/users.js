@@ -85,4 +85,16 @@ export default class ApiUsers {
             return Utils.handleErrors(response);
         });
     }
+
+    static syncRemoteFriends() {
+        const host = getApi(),
+            token = Utils.getToken();
+
+        return fetch (`${host}friendsync/`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        });
+    }
 }

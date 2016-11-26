@@ -125,3 +125,12 @@ export function* usersDeclineFriendRequest(action) {
         });
     }
 }
+
+export function* usersSyncRemoteFriends(action) {
+    try {
+        console.log("Syncing friends");
+        yield call(ApiUsers.syncRemoteFriends);
+    } catch (error) {
+        console.log("Sync Error. Displaying Stale Data Now. But, meh, who cares");
+    }
+}

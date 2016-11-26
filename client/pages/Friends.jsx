@@ -40,17 +40,6 @@ export class Friends extends React.Component
             </div>
 		);
     }
-
-    handleSelect(key)
-    {
-        switch (key) {
-            case "allAuthors":
-                break;
-            default:
-                break;
-        }
-        return;
-    }
 }
 function mapStateToProps(state, ownProps)
 {
