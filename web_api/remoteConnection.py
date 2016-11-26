@@ -38,8 +38,8 @@ class RemoteConnection:
     def check_node_valid(self, request):
         print "Checking the reuqest sender host..."
         
-        # for key,val in request.META.items():
-            # print key, val
+        for key,val in request.META.items():
+            print key, val
         
         if request.META['REMOTE_ADDR'] == '127.0.0.1':
             print "\nLocalhost found, assuming you are sending request from local."
@@ -47,7 +47,7 @@ class RemoteConnection:
         
         if not 'REMOTE_HOST' in request.META.keys():
             print "\nRemote host field found empty...but still return True for now."
-            return True
+            return False
         
         print "\nRequest from host: "+request.META['REMOTE_HOST']
         
