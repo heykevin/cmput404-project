@@ -116,11 +116,11 @@ class SyncFriend:
             
             for friend in local_author.friends.all():
                 if friend.host != 'http://'+request.get_host()+'/' and friend.host != 'http://'+request.get_host():
-                    self.sync_removed_friends(str(local_author.id), str(friend.id), friend.host)
+                    self.sync_removed_friends(str(local_author.id), str(friend.id), self.rc.makesure_host_with_slash(friend.host))
             
             for pending_friend in local_author.get_request_sent():
                 if pending_friend.host != 'http://'+request.get_host()+'/' and pending_friend.host != 'http://'+request.get_host():
-                    self.sync_pending_friends(str(local_author.id), str(pending_friend.id), pending_friend.host)              
+                    self.sync_pending_friends(str(local_author.id), str(pending_friend.id), self.rc.makesure_host_with_slash(pending_friend.host))              
         
         if is_from_client:        
             return Response("Sync done.", status.HTTP_200_OK)
