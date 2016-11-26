@@ -25,7 +25,9 @@ class reducerClass
     {
         console.log("reducer get comment", action);
         new_state.response = action.response;
-        new_state.list = (action.comments && action.comments.length) ? this.sortCommentsByDate(action.comments) : action.comments;
+        new_state.list = new_state.list || {};
+        new_state.list[action.postId] = (action.comments && action.comments.length) ? this.sortCommentsByDate(action.comments) : action.comments;
+        new_state.postId = action.postId;
         return new_state;
     }
 
@@ -38,7 +40,6 @@ class reducerClass
 
     static reloadList(new_state, action)
     {
-        new_state.resolved = false;
         new_state.list = [];
         return new_state;
     }

@@ -29,7 +29,8 @@ export function* commentsGetComment(action) {
         console.log("Saga comments.comments --> ", comments.comments);
         yield put({
             type: 'comments.getCommentSuccess',
-            comments: comments.comments
+            comments: comments.comments,
+            postId: action.postId
     });
     } catch (error) {
         console.log("get comments fail");
