@@ -314,6 +314,7 @@ class ForeignPostView(generics.ListAPIView):
                 continue
             
             if 'posts' in r.text:
+                print json.loads(r.text).get('posts')
                 serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), context={'request': request}, many=True)
                 if serializer.is_valid():
                     serializer.save()
