@@ -8,15 +8,14 @@ export function* commentsAddComment(action) {
         const comments = yield call(ApiComments.addComment, action);
         yield put({
             type: 'comments.addCommentSuccess',
-            response: response,
             content: action.content
         });
     } catch (error) {
+        console.log("error -- > ", error);
         yield put({
             type: 'comments.addCommentFailure',
             error: error,
             content: action.content,
-            response: response
         });
     }
 }
@@ -34,11 +33,10 @@ export function* commentsGetComment(action) {
     });
     } catch (error) {
         console.log("get comments fail");
-        console.log("error -- > " + error);
+        console.log("error -- > ", error);
         yield put({
             type: 'comments.getCommentFailure',
             error: error,
-            response: response
         });
     }
 }

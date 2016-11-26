@@ -21,7 +21,9 @@ export default class Comment extends React.Component
         console.log("Time to render some COMMENT");
         return (
             <div className="comment" id={this.props.id}>
-                <h1>COMMENT</h1>
+                <h2>{this.props.commentId}</h2>
+                <h2>{this.props.content}</h2>
+                <h2>{this.props.postId}</h2>
             </div>
         );
     }

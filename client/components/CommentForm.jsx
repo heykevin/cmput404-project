@@ -32,6 +32,8 @@ export class CommentForm extends React.Component
             postId: this.props.postId
         });
         this.setState({content: ''});
+        this.props.dispatch({type: 'commentsGetComment', postId: this.props.postId || ""});
+
     }
 
     handleContentChange(event) {
@@ -42,8 +44,7 @@ export class CommentForm extends React.Component
     render()
     {
         let comments = this.props.comments;
-        console.log("What are you getting --> " + this.props.comments + " Please show something legit");
-        console.log("Comment Length --> " + comments.length);
+        console.log("What are you getting --> " + this.props.comments + " Please show something legit");        console.log("Comment Length --> " + comments.length);
         if (comments.length){
             return(
                 <div className = "comment-form">
@@ -51,7 +52,8 @@ export class CommentForm extends React.Component
                     <ListGroup className = "comment-group">
                         {comments.map((comment, index) => {
                             if (index >= 0 && index < comments.length) {
-                                return (<Comment key={index} id={comments.id} author={comments.author} content={comments.content}/>);
+                                console.log("Comment content --> ", comments[index]);
+                                return (<Comment key={index} id={comments[index].id} author={comments[index].author.displayName} content={comments[index].content} postId={this.props.postId} commentId={comments[index].id}/>);
                             }
                         })}
                     </ListGroup>
