@@ -18,14 +18,10 @@ export default class Comment extends React.Component
     }
 
     render() {
+        console.log("Time to render some COMMENT");
         return (
-            <div className="comment" comment-id={this.props.key}>
-                <h2 className="commentAuthor">
-                    {this.props.author}
-                </h2>
-                <h2>
-                    {this.props.content}
-                </h2>
+            <div className="comment" id={this.props.id}>
+                <h1>COMMENT</h1>
             </div>
         );
     }

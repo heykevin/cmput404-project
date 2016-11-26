@@ -51,7 +51,7 @@ export class CommentForm extends React.Component
                     <ListGroup className = "comment-group">
                         {comments.map((comment, index) => {
                             if (index >= 0 && index < comments.length) {
-                                return (<Comment key={comments.id} author={comments.author} content={comments.content}/>);
+                                return (<Comment key={index} id={comments.id} author={comments.author} content={comments.content}/>);
                             }
                         })}
                     </ListGroup>
