@@ -302,8 +302,11 @@ class ForeignPostView(generics.ListAPIView):
         serializer = None
         for node in Node.objects.all():
             try:
-                r = self.rc.get_from_remote(node.node_url+"posts/", auth = self.rc.get_node_auth(node.node_url))
-                print 'testing:' + r.text
+                if node.node_url == 'http://secure-springs-85403.herokuapp.com/':
+                    r = self.rc.get_from_remote(node.node_url+"posts", auth = self.rc.get_node_auth(node.node_url))
+                else:
+                    r = self.rc.get_from_remote(node.node_url+"posts/", auth = self.rc.get_node_auth(node.node_url))
+                # print 'testing:' + r.text
             except:
                 continue
             if 'posts' in r.text:
