@@ -37,7 +37,7 @@ class AuthorInfoSerializer(serializers.ModelSerializer):
                   'email', 'bio', 'host', 'github_username', 'url')
 
 class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
-    pass
+    displayName = serializers.CharField()
 
 class ForeignPostSerializer(serializers.ModelSerializer):
     author = ForeignAuthorInfoSerializer(many = False)
