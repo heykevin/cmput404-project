@@ -532,13 +532,21 @@ class FriendRequestView(APIView):
         receiver = self.get_author_info(request, 'friend')
 
         if (not sender["is_local"]) and (not receiver["is_local"]):
-            return Response("Who are they?", status.HTTP_400_BAD_REQUEST)
+            return Response("Neither author is local on this server.", status.HTTP_400_BAD_REQUEST)
 
         if receiver["obj"].friends.all().filter(id=sender["obj"].id).exists():
-            return Response("Already friends.", status.HTTP_400_BAD_REQUEST)
+            return Response("Already friends.", status.HTTP_200_OK)
 
         if sender["obj"] in receiver["obj"].get_request_received():
-            return Response("Friend request already sent.", status.HTTP_400_BAD_REQUEST)
+            return Response("Friend request already sent.", status.HTTP_200_OK)
+        
+        # If sender already send a request then just add friend.
+        # Add friend first, if not getting 200 is only their bad.
+        if receiver["obj"] in sender["obj"].get_request_received(): 
+            sender['obj'].friends.add(receiver['obj'])
+            FriendRequest.objects.filter(sender=receiver['obj'], receiver=sender['obj']).delete()
+            
+            return Response("Friend added.", status.HTTP_200_OK)        
 
         # This is the communicating process to other nodes.
         if (sender["is_local"]) and (not receiver["is_local"]):
@@ -550,14 +558,7 @@ class FriendRequestView(APIView):
             if r.status_code != 200 and r.status_code != 201:
                 return Response("Not getting 200 or 201 from the remote.", status.HTTP_400_BAD_REQUEST)
         # -------------------------------------------------
-
-        # If sender already send a request then just add friend.
-
-        if receiver["obj"] in sender["obj"].get_request_received(): 
-            sender['obj'].friends.add(receiver['obj'])
-            FriendRequest.objects.filter(sender=receiver['obj'], receiver=sender['obj']).delete()
-            
-            return Response("Friend added.", status.HTTP_200_OK)
+        
         # Otherwise get the request object created.
         else:
             friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
@@ -593,6 +594,9 @@ class FriendRequestView(APIView):
         # With or withour slash.
         self.myNode = self.rc.sync_hostname_if_local('http://'+request.get_host()+'/')
         self.myNode2 = self.rc.sync_hostname_if_local('http://'+request.get_host())
+        
+        sf = SyncFriend()
+        sf.syncfriend(request)        
 
         if not self.rc.check_node_valid(request):
             return Response("What's this node?", status.HTTP_401_UNAUTHORIZED)
