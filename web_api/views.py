@@ -560,10 +560,9 @@ class FriendRequestView(APIView):
         # -------------------------------------------------
         
         # Otherwise get the request object created.
-        else:
-            friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
-            friend_request.save()
-            return Response("Friend request sent.", status.HTTP_200_OK)
+        friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
+        friend_request.save()
+        return Response("Friend request sent.", status.HTTP_200_OK)
 
     def reject_request(self, request):
         senderObj = Author.objects.get(id=request.data["author"]["id"])
