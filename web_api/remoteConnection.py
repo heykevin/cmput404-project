@@ -36,7 +36,7 @@ class RemoteConnection:
             return host
     
     def check_node_valid(self, request):
-        print "Checking the reuqest sender host..."
+        print "Checking the request sender host..."
         
         for key,val in request.META.items():
             print key, val
@@ -50,19 +50,14 @@ class RemoteConnection:
                 print "Request from our own client, OK."
                 return True
         
-        if not 'REMOTE_HOST' in request.META.keys():
-            print "\nRemote host field found empty...rejecting request."
-            return True
-        
-        print "\nRequest from host: "+request.META['REMOTE_HOST']
+        print "\nRequest from remote host, checking auth information."
         
         # Client case.
         
         print "\nRemote node confirmed, checking access permission."
         
         for node in Node.objects.all():
-            # print request.user.username
-            if "http://"+request.META['REMOTE_HOST']+"/" == node.node_url and request.user.is_authenticated():
+            if node.user == request.user and request.user.is_authenticated():
                 print "\nAccess permission checking successful."
                 return True
         
