@@ -74,7 +74,7 @@ export class ImageList extends React.Component
 
     changePage(page)
     {
-        this.props.dispatch(push('/page=' + page));
+        this.props.dispatch(push('/myimages?page=' + page));
     }
 }
 
