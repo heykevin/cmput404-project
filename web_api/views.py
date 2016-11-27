@@ -479,13 +479,14 @@ class CommentView(generics.ListCreateAPIView):
     
     def comment_to_local_post(self, post, request):
         author = Author.objects.get(user=request.user)
+        serializer = CommentSerializer
         
         try:
             comment = Comment.objects.create(author=author, post=post, **request.data)
+            serializer = CommentSerializer(comment)
         except:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        serializer = CommentSerializer(comment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)        
     
     def get_post_by_id(self, pk):
