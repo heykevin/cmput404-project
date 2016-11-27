@@ -472,18 +472,17 @@ class CommentView(generics.ListCreateAPIView):
             return self.comment_to_remote_post(postInfo['postObj'], request)
     
     def comment_to_remote_post(self, post, request):
-        print "Sending a comment to remote..."
-        
         author = Author.objects.get(user=request.user)
-        comment = RemoteComment.objects.create(author = author, post = post, **request.data)
-        serializer = RemoteCommentSerializer(comment)        
+        serializer = RemoteCommentSerializer
         
-        r = self.rc.post_to_remote(self.rc.makesure_host_with_slash(post.origin)+"comments/", serializer.data, self.rc.get_node_auth(self.rc.makesure_host_with_slash(post.author.host)))
+        try:
+            comment = RemoteCommentComment.objects.create(author=author, post=post, **request.data)
+            serializer = RemoteCommentSerializer(comment)
+        except:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        if r.status_code != 200 and r.status_code != 201:
-            return Response("Not getting 200 or 201 from the remote.", status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response(serializer.data, status=status.HTTP_201_CREATED)           
+        return Response(serializer.data, status=status.HTTP_201_CREATED) 
+             
     
     def comment_to_local_post(self, post, request):
         author = Author.objects.get(user=request.user)

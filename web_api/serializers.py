@@ -80,7 +80,6 @@ class ForeignPostSerializer(serializers.ModelSerializer):
         return post
 
 class CommentSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(required=True)
     author = AuthorInfoSerializer(many=False, read_only=True)
 
     class Meta:
@@ -90,7 +89,7 @@ class CommentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # print ("CREATING COMMENT")
         postId = self.context['request'].parser_context.get('kwargs').get('pk')
-        post = Post.objects.get(id=postId)
+        post = Post.objects.get(id = postId)
         author = Author.objects.get(user=self.context.get('request').user)
         comment = Comment.objects.create(author=author, post=post, **validated_data)
         comment.save()
