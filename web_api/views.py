@@ -478,10 +478,7 @@ class CommentView(generics.ListCreateAPIView):
         comment = RemoteComment.objects.create(author = author, post = post, **request.data)
         serializer = RemoteCommentSerializer(comment)        
         
-        if serializer.is_valid():
-            r = self.rc.post_to_remote(self.rc.makesure_host_with_slash(post.origin)+"comments/", serializer.data, self.rc.get_node_auth(self.rc.makesure_host_with_slash(post.author.host)))
-        else:
-            return Response("Comment data not valid.", status=status.HTTP_400_BAD_REQUEST)
+        r = self.rc.post_to_remote(self.rc.makesure_host_with_slash(post.origin)+"comments/", serializer.data, self.rc.get_node_auth(self.rc.makesure_host_with_slash(post.author.host)))
         
         if r.status_code != 200 and r.status_code != 201:
             return Response("Not getting 200 or 201 from the remote.", status=status.HTTP_400_BAD_REQUEST)
