@@ -82,6 +82,13 @@ class AuthorStream(generics.ListAPIView):
     def get_queryset(self):
         # when declaring authentication, user can be found in request
         user = self.request.user
+        print user.is_staff
+        if user.is_staff:
+            for node in Node.objects.all():
+                if node.user == user:
+                    return Post.objects.all().exclude(visibility="SERVERONLY")            
+            return Post.objects.all()
+
         # could refactor to use permissions but whatevs
         postsQuerySet = Post.objects.all().filter(visibility="PUBLIC")
         ownQuerySet = Post.objects.all().filter(author__user=user).exclude(visibility="PUBLIC")
