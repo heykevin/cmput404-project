@@ -80,7 +80,7 @@ class ForeignPostSerializer(serializers.ModelSerializer):
         return post
 
 class CommentSerializer(serializers.ModelSerializer):
-
+    id = serializers.CharField(required=True)
     author = AuthorInfoSerializer(many=False, read_only=True)
 
     class Meta:
