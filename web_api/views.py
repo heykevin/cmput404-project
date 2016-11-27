@@ -449,7 +449,7 @@ class CommentView(generics.ListCreateAPIView):
         post = Post.objects.get(id=pk)
         author = Author.objects.get(user=request.user)
         try:
-            comment = Comment.objects.create(author=author,post=post, **request.data)
+            comment = Comment.objects.create(author=author, post=post, **request.data)
         except:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer = CommentSerializer(comment)

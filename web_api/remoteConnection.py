@@ -124,7 +124,12 @@ class SyncFriend:
     
     def sync_pending_friends(self, local_author_id, remote_pending_friend_id, remote_host):
         print "Checking remote friend list with removed friends..."
-        r = self.rc.get_from_remote(remote_host+"friends/"+local_author_id+'/'+remote_pending_friend_id+'/', self.rc.get_node_auth(remote_host))
+        
+        final_url = remote_host+"friends/"+local_author_id+'/'+remote_pending_friend_id+'/'
+        if  not remote_host == 'http://secure-springs-85403.herokuapp.com/':
+            final_url += '/'        
+        
+        r = self.rc.get_from_remote(final_url, self.rc.get_node_auth(remote_host))
         is_friend = json.loads(r.text).get('friends')
         
                             
@@ -138,7 +143,12 @@ class SyncFriend:
     
     def sync_removed_friends(self, local_author_id, remote_friend_id, remote_host):
         print "Checking remote friend list with removed friends..."
-        r = self.rc.get_from_remote(remote_host+"friends/"+local_author_id+'/'+remote_friend_id+'/', self.rc.get_node_auth(remote_host))
+        
+        final_url = remote_host+"friends/"+local_author_id+'/'+remote_friend_id
+        if  not remote_host == 'http://secure-springs-85403.herokuapp.com/':
+            final_url += '/'
+        
+        r = self.rc.get_from_remote(final_url, self.rc.get_node_auth(remote_host))
         is_friend = json.loads(r.text).get('friends')
                         
         if not is_friend:
