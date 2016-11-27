@@ -53,6 +53,47 @@ class Image(models.Model):
     origin = models.URLField(editable=False, default="http://127.0.0.1:8000")
     photo = models.ImageField(upload_to=folder_name)
 
+class ForeignPost(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=500)
+    source = models.URLField(blank=True,)
+    origin = models.URLField(blank=True,)
+    description = models.CharField(max_length = 50)
+    content = models.TextField()
+    category = models.CharField(blank=True, null=True, default='', max_length = 50)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True)
+    text_plain="text/plain"
+    text_markdown="text/markdown"
+    text_xmarkdown="text/x-markdown"
+    contentType=(
+        (text_plain, 'text/plain'),
+        (text_markdown, 'text/markdown'),
+        (text_xmarkdown, 'text/x-markdown')
+    )
+
+    public="PUBLIC"
+    local="SERVERONLY"
+    foaf="FOAF"
+    list_of_friends="FRIENDS"
+    private="PRIVATE"
+
+    visibility_choice=(
+        (public, 'Public'),
+        (local, 'Local only'),
+        (foaf, 'Friends of friends'),
+        (list_of_friends, 'Friends'),
+        (private, 'Myself only')
+    )
+
+    visibility=models.CharField(max_length=20, choices=visibility_choice, default=public)
+    published=models.DateTimeField()
+    contentType=models.CharField(max_length=15, choices=contentType, default=text_markdown)
+
+    def get_count(self):
+        return self.objects.count()
+
+    def __str__(self):
+        return self.title
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -96,12 +137,18 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-class ForeignPost(Post):
-    pass
-
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     content = models.TextField(default="")
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     published = models.DateTimeField(auto_now=True)
+
+
+class RemoteComment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    content = models.TextField(default="")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    published = models.DateTimeField(auto_now=True)
+
