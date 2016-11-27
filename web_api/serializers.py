@@ -52,7 +52,7 @@ class ForeignPostSerializer(serializers.ModelSerializer):
         origin = validated_data.get('origin')
         content_type = validated_data.pop('contentType')
         foreign_author = validated_data.pop('author')
-        foreign_user = validated_data.pop('user')
+        foreign_user = foreign_author.pop('user')
         print foreign_author
         
         print self.context.get('request')
