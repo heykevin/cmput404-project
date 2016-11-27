@@ -149,7 +149,9 @@ export class UserListElement extends React.Component
 
         this.props.dispatch({type: 'usersSyncRemoteFriends'});
 
-        this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
+        setTimeout(()=> {
+            this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: this.props.author.id});
+        }, 4000);
     }
 
     sendUnfriendRequest(event) {
