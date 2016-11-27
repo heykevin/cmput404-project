@@ -126,7 +126,7 @@ class PersonalAuthorStream(generics.ListAPIView):
         authorPosts = Post.objects.all().filter(author=author)
 
         #if admin show everything            
-        if (self.request.user.is_staff()):
+        if (self.request.user.is_staff):
             return authorPosts
             
         publicPosts = authorPosts.all().filter(visibility="PUBLIC")
