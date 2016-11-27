@@ -4,17 +4,6 @@ from django.contrib.auth.models import User
 import uuid
 
 # Create your models here.
-class Node(models.Model):
-    node_url = models.URLField()
-    access_to_posts = models.BooleanField()
-    access_to_images = models.BooleanField()
-    
-    password = models.CharField(max_length=35, null=True)
-    
-    user = models.OneToOneField(User)
-
-    def __str__(self):
-        return self.node_url
 
 class Author(models.Model):
     user = models.OneToOneField(User)
@@ -39,6 +28,19 @@ class Author(models.Model):
 
     def __str__(self):
         return self.user.username
+
+class Node(models.Model):
+    node_url = models.URLField()
+    access_to_posts = models.BooleanField()
+    access_to_images = models.BooleanField()
+    
+    username = models.CharField(max_length=50, null=True)
+    password = models.CharField(max_length=50, null=True)
+    
+    user = models.OneToOneField(Author)
+
+    def __str__(self):
+        return self.node_url
 
 class FriendRequest(models.Model):
     sender = models.ForeignKey(Author, related_name="request_sent", on_delete=models.CASCADE)

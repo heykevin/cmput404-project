@@ -21,7 +21,7 @@ from .remoteConnection import *
 from serializers import *
 
 class PostsResultsSetPagination(PageNumberPagination):
-    page_size = 10
+    size = 10
     page_size_query_param = 'size'
     max_page_size = 1000
 
@@ -29,14 +29,14 @@ class PostsResultsSetPagination(PageNumberPagination):
         return Response({
             "query": "posts",
             "count": self.page.paginator.count,
-            "size": self.page_size,
+            "size": self.size,
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
             'posts': data
         })
 
 class CommentResultsSetPagination(PageNumberPagination):
-    page_size = 5
+    size = 5
     page_size_query_param = 'size'
     max_page_size = 1000
 
@@ -44,7 +44,7 @@ class CommentResultsSetPagination(PageNumberPagination):
         return Response({
             "query": "comments",
             "count": self.page.paginator.count,
-            "size": self.page_size,
+            "size": self.size,
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
             'comments': data

@@ -74,7 +74,7 @@ class RemoteConnection:
         print "\nGetting auth information from DB."
         for node in Node.objects.all():
             if remote_host == node.node_url:
-                return (node.user.username, node.password)
+                return (node.username, node.password)
         
         print "\nFailed..."
         return None
