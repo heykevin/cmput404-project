@@ -96,6 +96,9 @@ class CommentSerializer(serializers.ModelSerializer):
         comment.save()
         return comment
 
+class RemoteCommentSerializer(CommentSerializer):
+    pass
+
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group

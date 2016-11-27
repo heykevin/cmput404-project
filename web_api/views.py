@@ -468,8 +468,8 @@ class CommentView(generics.ListCreateAPIView):
         print "Sending a comment to remote..."
         
         author = Author.objects.get(user=request.user)
-        comment = Comment.objects.create(author = author, post = post, **request.data)
-        serializer = CommentSerializer(comment)        
+        comment = RemoteComment.objects.create(author = author, post = post, **request.data)
+        serializer = RemoteCommentSerializer(comment)        
         
         if serializer.is_valid():
             r = self.rc.post_to_remote(self.rc.makesure_host_with_slash(post.origin)+"comments/", serializer.data, self.rc.get_node_auth(self.rc.makesure_host_with_slash(post.author.host)))
