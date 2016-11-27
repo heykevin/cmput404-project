@@ -121,8 +121,14 @@ class PersonalAuthorStream(generics.ListAPIView):
         authorId = self.request.parser_context.get('kwargs').get('pk')
         user = self.request.user
         author = Author.objects.get(id=authorId)
+
         # could refactor to use permissions but whatevs
         authorPosts = Post.objects.all().filter(author=author)
+
+        #if admin show everything            
+        if (self.request.user.is_staff()):
+            return authorPosts
+            
         publicPosts = authorPosts.all().filter(visibility="PUBLIC")
         privatePosts = authorPosts.all().filter(visibility="PRIVATE").filter(author__user=user)
         querySet = publicPosts | privatePosts
@@ -314,8 +320,6 @@ class ForeignPostView(generics.ListAPIView):
                 continue
             
             if 'posts' in r.text:
-                print json.loads(r.text).get('posts')[0]
-
                 serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
                 if serializer.is_valid():
                     serializer.save()
@@ -451,7 +455,7 @@ class CommentView(generics.ListCreateAPIView):
         post = Post.objects.get(id=pk)
         author = Author.objects.get(user=request.user)
         try:
-            comment = Comment.objects.create(author=author, post=post, **request.data)
+            comment = Comment.objects.create(author=author,post=post, **request.data)
         except:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer = CommentSerializer(comment)
