@@ -445,6 +445,8 @@ class CommentView(generics.ListCreateAPIView):
     authentication_classes = (BasicAuthentication, )
     permission_classes = (IsAuthenticated, )
     pagination_class = CommentResultsSetPagination
+    
+    rc = RemoteConnection()
 
     def get_queryset(self):
         postID = self.request.parser_context.get('kwargs').get('pk')
@@ -452,14 +454,58 @@ class CommentView(generics.ListCreateAPIView):
         return queryset
 
     def post(self, request, pk):
-        post = Post.objects.get(id=pk)
+        postInfo = self.get_post_by_id(pk)
+        
+        if postInfo == None:
+            return Response("No such post to comment.", status=status.HTTP_400_BAD_REQUEST)
+        
+        if not postInfo['is_foreign']:
+            return self.comment_to_local_post(postInfo['postObj'], request)
+        else:
+            return self.comment_to_remote_post(postInfo['postObj'], request)
+    
+    def post_to_remote_post(self, post, request):
+        print "Sending a comment to remote..."
         author = Author.objects.get(user=request.user)
+        
+        r = self.rc.post_to_remote(self.rc.makesure_host_with_slash(post.origin)+"comments/", request.data, self.rc.get_node_auth(self.rc.makesure_host_with_slash(post.author.host)))
+        
+        if r.status_code != 200 and r.status_code != 201:
+            return Response("Not getting 200 or 201 from the remote.", status=status.HTTP_400_BAD_REQUEST)
+        
+        comment = Comment.objects.create(author=author, post=post, **request.data)
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)           
+    
+    def comment_to_local_post(self, post, request):
+        author = Author.objects.get(user=request.user)
+        
         try:
-            comment = Comment.objects.create(author=author,post=post, **request.data)
+            comment = Comment.objects.create(author=author, post=post, **request.data)
         except:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
         serializer = CommentSerializer(comment)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)        
+    
+    def get_post_by_id(self, pk):
+        post = None
+        is_foreign = False
+        
+        try:
+            post = Post.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            
+            try:
+                post = ForeignPost.objects.get(id=pk)
+                is_foreign = True
+            except ObjectDoesNotExist:
+                return None
+        
+        res=dict()
+        res["postObj"] = post
+        res["is_foreign"] = is_foreign
+        return res
 
 class FriendsWith(APIView):
     """

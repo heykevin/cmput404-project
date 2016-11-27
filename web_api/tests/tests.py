@@ -513,9 +513,9 @@ class CommentTestCase(APITestCase):
 		# test for creating a comment
 		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
 		response = self.client.post('/posts/%s/comments/' % self.pId1, {
-				'content': 'the post has really good information, I like it'
-			}, format='json'
-		)
+		    'content': 'the post has really good information, I like it'
+		}, format='json')
+		
 		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
 
 		# test for getting a comment
