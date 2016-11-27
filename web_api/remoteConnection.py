@@ -22,6 +22,12 @@ from serializers import *
 
 class RemoteConnection:
     
+    def check_url_slash(self, url):
+        if url.contains('http://secure-springs-85403.herokuapp.com/'):
+            return url[:-1]
+        return url
+            
+    
     def makesure_host_with_slash(self, host):
         if host[-1]!='/':
             host+='/'
@@ -80,10 +86,10 @@ class RemoteConnection:
         
         if auth == None:
             print "\nNo auth information."
-            r = requests.post(url, json=data)
+            r = requests.post(self.check_url_slash(url), json=data)
         else:
             print "\nSever access auth: {" + auth[0] + " : " + auth[1] + "}"
-            r = requests.post(url, json=data, auth=auth)
+            r = requests.post(self.check_url_slash(url), json=data, auth=auth)
         
         print '\nGetting ' + str(r.status_code)+' from the remote server.'
         return r
@@ -125,9 +131,7 @@ class SyncFriend:
     def sync_pending_friends(self, local_author_id, remote_pending_friend_id, remote_host):
         print "Checking remote friend list with removed friends..."
         
-        final_url = remote_host+"friends/"+local_author_id+'/'+remote_pending_friend_id+'/'
-        if  not remote_host == 'http://secure-springs-85403.herokuapp.com/':
-            final_url += '/'        
+        final_url = remote_host+"friends/"+local_author_id+'/'+remote_pending_friend_id+'/'     
         
         r = self.rc.get_from_remote(final_url, self.rc.get_node_auth(remote_host))
         is_friend = json.loads(r.text).get('friends')
@@ -144,9 +148,7 @@ class SyncFriend:
     def sync_removed_friends(self, local_author_id, remote_friend_id, remote_host):
         print "Checking remote friend list with removed friends..."
         
-        final_url = remote_host+"friends/"+local_author_id+'/'+remote_friend_id
-        if  not remote_host == 'http://secure-springs-85403.herokuapp.com/':
-            final_url += '/'
+        final_url = remote_host+"friends/"+local_author_id+'/'+remote_friend_id+'/'
         
         r = self.rc.get_from_remote(final_url, self.rc.get_node_auth(remote_host))
         is_friend = json.loads(r.text).get('friends')
