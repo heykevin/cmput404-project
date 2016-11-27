@@ -464,7 +464,7 @@ class CommentView(generics.ListCreateAPIView):
         else:
             return self.comment_to_remote_post(postInfo['postObj'], request)
     
-    def post_to_remote_post(self, post, request):
+    def comment_to_remote_post(self, post, request):
         print "Sending a comment to remote..."
         
         author = Author.objects.get(user=request.user)
