@@ -15,13 +15,12 @@ export class ProfileInfo extends React.Component {
     render() {
         return(
             <div className = "ProfileDisplay">
-                <h1>Your Profile</h1>
-                <Panel header="Display name">{this.props.author.displayName}</Panel>
-                <Panel header="First Name">{this.props.author.first_name}</Panel>
-                <Panel header="Last name">{this.props.author.last_name}</Panel>
-                <Panel header="Email">{this.props.author.email}</Panel>
-                <Panel header="Github username">{this.props.author.github_username}</Panel>
-                <Panel header="Bios">{this.props.author.bio}</Panel>
+                <Panel bsStyle="primary" header="Display name">{this.props.author.displayName}</Panel>
+                <Panel bsStyle="primary" header="First Name">{this.props.author.first_name}</Panel>
+                <Panel bsStyle="primary" header="Last name">{this.props.author.last_name}</Panel>
+                <Panel bsStyle="primary" header="Email">{this.props.author.email}</Panel>
+                <Panel bsStyle="primary" header="Github username">{this.props.author.github_username}</Panel>
+                <Panel bsStyle="primary" header="Bios">{this.props.author.bio}</Panel>
             </div>
         );
     }

@@ -787,24 +787,30 @@ span.gha-time {
     opacity: 0.09;
 }
 
-.ProfileDisplay {
-    h1 {
-        color: white;
-    }
+.profile {
+    background: white;
+    border-radius: 0.45em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5em;
+    width: 40em;
+    margin: auto;
 
+    button {
+        width: 10em;
+    }
+}
+
+.ProfileDisplay {
     .panel {
-        border-color: #8bdbeb;
+        color: black;
+        text-align: center;
+        width: 30em;
     }
 
     .panel-heading {
-        border-color: #8bdbeb;
-        background-color: green;
-        color: #1a53ff;
-    }
-
-    .panel-body {
-        border-width: 10px;
-        border-color: #8bdbeb;
+        padding: 0.25em;
     }
 }
 
@@ -881,5 +887,20 @@ span.gha-time {
                 margin: auto;
             }
         }
+    }
+}
+
+.author-edit-form {
+
+
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    input {
+        width: 30em;
+        margin: 0.45em;
     }
 }

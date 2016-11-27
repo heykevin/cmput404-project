@@ -103,7 +103,7 @@ export class AuthorEditForm extends React.Component {
                         type="text"
                         defaultValue={this.props.author.bio}
                         />
-                    <Button type = "submit">
+                    <Button bsStyle="primary" type="submit">
                         Submit
                     </Button>
                 </Form>

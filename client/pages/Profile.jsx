@@ -16,7 +16,7 @@ export class Profile extends React.Component {
     render() {
         console.log(this.props.author);
         return (
-            <div>
+            <div className="profile">
                 <div className={this.props.showForm
                     ? "invisible"
                     : "visible"}>
