@@ -13,7 +13,7 @@ class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         mode = Node
         # password is the text form of nodePassword which can only be in hash form.
-        fields = ('node_url', 'access_to_posts', 'access_to_images','password', 'nodeName', 'nodePassword')
+        fields = ('node_url', 'access_to_posts', 'access_to_images','password', 'user', 'username')
 
 class UserSerializer(serializers.ModelSerializer):
 
