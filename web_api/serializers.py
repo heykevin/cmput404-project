@@ -84,7 +84,7 @@ class CommentSerializer(serializers.ModelSerializer):
     author = AuthorInfoSerializer(many=False, read_only=True)
 
     class Meta:
-        model = Comment
+        model = RemoteComment
         fields = ('id', 'content', 'author', 'published', 'post')
 
     def create(self, validated_data):
