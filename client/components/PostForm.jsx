@@ -55,9 +55,9 @@ export class PostForm extends React.Component {
 
         if (this.props.redirect && !this.props.error) {
             // notify.show("Post Saved! Redirecting you...", "success", 3000);
-            const url = this.props.response && this.props.response.id ? '/posts/' + this.props.response.id : '/dashboard';
+            // const url = this.props.response && this.props.response.id ? '/posts/' + this.props.response.id : '/dashboard';
             setTimeout(() => {
-                Utils.redirect(url);
+                Utils.redirect('/myposts');
                 this.props.dispatch({type: "posts.clearEditorRelatedState"});
             }, 5000);
         } else if (this.props.error){
@@ -130,8 +130,8 @@ export class PostForm extends React.Component {
                             <option value="PUBLIC">Public</option>
                             <option value="FOAF">Friends of a friend</option>
                             <option value="FRIENDS">Friends only</option>
-                            <option value="PRIVATE">only me</option>
-                            <option value="SERVERONLY">users on my server</option>
+                            <option value="PRIVATE">Only me</option>
+                            <option value="SERVERONLY">Friends on my server</option>
                         </FormControl>
                     </FormGroup>
                     <FormGroup>
