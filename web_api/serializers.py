@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.decorators import detail_route
 from django.core.exceptions import ObjectDoesNotExist
 from .models import *
+import json
 
 class NodeSerializer(serializers.ModelSerializer):
     nodeName = serializers.CharField(source='user.username')
@@ -37,10 +38,13 @@ class AuthorInfoSerializer(serializers.ModelSerializer):
                   'email', 'bio', 'host', 'github_username', 'url')
 
 class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
+    id = serializers.CharField(required=True)
     pass
 
+
 class ForeignPostSerializer(serializers.ModelSerializer):
-    author = ForeignAuthorInfoSerializer(many = False)
+    author = ForeignAuthorInfoSerializer(required=True, read_only=False)
+    id = serializers.CharField(required=True)
 
     class Meta:
         model = ForeignPost
@@ -53,20 +57,16 @@ class ForeignPostSerializer(serializers.ModelSerializer):
         content_type = validated_data.pop('contentType')
         foreign_author = validated_data.pop('author')
         foreign_user = foreign_author.pop('user')
-        print foreign_author
-        
-        print self.context.get('request')
-        
+
         url = foreign_author.get('url')
-        author_id = url.split('/')[-2]
-        
         author = None
         
+        postId = validated_data.pop('id')
         try:
             author = Author.objects.get(url = url)
         except ObjectDoesNotExist:
             user = User.objects.create(username="__"+foreign_user.get('username'))
-            author = Author.objects.create(id=author_id, user=user, **foreign_author)
+            author = Author.objects.create(user=user, **foreign_author)
             user.save()
             author.save()
 
@@ -76,7 +76,7 @@ class ForeignPostSerializer(serializers.ModelSerializer):
             post = ForeignPost.objects.get(origin=origin)
         except ObjectDoesNotExist:
             print "SAVING FOREIGN POST..."
-            post = ForeignPost.objects.create(id=foreign_author.get('id'), author = author, contentType=content_type, **validated_data)
+            post = ForeignPost.objects.create(id=postId, author=author, contentType=content_type, **validated_data)
             post.save()
         return post
 

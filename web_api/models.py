@@ -13,6 +13,8 @@ class Node(models.Model):
     
     user = models.OneToOneField(User)
 
+    def __str__(self):
+        return self.node_url
 
 class Author(models.Model):
     user = models.OneToOneField(User)
