@@ -31,7 +31,7 @@
     width: 30em;
     z-index: 10;
     position: fixed;
-    top: 0%;
+    top: 0;
     left: 35%;
     border-radius: 0.45em;
 }
@@ -44,7 +44,7 @@
     width: 30em;
     z-index: 10;
     position: fixed;
-    top: 0%;
+    top: 0;
     left: 35%;
     border-radius: 0.45em;
 }
@@ -179,7 +179,7 @@
             border-top-left-radius: 0;
             border-top-right-radius: 0;
             margin-bottom: 0 !important;
-            border-radius: 0px !important;
+            border-radius: 0 !important;
         }
 
         span:last-child {
@@ -257,6 +257,24 @@
 
             button {
                 margin-right: 4px;
+            }
+        }
+
+        .comment-form {
+            background: white;
+            padding: 1em;
+            margin-top: 0.5em;
+            border-radius: 0.5em;
+
+            form {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+
+                button {
+                    margin-top: 1em;
+                    width: 8em;
+                }
             }
         }
     }

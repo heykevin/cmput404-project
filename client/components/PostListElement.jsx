@@ -88,8 +88,8 @@ export class PostListElement extends React.Component
                         <div className="post-content">
                             {content}
                         </div>
+                        <CommentForm postId={post.id}/>
                     </div>
-                    <CommentForm postId={post.id}/>
                     <PostDelete/>
                 </ListGroupItem>
         );
