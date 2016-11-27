@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
-import {ProgressBar, List, ListGroup} from 'react-bootstrap';
+import {ProgressBar, List, ListGroup, FormGroup, ControlLabel, FormControl} from 'react-bootstrap';
 
 import PostListElement from './PostListElement.jsx';
 import Utils from '../utils/utils.js';
@@ -12,48 +12,94 @@ export class PostList extends React.Component
     {
         super(props);
         this.state = {
-            posts: []
+            selectedAuthor: "all"
         }
 
         // posts can be retrieve by either author/{AUTHOR_ID}/posts or posts
         this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: Utils.getAuthor().id});
         this.props.dispatch({type: 'posts.reloadList'});
         if (this.props.foreign) {
-            this.props.dispatch({type: 'postsGetForeignPosts', method: this.props.method, page: this.props.page || ""});
+            this.props.dispatch({
+                type: 'postsGetForeignPosts',
+                method: this.props.method,
+                page: this.props.page || ""
+            });
         } else {
-            this.props.dispatch({type: 'postsGetPosts', method: this.props.method, authorId: this.props.authorId, page: this.props.page || ""});
+            this.props.dispatch({
+                type: 'postsGetPosts',
+                method: this.props.method,
+                authorId: this.props.authorId,
+                page: this.props.page || "",
+                size: 99999
+            });
         }
+
+        this.onChange = this.onChange.bind(this);
+        this.getUniqueAuthors = this.getUniqueAuthors.bind(this);
+    }
+
+    getUniqueAuthors(posts)
+    {
+        const authors = posts.map(function(post) {
+            if (post.author) {
+                return JSON.stringify(post.author);
+            }
+        });
+        const uniqueAuthors = Array.from(new Set(authors)).map(function(author) {
+            return JSON.parse(author);
+        });;
+        return uniqueAuthors;
+    }
+
+    onChange(event)
+    {
+        console.log(event.target.value);
+        this.setState({
+            selectedAuthor: event.target.value
+        });
     }
 
     render()
     {
-        let start_count = 0, posts, resolved, count;
+        let posts,
+            resolved;
         if (this.props.foreign) {
             posts = this.props.foreignPosts;
             resolved = this.props.foreignResolved;
-            count = this.props.foreignCount;
         } else {
             posts = this.props.posts;
             resolved = this.props.resolved;
-            count = this.props.count;
         }
-
-        console.dir(this.props);
 
         // render
         if (!resolved || !this.props.authorResolved) {
-            // show the loading state
             return (<ProgressBar active now={100}/>);
         } else if (posts.length && this.props.authorResolved) {
+            const authors = this.getUniqueAuthors(posts), isForeign = this.props.foreign, selectedAuthor = this.state.selectedAuthor;
             return (
                 <div>
-                    <div className={(this.props.sending ? "visible" : "invisible") + " hide-yall-kids-hide-yall-wife"}>
+                    <div className={(this.props.sending
+                        ? "visible"
+                        : "invisible") + " hide-yall-kids-hide-yall-wife"}>
                         <i className="fa fa-spinner fa-spin"></i>
                     </div>
                     <ListGroup className="post-group">
+                        <FormGroup className={this.props.canEdit ? "invisible" : "select-group"} controlId="formControlsSelect">
+                            <ControlLabel>View Posts From</ControlLabel>
+                            <FormControl componentClass="select" placeholder="select" value={this.state.selectedAuthor} onChange={this.onChange}>
+                                <option value="all">all authors</option>
+                                {
+                                    authors.map(function(author) {
+                                        var  displayName = isForeign && author.displayName.length > 2 ? author.displayName.substr(2) : author.displayName;
+                                        return <option key={author.id} value={JSON.stringify(author)}> {displayName} from {author.host}</option>;
+                                    })
+                                }
+                          </FormControl>
+                        </FormGroup>
                         {posts.map((post, index) => {
-                            if (index >= 0 && index < posts.length) {
-                                return (<PostListElement key={post.id} id={post.id} preview={true} foreign={this.props.foreign} canEdit={this.props.canEdit}/>);
+                            const show = selectedAuthor === JSON.stringify(post.author) ? true : selectedAuthor === "all" ? true : false;
+                            if (index >= 0 && index < posts.length && show) {
+                                return (<PostListElement key={post.id} id={post.id} preview={true} foreign={isForeign} canEdit={this.props.canEdit}/>);
                             }
                         })}
                     </ListGroup>
@@ -74,7 +120,6 @@ export class PostList extends React.Component
 
 // export the connected class
 function mapStateToProps(state, own_props) {
-    console.log(state.routing.locationBeforeTransitions.query);
     return {
         posts: state.posts.list || [],
         foreignPosts: state.posts.foreignList || [],
@@ -86,7 +131,7 @@ function mapStateToProps(state, own_props) {
         method: own_props.method,
         authorId: own_props.authorId,
         foreign: own_props.foreign,
-        authorResolved: state.users.authorResolved,
+        authorResolved: state.users.authorResolved
     };
 }
 export default connect(mapStateToProps)(PostList);

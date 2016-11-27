@@ -213,6 +213,13 @@
             color: white;
         }
 
+        .select-group {
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+            padding: 1em 1em 0 !important;
+            margin: 0 !important;
+        }
+
         .post-info {
             padding-right: 5px;
             border-radius: 0;

@@ -8,7 +8,7 @@ export default class ApiUsers {
 
     static getAuthorProfile(action) {
         const host = getApi();
-        return fetch(`${host}author/` + action.authorId).then((response) => {
+        return fetch(`${host}author/` + action.authorId + "/").then((response) => {
             return Utils.handleErrors(response);
         });
     }
@@ -24,7 +24,7 @@ export default class ApiUsers {
 
     static getFriendsIds(action) {
         const host = getApi();
-        return fetch(`${host}friends/` + action.authorId).then((response) => {
+        return fetch(`${host}friends/` + action.authorId + "/").then((response) => {
             return Utils.handleErrors(response);
         }).then((list) => {
             return list.authors;

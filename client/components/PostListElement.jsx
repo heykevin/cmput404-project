@@ -30,7 +30,6 @@ export class PostListElement extends React.Component
         let post, href, time, content, friendStatus, buttonText, disabled, origin;
         const sendFriendRequestText = "Send a friend request to",
         posts = this.props.foreign ? this.props.foreignPosts : this.props.posts;
-        console.log(this.props.foreignPosts);
         if (this.props.view === "view" && ! (this.props.posts instanceof Array)) {
             post = this.props.posts;
         } else if (posts.length > 0){
@@ -88,7 +87,7 @@ export class PostListElement extends React.Component
                         <div className="post-content">
                             {content}
                         </div>
-                        <CommentForm postId={post.id}/>
+                        <CommentForm className={this.props.canEdit ? "invisible" : "visible"} postId={post.id}/>
                     </div>
                     <PostDelete/>
                 </ListGroupItem>

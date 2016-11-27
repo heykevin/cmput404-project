@@ -54,14 +54,14 @@ export class PostForm extends React.Component {
         }
 
         if (this.props.redirect && !this.props.error) {
-            notify.show("Post Saved! Redirecting you...", "success", 3000);
+            // notify.show("Post Saved! Redirecting you...", "success", 3000);
             const url = this.props.response && this.props.response.id ? '/posts/' + this.props.response.id : '/dashboard';
             setTimeout(() => {
                 Utils.redirect(url);
                 this.props.dispatch({type: "posts.clearEditorRelatedState"});
             }, 5000);
         } else if (this.props.error){
-            notify.show("Failed to save! Please try again later. " + this.props.error, "error", 3000);
+            console.log("Failed to save! Please try again later. " + this.props.error, "error", 3000);
         }
 
         return (
