@@ -511,7 +511,7 @@ class CommentView(generics.ListCreateAPIView):
         serializer = RemoteCommentSerializer
         
         try:
-            comment = RemoteCommentComment.objects.create(author=author, post=post, **request.data)
+            comment = RemoteComment.objects.create(author=author, post=post, **request.data)
             serializer = RemoteCommentSerializer(comment)
         except:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

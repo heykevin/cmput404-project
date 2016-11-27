@@ -90,7 +90,6 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'content', 'author', 'published', 'post')
 
     def create(self, validated_data):
-        # print ("CREATING COMMENT")
         postId = self.context['request'].parser_context.get('kwargs').get('pk')
         post = Post.objects.get(id = postId)
         author = Author.objects.get(user=self.context.get('request').user)
