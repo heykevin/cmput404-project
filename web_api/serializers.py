@@ -74,8 +74,11 @@ class ForeignPostSerializer(serializers.ModelSerializer):
             content_type = "type/markdown"
  
         print "SAVING FOREIGN POST..."
-        post = ForeignPost.objects.create(id=postId, author=author, contentType=content_type, **validated_data)
-        post.save()
+        try:
+            post = ForeignPost.objects.get(id=postId)
+        except: 
+            post = ForeignPost.objects.create(id=postId, author=author, contentType=content_type, **validated_data)
+            post.save()
         
         return post
 
