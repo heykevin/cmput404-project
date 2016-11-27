@@ -25,8 +25,7 @@ class RemoteConnection:
     def check_url_slash(self, url):
         if 'http://secure-springs-85403.herokuapp.com/' in str(url):
             return str(url)[:-1]
-        return url
-            
+        return url        
     
     def makesure_host_with_slash(self, host):
         if host[-1]!='/':
@@ -81,7 +80,7 @@ class RemoteConnection:
         return None
     
     def post_to_remote(self, url, data, auth):
-        print '\nSending post request to: '+url
+        print '\nSending post request to: ' + self.check_url_slash(url)
         r = None
         
         if auth == None:
@@ -95,7 +94,7 @@ class RemoteConnection:
         return r
     
     def get_from_remote(self, url, auth):
-        print '\nSending get request to: '+url
+        print '\nSending get request to: ' + self.check_url_slash(url)
         r=None
         
         if auth == None:

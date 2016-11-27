@@ -72,12 +72,11 @@ class ForeignPostSerializer(serializers.ModelSerializer):
 
         if content_type == "type/x-markdown":
             content_type = "type/markdown"
-        try:
-            post = ForeignPost.objects.get(origin=origin)
-        except ObjectDoesNotExist:
-            print "SAVING FOREIGN POST..."
-            post = ForeignPost.objects.create(id=postId, author=author, contentType=content_type, **validated_data)
-            post.save()
+ 
+        print "SAVING FOREIGN POST..."
+        post = ForeignPost.objects.create(id=postId, author=author, contentType=content_type, **validated_data)
+        post.save()
+        
         return post
 
 class CommentSerializer(serializers.ModelSerializer):
