@@ -609,7 +609,7 @@ class FriendRequestView(APIView):
             if Author.objects.filter(id = author_id).exists():
                 res["obj"] = Author.objects.get(id = author_id)
             else:
-                foreign_user=User(username = "__" + request.data[key_name]["displayName"], is_active=False)
+                foreign_user=User(username = request.data[key_name]["host"] + "__" + request.data[key_name]["displayName"], is_active=False)
                 foreign_user.save()
 
                 url = node
