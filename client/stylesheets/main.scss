@@ -125,10 +125,12 @@
         background: white;
         height: 100%;
         border-radius: 0.25em;
+        min-width: 540px;
 
         .nav {
             margin: 0 !important;
             padding: 1em 0 0 !important;
+            min-width: 540px;
         }
     }
 
