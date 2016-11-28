@@ -6,6 +6,7 @@ import {push} from 'react-router-redux';
 import {Button, Glyphicon, ListGroupItem, ListGroup, Popover, OverlayTrigger, Form, FormControl} from 'react-bootstrap';
 import Utils from '../utils/utils.js';
 
+
 //https://github.com/reactjs/react-tutorial/blob/master/public/scripts/example.js
 
 export class CommentForm extends React.Component
@@ -25,7 +26,8 @@ export class CommentForm extends React.Component
         this.props.dispatch({
             type: "commentsAddComment",
             content: this.state.content,
-            postId: this.props.postId
+            postId: this.props.postId,
+            author: Utils.getAuthor().displayName
         });
         this.setState({content: ''});
     }

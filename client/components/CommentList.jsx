@@ -15,14 +15,17 @@ export class CommentList extends React.Component
     {
         super(props);
         this.state = {comments:[]};
+    }
+
+    componentWillMount() {
         this.props.dispatch({type: 'commentsGetComment', postId: this.props.postId});
     }
 
     render()
     {
         let comments = this.props.comments;
-        console.log("What are you getting --> " + this.props.comments);
-        console.log("Comment Length --> " + comments.length);
+        console.log("What are you getting --> " + this.props.postId + " --> " + this.props.comments);
+        console.log("Comment Length --> " + this.props.postId + " --> " + comments.length);
         if (comments.length)
         {
             return(
