@@ -83,31 +83,39 @@ class RemoteConnection:
         print 'Sending post request to: ' + self.check_url_slash(url)
         print 'JSON data:' + data
         r = None
-        
-        if auth == None:
-            print "No auth information."
-            r = requests.post(self.makesure_host_with_slash(url), json=data)
-        else:
-            print "Sever access auth: {" + auth[0] + " : " + auth[1] + "}"
-            r = requests.post(self.makesure_host_with_slash(url), json=data, auth=auth)
-        
-        print 'Getting ' + str(r.status_code)+' from the remote server.'
-        print r.text
+        try:
+            if auth == None:
+                print "No auth information."
+                r = requests.post(self.makesure_host_with_slash(url), json=data)
+            else:
+                print "Sever access auth: {" + auth[0] + " : " + auth[1] + "}"
+                r = requests.post(self.makesure_host_with_slash(url), json=data, auth=auth)
+            
+            print 'Getting ' + str(r.status_code)+' from the remote server.'
+            print 'Message: ' + r.text     
+        except:
+            print 'Connection failed with '+ str(r.status_code) 
+            print 'Message: ' + r.text     
+
         return r
     
     def get_from_remote(self, url, auth):
         print 'Sending get request to: ' + self.check_url_slash(url)
         r=None
-        
-        if auth == None:
-            print "No auth information."
-            r = requests.get(self.check_url_slash(url))
-        else:
-            print "Sever access auth: {" + auth[0] + " : " + auth[1] + "}"
-            r = requests.get(self.check_url_slash(url), auth=auth)
-        
-        print 'Getting ' + str(r.status_code)+' from the remote server.'  
-        print 'Message: ' + r.text     
+
+        try:
+            if auth == None:
+                print "No auth information."
+                r = requests.get(self.check_url_slash(url))
+            else:
+                r = requests.get(self.check_url_slash(url), auth=auth)
+            
+            print 'Getting ' + str(r.status_code)+' from the remote server.'  
+            print 'Message: ' + r.text     
+        except:
+            print 'Connection failed with '+ str(r.status_code) 
+            print 'Message: ' + r.text     
+
         return r
 
 

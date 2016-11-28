@@ -63,6 +63,8 @@ class ForeignPostSerializer(serializers.ModelSerializer):
         
         postId = validated_data.pop('id')
         try:
+            print url
+            print foreign_user.get('username')
             author = Author.objects.get(url = url)
         except ObjectDoesNotExist:
             user = User.objects.create(username = foreign_author.get('host') + "__" + foreign_user.get('username'))
@@ -83,11 +85,11 @@ class ForeignPostSerializer(serializers.ModelSerializer):
         return post
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = AuthorInfoSerializer(many=False, read_only=True)
+    author = AuthorInfoSerializer(many=False)
 
     class Meta:
-        model = RemoteComment
-        fields = ('id', 'content', 'author', 'published', 'post')
+        model = Comment
+        fields = ('id', 'comment', 'author', 'published', 'post')
 
     def create(self, validated_data):
         postId = self.context['request'].parser_context.get('kwargs').get('pk')
@@ -96,9 +98,6 @@ class CommentSerializer(serializers.ModelSerializer):
         comment = Comment.objects.create(author=author, post=post, **validated_data)
         comment.save()
         return comment
-
-class RemoteCommentSerializer(CommentSerializer):
-    pass
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

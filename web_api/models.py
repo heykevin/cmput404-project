@@ -6,7 +6,7 @@ import uuid
 # Create your models here.
 
 class Author(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     github_username = models.CharField(max_length=35, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
@@ -141,16 +141,8 @@ class Post(models.Model):
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    content = models.TextField(default="")
+    comment = models.TextField(default="")
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     published = models.DateTimeField(auto_now=True)
-
-
-class RemoteComment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    content = models.TextField(default="")
-    post = models.ForeignKey(ForeignPost, on_delete=models.CASCADE)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    published = models.DateTimeField(auto_now=True)
-
+    contentType = models.CharField(max_length=35, default='text/markdown', editable=False)

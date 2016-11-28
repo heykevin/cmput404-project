@@ -366,9 +366,8 @@ class ForeignPostView(generics.ListAPIView):
                 # check node's server if currently friends
                 r = self.rc.get_from_remote(url, auth = self.rc.get_node_auth(friend_node.node_url))
                 response = json.loads(r.text)
-
                 # if currently friends
-                if True:
+                if json.loads(r.text).get('friends'):
                     friend_queryset = queryset.filter(author=friend)
                     friend_only_queryset = friend_queryset.filter(visibility="FRIENDS")
                     friend_foaf_queryset = friend_queryset.filter(visibility="FOAF")
@@ -537,59 +536,107 @@ class CommentView(generics.ListCreateAPIView):
         return queryset
 
     def post(self, request, pk):
-        postInfo = self.get_post_by_id(pk)
+        post = get_object_or_404(Post, id=pk)
+        user = request.user
+        data = request.data
+        data_author = data.pop("author")
+        print data
+        print data_author
+        source = "http://" + self.request.get_host() + "/"
+        author_host = data_author.get("host")
+        author_id = data_author.get("id")
+        if not author_host[-1] == "/":
+            author_host = author_host + "/"
+        # this is for local posts
+        # Check if user is local
+        print source
+        print author_host
+        if (source == author_host):
+            # user is local
+            print "LOCAL COMMENT"
+            author = Author.objects.get(user=user)
+            comment = Comment.objects.create(author=author, post=post, **request.data)
+        else: # make sure author is from a node
+            try:
+                author_node = Node.objects.get(node_url = author_host)
+            except:
+                return Response("Author not from approved node", status=status.HTTP_400_BAD_REQUEST)
+            try:
+                author = Author.objects.get(id=author_id)
+            except: # author not yet in database so we should create them
+                print "NOT AUTHOR"
+                user = User.objects.create(username = author_host[0:-1] + "__" + data_author.pop("displayName"))
+                author = Author.objects.create(user=user, url=author_host+"author/"+author_id+"/", **data_author)
+                return Response("Author does not exist yet in our db", status=status.HTTP_400_BAD_REQUEST)
+            comment = Comment.objects.create(author=author, post=post, **request.data)
         
-        if postInfo == None:
-            return Response("No such post to comment.", status=status.HTTP_400_BAD_REQUEST)
         
-        if not postInfo['is_foreign']:
-            return self.comment_to_local_post(postInfo['postObj'], request)
-        else:
-            return self.comment_to_remote_post(postInfo['postObj'], request)
+        # if request.get)host
+        # try:
+        #     author = Author.objects.get(user__username=json_author.get("displayName"))
+
+        # except:
+        #     # If user not found, probably remote user so we create
+        #     print "USER NOT FOUND"
+        
+        # if user is found
+        # if (user.host_name == "")
+        # Posting to our own posts
+        # author = Author.objects.get(user=user)
+        # try:
+        #     comment = Comment.objects.create(author=author,post=post, **request.data)
+        # except:
+        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+    def __unicode__(self):
+         return "Parent post:"+ str(self.parent_post.id) + ", Author:" + self.author.displayName + ": " + self.content
     
-    def comment_to_remote_post(self, post, request):
-        author = Author.objects.get(user=request.user)
-        serializer = RemoteCommentSerializer
+    # def comment_to_remote_post(self, post, request):
+    #     author = Author.objects.get(user=request.user)
+    #     serializer = RemoteCommentSerializer
         
-        try:
-            comment = RemoteComment.objects.create(author=author, post=post, **request.data)
-            serializer = RemoteCommentSerializer(comment)
-        except:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     try:
+    #         comment = RemoteComment.objects.create(author=author, post=post, **request.data)
+    #         serializer = RemoteCommentSerializer(comment)
+    #     except:
+    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response(serializer.data, status=status.HTTP_201_CREATED) 
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED) 
              
     
-    def comment_to_local_post(self, post, request):
-        author = Author.objects.get(user=request.user)
-        serializer = CommentSerializer
+    # def comment_to_local_post(self, post, request):
+    #     author = Author.objects.get(user=request.user)
+    #     serializer = CommentSerializer
         
-        try:
-            comment = Comment.objects.create(author=author, post=post, **request.data)
-            serializer = CommentSerializer(comment)
-        except:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     try:
+    #         comment = Comment.objects.create(author=author, post=post, **request.data)
+    #         serializer = CommentSerializer(comment)
+    #     except:
+    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response(serializer.data, status=status.HTTP_201_CREATED)        
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED)        
     
-    def get_post_by_id(self, pk):
-        post = None
-        is_foreign = False
+    # def get_post_by_id(self, pk):
+    #     post = None
+    #     is_foreign = False
         
-        try:
-            post = Post.objects.get(id=pk)
-        except ObjectDoesNotExist:
+    #     try:
+    #         post = Post.objects.get(id=pk)
+    #     except ObjectDoesNotExist:
             
-            try:
-                post = ForeignPost.objects.get(id=pk)
-                is_foreign = True
-            except ObjectDoesNotExist:
-                return None
+    #         try:
+    #             post = ForeignPost.objects.get(id=pk)
+    #             is_foreign = True
+    #         except ObjectDoesNotExist:
+    #             return None
         
-        res=dict()
-        res["postObj"] = post
-        res["is_foreign"] = is_foreign
-        return res
+    #     res=dict()
+    #     res["postObj"] = post
+    #     res["is_foreign"] = is_foreign
+    #     return res
 
 class FriendsWith(APIView):
     """
