@@ -103,6 +103,7 @@ class RemoteConnection:
             print "\nNo auth information."
             r = requests.get(self.check_url_slash(url))
         else:
+            print "\nSever access auth: {" + auth[0] + " : " + auth[1] + "}"
             r = requests.get(self.check_url_slash(url), auth=auth)
         
         print '\nGetting ' + str(r.status_code)+' from the remote server.'  
