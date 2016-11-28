@@ -363,7 +363,7 @@ class ForeignPostView(generics.ListAPIView):
         queryset = queryset.exclude(visibility="PRIVATE")
         serializer = ForeignPostSerializer(queryset, many=True)
         if serializer.is_valid:
-            print "hi"
+            print "Serializer is valid."
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def get_queryset(self):

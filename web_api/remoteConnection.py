@@ -73,7 +73,7 @@ class RemoteConnection:
         
         print "\nGetting auth information from DB for %s" % remote_host
         for node in Node.objects.all():
-            print "checking" + node.node_url
+            print "Checking " + node.node_url
             if remote_host == node.node_url:
                 return (node.username, node.password)
         
