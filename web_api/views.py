@@ -733,8 +733,8 @@ class FriendRequestView(APIView):
         self.myNode = self.rc.sync_hostname_if_local('http://'+request.get_host()+'/')
         self.myNode2 = self.rc.sync_hostname_if_local('http://'+request.get_host())
         
-        sf = SyncFriend()
-        sf.syncfriend(request)        
+        # sf = SyncFriend()
+        # sf.syncfriend(request)        
 
         if not self.rc.check_node_valid(request):
             return Response("What's this node?", status.HTTP_401_UNAUTHORIZED)
