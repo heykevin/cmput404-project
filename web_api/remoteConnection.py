@@ -23,7 +23,8 @@ from serializers import *
 class RemoteConnection:
     
     def check_url_slash(self, url):
-        return str(url)[:-1]       
+        if url[-1] == '/':
+            return str(url)[:-1]       
     
     def makesure_host_with_slash(self, host):
         if host[-1]!='/':
