@@ -30,6 +30,7 @@ SECRET_KEY = 'nt$77850#=nwx@!-69(#wb(t3da@!s+g(g_8h=6g@e+4^ef@5b'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+APPEND_SLASH = False
 
 
 # Application definition
@@ -126,5 +127,3 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'userfiles')
 
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
-
-APPEND_SLASH = False
