@@ -23,7 +23,7 @@ from serializers import *
 class RemoteConnection:
     
     def check_url_slash(self, url):
-        if 'http://secure-springs-85403.herokuapp.com/' in str(url):
+        if 'http://secure-springs-85403.herokuapp.com/' in str(url) or 'http://socialnets404.herokuapp.com/' in str(url):
             return str(url)[:-1]
         return url        
     
@@ -43,8 +43,8 @@ class RemoteConnection:
     def check_node_valid(self, request):
         print "Checking the request sender host..."
         
-        for key,val in request.META.items():
-            print key, val
+        # for key,val in request.META.items():
+            # print key, val
         
         if request.META['REMOTE_ADDR'] == '127.0.0.1':
             print "\nLocalhost found, assuming you are sending request from local."
