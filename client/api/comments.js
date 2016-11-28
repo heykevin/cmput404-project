@@ -9,6 +9,7 @@ export default class ApiComments{
     static composeData(action) {
         let body = new FormData();
         const host = getApi();
+        body.append('host', host);
         body.append('content', action.content);
         body.append('author', action.author);
         console.log("Body of comment in api compose --> " + action.content);

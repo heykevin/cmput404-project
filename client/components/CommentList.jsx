@@ -21,6 +21,15 @@ export class CommentList extends React.Component
         this.props.dispatch({type: 'commentsGetComment', postId: this.props.postId});
     }
 
+    // contentformat(utext){
+    //     var x = utext;
+    //     var r = /\\u([\d\w]{4})/gi;
+    //     x = x.replace(r, function (match, grp) {
+    //         return String.fromCharCode(parseInt(grp, 16)); } );
+    //     x = unescape(x);
+    //     console.log(x);
+    // }
+
     render()
     {
         let comments = this.props.comments;
