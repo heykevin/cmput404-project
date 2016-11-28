@@ -22,7 +22,11 @@ from serializers import *
 
 class RemoteConnection:
     
-    def check_url_slash(self, url):
+    def check_group_for_remove_slash(self, url):
+        if 'http://socialnets404.herokuapp.com/' in url:
+            return self.remove_url_slash(url)
+    
+    def remove_url_slash(self, url):
         if url[-1] == '/':
             return str(url)[:-1]       
 
@@ -80,17 +84,17 @@ class RemoteConnection:
         return None
     
     def post_to_remote(self, url, data, auth):
-        print 'Sending post request to: ' + self.check_url_slash(url)
+        print 'Sending post request to: ' + self.check_group_for_remove_slash(url)
         print 'JSON data: ' 
         print data
         r = None
         try:
             if auth == None:
                 print "No auth information."
-                r = requests.post(self.makesure_host_with_slash(url), json=data)
+                r = requests.post(self.check_group_for_remove_slash(url), json=data)
             else:
                 print "Sever access auth: {" + auth[0] + " : " + auth[1] + "}"
-                r = requests.post(self.makesure_host_with_slash(url), json=data, auth=auth)
+                r = requests.post(self.check_group_for_remove_slash(url), json=data, auth=auth)
             
             print 'Getting ' + str(r.status_code)+' from the remote server.'
             print 'Message: ' + r.text     
@@ -101,15 +105,15 @@ class RemoteConnection:
         return r
     
     def get_from_remote(self, url, auth):
-        print 'Sending get request to: ' + self.check_url_slash(url)
+        print 'Sending get request to: ' + self.remove_url_slash(url)
         r=None
 
         try:
             if auth == None:
                 print "No auth information."
-                r = requests.get(self.check_url_slash(url))
+                r = requests.get(self.remove_url_slash(url))
             else:
-                r = requests.get(self.check_url_slash(url), auth=auth)
+                r = requests.get(self.remove_url_slash(url), auth=auth)
             
             print 'Getting ' + str(r.status_code)+' from the remote server.'  
             print 'Message: ' + r.text     
