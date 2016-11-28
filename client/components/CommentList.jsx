@@ -40,7 +40,6 @@ export class CommentList extends React.Component
                                 return (
                                     <div key={comment.id} className='comment'>
                                         <div className='flex comment-author'>
-
                                             <div><Glyphicon glyph="comment"/><strong>{comment.author.displayName}:</strong></div><div>{new Date(comment.published).toLocaleString()}</div>
                                         </div>
                                         <div className='flex comment-content'>
