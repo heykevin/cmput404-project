@@ -46,7 +46,7 @@ class RemoteConnection:
             # print key, val
         
         if request.META['REMOTE_ADDR'] == '127.0.0.1':
-            print "\nLocalhost found, assuming you are sending request from local."
+            print "Localhost found, assuming you are sending request from local."
             return True
         
         if 'HTTP_ORIGIN' in request.META.keys():
@@ -54,23 +54,23 @@ class RemoteConnection:
                 print "Request from our own client, OK."
                 return True
         
-        print "\nRequest from remote host, checking auth information."
+        print "Request from remote host, checking auth information."
         
         # Client case.
         
-        print "\nRemote node confirmed, checking access permission."
+        print "Remote node confirmed, checking access permission."
         
         for node in Node.objects.all():
             if node.user == request.user and request.user.is_authenticated():
-                print "\nAccess permission checking successful."
+                print "Access permission checking successful."
                 return True
         
-        print "\nRemote node access permission checking failed."
+        print "Remote node access permission checking failed."
         return True
     
     def get_node_auth(self, remote_host):
         
-        print "\nGetting auth information from DB for %s" % remote_host
+        print "Getting auth information from DB for %s" % remote_host
         for node in Node.objects.all():
             print "Checking " + node.node_url
             if remote_host == node.node_url:
@@ -80,34 +80,34 @@ class RemoteConnection:
         return None
     
     def post_to_remote(self, url, data, auth):
-        print '\nSending post request to: ' + self.check_url_slash(url)
-        print data
+        print 'Sending post request to: ' + self.check_url_slash(url)
+        print 'JSON data:' + data
         r = None
         
         if auth == None:
-            print "\nNo auth information."
+            print "No auth information."
             r = requests.post(self.makesure_host_with_slash(url), json=data)
         else:
-            print "\nSever access auth: {" + auth[0] + " : " + auth[1] + "}"
+            print "Sever access auth: {" + auth[0] + " : " + auth[1] + "}"
             r = requests.post(self.makesure_host_with_slash(url), json=data, auth=auth)
         
-        print '\nGetting ' + str(r.status_code)+' from the remote server.'
+        print 'Getting ' + str(r.status_code)+' from the remote server.'
         print r.text
         return r
     
     def get_from_remote(self, url, auth):
-        print '\nSending get request to: ' + self.check_url_slash(url)
+        print 'Sending get request to: ' + self.check_url_slash(url)
         r=None
         
         if auth == None:
-            print "\nNo auth information."
+            print "No auth information."
             r = requests.get(self.check_url_slash(url))
         else:
-            print "\nSever access auth: {" + auth[0] + " : " + auth[1] + "}"
+            print "Sever access auth: {" + auth[0] + " : " + auth[1] + "}"
             r = requests.get(self.check_url_slash(url), auth=auth)
         
-        print '\nGetting ' + str(r.status_code)+' from the remote server.'  
-        print r.text     
+        print 'Getting ' + str(r.status_code)+' from the remote server.'  
+        print 'Message: ' + r.text     
         return r
 
 
@@ -132,7 +132,7 @@ class SyncFriend:
             return None
     
     def sync_pending_friends(self, local_author_id, remote_pending_friend_id, remote_host):
-        print "Checking remote friend list with removed friends..."
+        # print "Checking remote friend list with removed friends..."
         
         final_url = remote_host+"friends/"+local_author_id+'/'+remote_pending_friend_id+'/'     
         
@@ -149,7 +149,7 @@ class SyncFriend:
             author.friends.add(remote_pending_friend)     
     
     def sync_removed_friends(self, local_author_id, remote_friend_id, remote_host):
-        print "Checking remote friend list with removed friends..."
+        # print "Checking remote friend list with removed friends..."
         
         final_url = remote_host+"friends/"+local_author_id+'/'+remote_friend_id+'/'
         
