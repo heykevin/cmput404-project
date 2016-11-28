@@ -696,6 +696,8 @@ class FriendRequestView(APIView):
             url = remote_host+'friendrequest/'
             
             remote_author_displayName = request.data['friend']['displayName']
+            print 'sending friend request to '+ remote_author_displayName
+            
             request.data['friend']['displayName'] = self.parseRemoteDisplayName(remote_author_displayName)
 
             r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
