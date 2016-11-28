@@ -52,7 +52,7 @@ class ForeignPostSerializer(serializers.ModelSerializer):
             'category', 'visibility', 'published', 'contentType')
 
     def create(self, validated_data):
-        print "CREATING FOREIGN POST..."
+        # print "CREATING FOREIGN POST..."
         origin = validated_data.get('origin')
         content_type = validated_data.pop('contentType')
         foreign_author = validated_data.pop('author')
@@ -73,7 +73,7 @@ class ForeignPostSerializer(serializers.ModelSerializer):
         if content_type == "type/x-markdown":
             content_type = "type/markdown"
  
-        print "SAVING FOREIGN POST..."
+        # print "SAVING FOREIGN POST..."
         try:
             post = ForeignPost.objects.get(id=postId)
         except: 

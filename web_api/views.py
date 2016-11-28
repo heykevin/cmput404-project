@@ -19,6 +19,7 @@ from .permissions import *
 from .models import Author, Post, Image, ForeignPost
 from .remoteConnection import *
 from serializers import *
+import urlparse
 
 class PostsResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'size'
@@ -94,8 +95,9 @@ class AuthorStream(generics.ListAPIView):
         # get friends and foaf posts
         for friend in Author.objects.get(user=user).friends.all():
             friendQuerySet = Post.objects.all().filter(author=friend).filter(visibility="FRIENDS")
+            friendFoafQuerySet = Post.objects.all().filter(author=friend).filter(visibility="FOAF")
             serverQuerySet = Post.objects.all().filter(author=friend).filter(visibility="SERVERONLY")
-            querySet = querySet | friendQuerySet | serverQuerySet
+            querySet = querySet | friendQuerySet | serverQuerySet | friendFoafQuerySet
             for foaf in friend.friends.all():
                 foafQuerySet = Post.objects.all().filter(author=foaf).filter(visibility="FOAF")
                 querySet = querySet | foafQuerySet
@@ -307,22 +309,14 @@ class ForeignPostView(generics.ListAPIView):
     serializer_class = ForeignPostSerializer
 
     rc = RemoteConnection()
-
-    def get(self, request, format=None):
-        source = self.request.get_host()
-        user = self.request.user
-        author = Author.objects.get(user=user)
-        # Delete everything.
-        ForeignPost.objects.all().delete()
+    def createForeignPosts(self):
         res = []
-        # Get and create remote public posts
         for node in Node.objects.all():
             try:
-                r = self.rc.get_from_remote(node.node_url+"posts/", auth = self.rc.get_node_auth(node.node_url))
+                r = self.rc.get_from_remote(node.node_url+"author/posts?size=100", auth = self.rc.get_node_auth(node.node_url))
                 # print 'testing:' + r.text
             except:
                 continue
-            
             if 'posts' in r.text:
                 serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
                 if serializer.is_valid():
@@ -331,39 +325,72 @@ class ForeignPostView(generics.ListAPIView):
                 else:
                     res.extend(serializer.errors)
 
+    def get(self, request, format=None):
+        source = "http://" + self.request.get_host() + "/"
+        user = self.request.user
+        author = Author.objects.get(user=user)
+        # Delete everything.
+        ForeignPost.objects.all().delete()
+        # Get and create remote public posts
+        self.createForeignPosts()
+
         # Get and create remote friend posts
-        for friend in Author.objects.get(user=user).friends.all():  
-            if not friend.host == source:
-                if not friend.host[-1] == "/":
-                    friend.host = friend.host + "/"
+        # for friend in Author.objects.get(user=user).friends.all():  
+        #     if not friend.host == source:
+        #         if not friend.host[-1] == "/":
+        #             friend.host = friend.host + "/"
 
-                friend_node = Node.objects.get(node_url = friend.host)
-                print "NODE"
-                print friend_node.node_url
-                url = "%sfriends/%s/%s" % (friend_node.node_url, author.id, friend.id)
-                print url
-                # check node's server if currently friends
-                r = self.rc.get_from_remote(url, auth = self.rc.get_node_auth(node.node_url))
+        #         friend_node = Node.objects.get(node_url = friend.host)
+        #         print "NODE"
+        #         print friend_node.node_url
+        #         url = "%sfriends/%s/%s" % (friend_node.node_url, author.id, friend.id)
+        #         print url
+        #         # check node's server if currently friends
+        #         r = self.rc.get_from_remote(url, auth = self.rc.get_node_auth(node.node_url))
 
-                # if json.loads(r.text).get('friends'):
-                    # get author's posts
-                posts_url = "%sauthor/%s/posts" % (friend_node, friend.id)
-                r = self.rc.get_from_remote(posts_url, auth = self.rc.get_node_auth(node.node_url))
-                print "FRIEND POSTS"
-                friend_posts = json.loads(r.text).get('posts')
-                if 'posts' in r.text:
-                    serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
-                    if serializer.is_valid():
-                        serializer.save()
-                        res.extend(serializer.data)
-                    else:
-                        res.extend(serializer.errors)
+        #         # if json.loads(r.text).get('friends'):
+        #             # get author's posts
+        #         posts_url = "%sauthor/%s/posts" % (friend_node, friend.id)
+        #         r = self.rc.get_from_remote(posts_url, auth = self.rc.get_node_auth(node.node_url))
+        #         print "FRIEND POSTS"
+        #         friend_posts = json.loads(r.text).get('posts')
+        #         if 'posts' in r.text:
+        #             serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
+        #             if serializer.is_valid():
+        #                 serializer.save()
+        #                 res.extend(serializer.data)
+        #             else:
+        #                 res.extend(serializer.errors)
 
+        # queryset = ForeignPost.objects.all()
+        # queryset = queryset.exclude(visibility="PRIVATE")
+        # serializer = ForeignPostSerializer(queryset, many=True)
+        # if serializer.is_valid:
+        #     print "hi"
         queryset = ForeignPost.objects.all()
-        queryset = queryset.exclude(visibility="PRIVATE")
-        serializer = ForeignPostSerializer(queryset, many=True)
-        if serializer.is_valid:
-            print "Serializer is valid."
+        pubqueryset = queryset.filter(visibility="PUBLIC")
+        # Get friend posts
+        for friend in Author.objects.get(user=user).friends.all():  
+            # if friend is not local
+            if not friend.host[-1] == "/":
+                friend.host = friend.host + "/"
+
+            if not friend.host == source:
+                print friend
+                friend_node = Node.objects.get(node_url = friend.host)
+                url = "%sfriends/%s/%s" % (friend_node.node_url, author.id, friend.id)
+                print friend.id
+                # check node's server if currently friends
+                r = self.rc.get_from_remote(url, auth = self.rc.get_node_auth(friend_node.node_url))
+                response = json.loads(r.text)
+
+                # if currently friends
+                if True:
+                    friend_queryset = queryset.filter(author=friend, visibility="FRIENDS")
+                    foaf_queryset = queryset.filter(author=friend, visibility="FOAF")
+                    pubqueryset = pubqueryset | friend_queryset | foaf_queryset
+
+        serializer = ForeignPostSerializer(pubqueryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def get_queryset(self):
@@ -404,7 +431,9 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
         serializer = PostSerializer(queryset)
         res = dict()
         res["posts"] = serializer.data
-        return Response(res, status=status.HTTP_200_OK)
+        res["count"] = 1
+        res["size"] = 10
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ImageView(generics.ListCreateAPIView):
     authentication_classes = (BasicAuthentication, )
