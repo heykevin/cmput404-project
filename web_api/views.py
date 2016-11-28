@@ -754,8 +754,9 @@ class FriendRequestView(APIView):
 class FriendSyncView(APIView):
     
     def get(self, request):
-        sf = SyncFriend()
-        return sf.syncfriend(request, is_from_client=True)
+        # sf = SyncFriend()
+        # return sf.syncfriend(request, is_from_client=True)
+        return None
             
 
 class FriendCheck(APIView):
@@ -771,8 +772,8 @@ class FriendCheck(APIView):
     
     
     def get(self, request, id1, id2, format=None):
-        sf = SyncFriend()
-        sf.syncfriend(request)
+        # sf = SyncFriend()
+        # sf.syncfriend(request)
         
         res = dict()
         res['authors'] = [id1, id2]
