@@ -23,8 +23,9 @@ from serializers import *
 class RemoteConnection:
     
     def check_group_for_remove_slash(self, url):
-        if 'http://socialnets404.herokuapp.com/' in url:
+        if 'http://socialnets404.herokuapp.com/' in url or 'http://ssrapp.herokuapp.com/' in url:
             return self.remove_url_slash(url)
+        return url
     
     def remove_url_slash(self, url):
         if url[-1] == '/':
