@@ -40,8 +40,8 @@ export default class ApiUsers {
             },
             body: JSON.stringify({
                     query: "unfriend",
-                    author: action.actor,
-                    friend: action.target
+                    author: action.target,
+                    friend: action.actor
                 })
         }).then((response) => {
             return Utils.handleErrors(response);
@@ -52,8 +52,8 @@ export default class ApiUsers {
         const host = getApi();
         const body = JSON.stringify({
                 query: "friendrequest",
-                author: action.actor,
-                friend: action.target
+                author: action.target,
+                friend: action.actor
             });
         return fetch(`${host}friendrequest/`, {
             method: 'POST',

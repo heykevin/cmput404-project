@@ -142,7 +142,7 @@ export class UserListElement extends React.Component
                 host: this.props.author.host,
                 url: event.target.dataset.url
             };
-        console.log(target, actor);
+        console.log('receiver/author', target, 'sender/friend', actor);
         return {target, actor};
     }
 
