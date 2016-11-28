@@ -675,8 +675,8 @@ class FriendRequestView(APIView):
 
     # Handles the request creation
     def post_request(self, request):
-        sender = self.get_author_info(request, 'author')
-        receiver = self.get_author_info(request, 'friend')
+        sender = self.get_author_info(request, 'friend')
+        receiver = self.get_author_info(request, 'author')
 
         if (not sender["is_local"]) and (not receiver["is_local"]):
             return Response("Neither author is local on this server.", status.HTTP_400_BAD_REQUEST)
@@ -712,15 +712,15 @@ class FriendRequestView(APIView):
         return Response("Friend request sent.", status.HTTP_200_OK)
 
     def reject_request(self, request):
-        senderObj = Author.objects.get(id=request.data["author"]["id"])
-        receiverObj = Author.objects.get(id=request.data["friend"]["id"])
+        senderObj = Author.objects.get(id=request.data["friend"]["id"])
+        receiverObj = Author.objects.get(id=request.data["author"]["id"])
 
         FriendRequest.objects.filter(sender=senderObj, receiver=receiverObj).delete()
         return Response("Friend request rejected.", status.HTTP_200_OK)
 
     def unfriend(self, request):
-        senderObj = Author.objects.get(id=request.data["author"]["id"])
-        receiverObj = Author.objects.get(id=request.data["friend"]["id"])
+        senderObj = Author.objects.get(id=request.data["friend"]["id"])
+        receiverObj = Author.objects.get(id=request.data["author"]["id"])
 
         senderObj.friends.remove(receiverObj)
 
