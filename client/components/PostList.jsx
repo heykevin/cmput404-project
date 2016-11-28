@@ -90,7 +90,7 @@ export class PostList extends React.Component
                                 <option value="all">all authors</option>
                                 {
                                     authors.map(function(author) {
-                                        var  displayName = isForeign && author.displayName.length > 2 ? author.displayName.substr(2) : author.displayName;
+                                        var  displayName = isForeign ? Utils.extractUsername(author.displayName) : author.displayName;
                                         return <option key={author.id} value={JSON.stringify(author)}> {displayName} from {author.host}</option>;
                                     })
                                 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
-import {Button, Glyphicon, ProgressBar} from 'react-bootstrap';
+import {Button, Glyphicon, ProgressBar, Popover, OverlayTrigger} from 'react-bootstrap';
 
 import Utils from '../utils/utils.js';
 import {getApi} from '../config.js';
@@ -25,6 +25,9 @@ export class UserListElement extends React.Component
 
     render()
     {
+        if (this.props.id === Utils.getAuthor().id) {
+            return null;
+        }
         // get the user element data
         let user,
             action,
@@ -49,13 +52,19 @@ export class UserListElement extends React.Component
             return null;
         } else {
             console.log("hello", user.host, user.host in [getApi(), "http://localhost:8000", "http://127.0.0.1:8000"]);
-            displayName = [getApi(), "http://localhost:8000", "http://127.0.0.1:8000"].indexOf(user.host) > -1 ? user.displayName : user.displayName.substr(2);
+            displayName = [getApi(), "http://localhost:8000", "http://127.0.0.1:8000"].indexOf(user.host) > -1 ? user.displayName : Utils.extractUsername(user.displayName);
         }
+
+        const popoverHoverFocus =
+                <Popover bsClass="popover" title="Profile" id={user.id}>
+                    <strong>Display Name</strong>: {displayName} <br/>
+                    <div className="pop-over"><strong>Host</strong>: {user.host}</div>
+                </Popover>;
 
         if (this.props.view === "allauthors" && !this.props.authorResolved) {
             return (
                 <tr>
-                    <td>{displayName}</td>
+                    <td><OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{displayName}</strong></OverlayTrigger></td>
                     <td>{user.bio
                             ? user.bio
                             : displayName + " is rather private. So no bio is available."}</td>
@@ -111,7 +120,7 @@ export class UserListElement extends React.Component
         // render
         return (
             <tr>
-                <td>{displayName}</td>
+                <td><OverlayTrigger trigger={['hover', 'focus']} placement="bottom" overlay={popoverHoverFocus}><strong>{displayName}</strong></OverlayTrigger></td>
                 <td>{user.bio
                         ? user.bio
                         : displayName + " is rather private. So no bio is available."}</td>

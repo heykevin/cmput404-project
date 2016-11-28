@@ -53,7 +53,7 @@ export class UserList extends React.Component
 
             return (
 
-                <div>
+                <div className="friends">
                     <div className={(this.props.sending ? "visible" : "invisible") + " hide-yall-kids-hide-yall-wife"}>
                         <i className="fa fa-spinner fa-spin"></i>
                     </div>

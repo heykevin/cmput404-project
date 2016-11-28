@@ -6,6 +6,20 @@
     min-height: 1000px;
 }
 
+.pop-over {
+    width: 15em;
+    word-wrap: break-word;
+}
+
+.friends {
+
+    tr {
+        strong {
+            border-bottom: 1px dotted #000;
+            font-weight: 700;
+        }
+    }
+}
 .warning-text {
     background: #f0ad4e;
     padding: 2em;

@@ -44,7 +44,7 @@ export class PostListElement extends React.Component
         if (!post) {
             return null;
         }
-        const displayName = this.props.foreign && post.author.displayName.length > 2 ? post.author.displayName.substr(2) : post.author.displayName;
+        const displayName = this.props.foreign ? Utils.extractUsername(post.author.displayName) : post.author.displayName;
         time = new Date(post.published).toLocaleString();
         href = this.props.foreign ? post.origin : this.props.preview ? '/posts/' + post.id : "#";
         href = "#";
@@ -60,8 +60,8 @@ export class PostListElement extends React.Component
         const popoverHoverFocus =
                 <Popover title="Profile" id={post.author.id}>
                     <strong>Display Name</strong>: {displayName} <br/>
-                    <strong>Host</strong>: {post.author.host} <br/>
-                    <strong>Bio</strong>: {post.author.bio || ""} <br/>
+                    <div className="pop-over"><strong>Host</strong>: {post.author.host}</div>
+                    <div className="pop-over"><strong>Bio</strong>: {post.author.bio || ""}</div>
                 </Popover>;
 
         //className={this.props.preview ? "invisible" : "visible post-content"}

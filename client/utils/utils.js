@@ -29,6 +29,19 @@ export default class Utils {
         }
     }
 
+    static extractUsername(name) {
+        const nameComponents = name.split('__');
+        if (nameComponents.length > 1) {
+            let beautifiedName = "";
+            nameComponents.slice(1).map((string, index) => {
+                beautifiedName += index === 0 ? string : ('__' + string);
+            });
+            return beautifiedName;
+        } else {
+            return name;
+        }
+    }
+
     static handleErrors(response) {
         if (!response.ok) {
             console.log("error", response);
