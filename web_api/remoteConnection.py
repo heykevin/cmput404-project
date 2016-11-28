@@ -23,9 +23,7 @@ from serializers import *
 class RemoteConnection:
     
     def check_url_slash(self, url):
-        if 'http://secure-springs-85403.herokuapp.com/' in str(url) or 'http://socialnets404.herokuapp.com/' in str(url):
-            return str(url)[:-1]
-        return url        
+        return str(url)[:-1]       
     
     def makesure_host_with_slash(self, host):
         if host[-1]!='/':

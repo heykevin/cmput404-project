@@ -629,6 +629,9 @@ class FriendRequestView(APIView):
         if foreign_author.friends.all().count()==0 and len(foreign_author.get_request_sent())==0 and len(foreign_author.get_request_received())==0:
             foreign_author.user.delete()
     '''
+    
+    def parseRemoteDisplayName(self, displayName):
+        return displayName.split('__', 1)[1]
 
     # Handles the request creation
     def post_request(self, request):
@@ -656,6 +659,9 @@ class FriendRequestView(APIView):
         if (sender["is_local"]) and (not receiver["is_local"]):
             remote_host = self.rc.makesure_host_with_slash(receiver["obj"].host)
             url = remote_host+'friendrequest/'
+            
+            remote_author_displayName = request.data['friend']['displayName']
+            request.data['friend']['displayName'] = self.parseRemoteDisplayName(remote_author_displayName)
 
             r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
 
