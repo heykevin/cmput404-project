@@ -42,7 +42,7 @@ class reducerClass {
     }
 
     static savePostFailure(new_state, action) {
-        new_state.error = action.error;
+        new_state.saveError = action.error;
         new_state.postData = action.postData;
         return new_state;
     }

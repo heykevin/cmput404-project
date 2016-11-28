@@ -244,7 +244,7 @@ function mapStateToProps(state, props) {
     return {
         response: state.posts.response,
         redirect: state.posts.redirect,
-        error: state.posts.error,
+        error: state.posts.saveError,
         savedPost: state.posts.postData,
         post: props.post
     }
