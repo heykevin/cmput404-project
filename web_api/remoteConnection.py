@@ -91,6 +91,7 @@ class RemoteConnection:
             r = requests.post(self.check_url_slash(url), json=data, auth=auth)
         
         print '\nGetting ' + str(r.status_code)+' from the remote server.'
+        print r.text
         return r
     
     def get_from_remote(self, url, auth):
@@ -103,7 +104,8 @@ class RemoteConnection:
         else:
             r = requests.get(self.check_url_slash(url), auth=auth)
         
-        print '\nGetting ' + str(r.status_code)+' from the remote server.'       
+        print '\nGetting ' + str(r.status_code)+' from the remote server.'  
+        print r.text     
         return r
 
 
