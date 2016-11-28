@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import PostDelete from './PostDelete.jsx';
 import Utils from '../utils/utils.js';
 import CommentForm from './CommentForm.jsx';
+import CommentList from './CommentList.jsx';
 
 import {getApi} from '../config.js';
 
@@ -76,7 +77,8 @@ export class PostListElement extends React.Component
                         <div className="post-content">
                             {content}
                         </div>
-                        <CommentForm className={this.props.canEdit ? "invisible" : "visible"} postId={post.id}/>
+                        <CommentList postId={post.id}/>
+                        <CommentForm postId={post.id}/>
                     </div>
                     <PostDelete/>
                 </ListGroupItem>

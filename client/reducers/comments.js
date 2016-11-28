@@ -25,7 +25,7 @@ class reducerClass
     {
         console.log("reducer get comment", action);
         new_state.response = action.response;
-        new_state.list = new_state.list || {};
+        new_state.list = {};
         new_state.list[action.postId] = (action.comments && action.comments.length) ? this.sortCommentsByDate(action.comments) : action.comments;
         new_state.postId = action.postId;
         return new_state;
