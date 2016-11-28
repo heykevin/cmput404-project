@@ -22,8 +22,6 @@ export class CommentForm extends React.Component
             editorModeOverride: false,
             disableButton: true
         };
-        this.getEditorMode = this.getEditorMode.bind(this);
-        this.handleSelect = this.handleSelect.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
     }
