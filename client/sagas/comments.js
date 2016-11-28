@@ -20,24 +20,19 @@ export function* commentsAddComment(action) {
     }
 }
 
-export function* commentsGetComment(action) {
-    try {
-        console.log("saga -- get comment", action);
-        const comments = yield call(ApiComments.getComment, action);
-        console.log("get comment saga success");
-        console.log("Saga comments --> ", comments);
-        console.log("Saga comments.comments --> ", comments.comments);
-        yield put({
-            type: 'comments.getCommentSuccess',
-            comments: comments.comments,
-            postId: action.postId
-    });
-    } catch (error) {
-        console.log("get comments fail");
-        console.log("error -- > ", error);
-        yield put({
-            type: 'comments.getCommentFailure',
-            error: error,
-        });
-    }
-}
+// export function* commentsGetComment(action) {
+//     try {
+//         console.log("saga -- get comment", action);
+//         const comments = yield call(ApiComments.getComment, action);
+//         yield put({
+//             type: 'comments.getCommentSuccess',
+//             comments: comments,
+//             postId: action.postId
+//     });
+//     } catch (error) {
+//         yield put({
+//             type: 'comments.getCommentFailure',
+//             error: error,
+//         });
+//     }
+// }

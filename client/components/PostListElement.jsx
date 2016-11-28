@@ -44,7 +44,6 @@ export class PostListElement extends React.Component
         time = new Date(post.published).toLocaleString();
         href = this.props.foreign ? post.origin : this.props.preview ? '/posts/' + post.id : "#";
         href = "#";
-        content = post.contentType.toLowerCase() === "text/markdown" || post.contentType.toLowerCase() === "text/x-markdown" ?  <ReactMarkdown source={post.content} /> : post.content,
         origin = [getApi(), "http://localhost:8000", "http://127.0.0.1:8000"].indexOf(post.author.host) > -1 ? "Bloggy Blog" : post.author.host;
         content = post.contentType.toLowerCase() === "text/markdown" || post.contentType.toLowerCase() === "text/x-markdown" ?  <ReactMarkdown source={post.content} /> : post.content;
 
@@ -77,14 +76,13 @@ export class PostListElement extends React.Component
                         <div className="post-content">
                             {content}
                         </div>
-                        <CommentList postId={post.id}/>
-                        <CommentForm postId={post.id}/>
+                        <CommentList postId={post.id} foreign={this.props.foreign}/>
+                        <CommentForm postId={post.id} foreign={this.props.foreign}/>
                     </div>
                     <PostDelete/>
                 </ListGroupItem>
         );
     }
-
     redirectToEditor(event)
     {
         this.props.dispatch({

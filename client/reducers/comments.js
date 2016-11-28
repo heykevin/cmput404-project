@@ -21,22 +21,6 @@ class reducerClass
         return new_state;
     }
 
-    static getCommentSuccess(new_state, action)
-    {
-        console.log("reducer get comment", action);
-        new_state.list = {};
-        new_state.list[action.postId] = (action.comments && action.comments.length) ? this.sortCommentsByDate(action.comments) : action.comments;
-        new_state.postId = action.postId;
-        console.log("reducer list --> " + new_state.list[action.postId]);
-        return new_state;
-    }
-
-    static getCommentFailure(new_state, action)
-    {
-        new_state.error = action.error;
-        new_state.response = action.response;
-        return new_state;
-    }
 
     static reloadList(new_state, action)
     {

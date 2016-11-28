@@ -1,12 +1,9 @@
 import React from 'react';
 import Router from 'react-router';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
-import {push} from 'react-router-redux';
-import {MarkdownEditor, MarkdownEditorContentStore} from 'react-markdown-editor';
-import {Button, Nav, NavItem, ProgressBar, Glyphicon, ListGroupItem, ListGroup, Popover, OverlayTrigger, Form, FormGroup, FormControl} from 'react-bootstrap';
+import ReactMarkdown from 'react-markdown';
+import {Glyphicon, ListGroupItem, ListGroup} from 'react-bootstrap';
 import Utils from '../utils/utils.js';
-import Comment from './Comment.jsx';
 
 export class CommentList extends React.Component
 {
@@ -14,47 +11,50 @@ export class CommentList extends React.Component
     constructor(props)
     {
         super(props);
-        this.state = {comments:[]};
     }
-
-    componentWillMount() {
-        this.props.dispatch({type: 'commentsGetComment', postId: this.props.postId});
-    }
-
-    // contentformat(utext){
-    //     var x = utext;
-    //     var r = /\\u([\d\w]{4})/gi;
-    //     x = x.replace(r, function (match, grp) {
-    //         return String.fromCharCode(parseInt(grp, 16)); } );
-    //     x = unescape(x);
-    //     console.log(x);
-    // }
 
     render()
     {
-        let comments = this.props.comments;
-        console.log("What are you getting --> " + this.props.postId + " --> " + this.props.comments);
-        console.log("Comment Length --> " + this.props.postId + " --> " + comments.length);
-        if (comments.length)
+        const posts = this.props.foreign ? this.props.foreignPosts : this.props.posts;
+        console.log('commentlist l35', posts);
+        let comments;
+        for (const post of posts) {
+            if (post.id === this.props.postId) {
+                comments = post.comments;
+                break;
+            }
+        }
+        console.log(comments);
+
+        //TODO: change comment.content to comment.comment;
+        if (comments && comments.length)
         {
             return(
                 <div className = "comment-list">
-                    <h4>Comment list</h4>
+                    <h4>Comments</h4>
                     <ListGroup className = "comment-group">
                         {comments.map((comment, index) => {
                             if (index >= 0 && index < comments.length) {
-                                return (<Comment key={index} id={comments[index].id} author={comments[index].author.displayName} content={comments[index].content} postId={comments[index].post} published={comments[index].published}/>);
+                                const content = comment.contentType && comment.contentType.toLowerCase().includes('markdown') ? <ReactMarkdown source={comment.content} /> : comment.content;
+                                console.log(content);
+                                return (
+                                    <div key={comment.id} className='comment'>
+                                        <div className='flex comment-author'>
+
+                                            <div><Glyphicon glyph="comment"/><strong>{comment.author.displayName}:</strong></div><div>{new Date(comment.published).toLocaleString()}</div>
+                                        </div>
+                                        <div className='flex comment-content'>
+                                            {content};
+                                        </div>
+                                    </div>
+                                );
                             }
                         })}
                     </ListGroup>
                 </div>
             );
         } else {
-            return(
-                <div className = "comment-list">
-                    <h4>Waiting for comments</h4>
-                </div>
-            );
+            return (<div key={this.props.postId} className='comment-list'><h4>No comments yet</h4></div>);
         }
     }
 }
@@ -64,7 +64,9 @@ function mapStateToProps(state, own_props) {
 
     return {
         postId: own_props.postId,
-        comments: state.comments.list[own_props.postId] || [],
+        posts: state.posts.list || [],
+        foreignPosts: state.posts.foreignList || [],
+        foreign: own_props.foreign
     };
 }
 export default connect(mapStateToProps)(CommentList);

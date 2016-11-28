@@ -6,7 +6,7 @@ import { postsGetPosts, postsSavePost, postsDeletePost, postsEditPostRedirect, p
 import { authLogin, authSignup, authLogout, authEdit } from './auth';
 import { gitGetEvents, gitGetUser } from './git';
 import { imagesUpload, imagesFetch } from './images';
-import { commentsAddComment, commentsGetComment} from './comments';
+import { commentsAddComment } from './comments';
 
 /**
  * Main saga generator
@@ -40,7 +40,6 @@ export function* sagas() {
         fork(takeLatest, 'imagesUpload', imagesUpload),
         fork(takeLatest, 'imagesFetch', imagesFetch),
 
-        fork(takeLatest, 'commentsAddComment', commentsAddComment),
-        fork(takeLatest, 'commentsGetComment', commentsGetComment)
+        fork(takeLatest, 'commentsAddComment', commentsAddComment)
     ];
 }

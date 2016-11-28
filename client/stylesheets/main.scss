@@ -12,7 +12,6 @@
 }
 
 .friends {
-
     tr {
         strong {
             border-bottom: 1px dotted #000;
@@ -20,6 +19,7 @@
         }
     }
 }
+
 .warning-text {
     background: #f0ad4e;
     padding: 2em;
@@ -298,6 +298,41 @@
                     margin-top: 1em;
                     width: 8em;
                 }
+            }
+        }
+
+        .comment-list {
+            background: white;
+            padding: 0.45em;
+            margin: 0.45em 0;
+            border-radius: 0.4em;
+
+            h4 {
+                background: #337ab7;
+                color: white;
+                padding: 0.5em;
+                margin-top: -0.2em;
+                margin-left: -0.4em;
+                margin-right: -0.4em;
+                border-radius: 0.3em;
+            }
+
+            .comment-author {
+                flex-direction: row;
+                border: 0.05em solid #ddd;
+                background: #ddd;
+                padding: 0.3em 1em;
+                margin: 0 -0.4em;
+                border-radius: 0.35em;
+                justify-content: space-between;
+
+                .glyphicon {
+                    padding-right: 1em;
+                }
+            }
+
+            .comment-content {
+                padding: 0.5em;
             }
         }
     }
@@ -906,8 +941,6 @@ span.gha-time {
 }
 
 .author-edit-form {
-
-
     form {
         display: flex;
         flex-direction: column;
