@@ -26,7 +26,6 @@ export class CommentList extends React.Component
         }
         console.log(comments);
 
-        //TODO: change comment.content to comment.comment;
         if (comments && comments.length)
         {
             return(
@@ -35,7 +34,7 @@ export class CommentList extends React.Component
                     <ListGroup className = "comment-group">
                         {comments.map((comment, index) => {
                             if (index >= 0 && index < comments.length) {
-                                const content = comment.contentType && comment.contentType.toLowerCase().includes('markdown') ? <ReactMarkdown source={comment.content} /> : comment.content;
+                                const content = comment.contentType && comment.contentType.toLowerCase().includes('markdown') ? <ReactMarkdown source={comment.comment} /> : comment.comment;
                                 console.log(content);
                                 return (
                                     <div key={comment.id} className='comment'>
@@ -43,7 +42,7 @@ export class CommentList extends React.Component
                                             <div><Glyphicon glyph="comment"/><strong>{comment.author.displayName}:</strong></div><div>{new Date(comment.published).toLocaleString()}</div>
                                         </div>
                                         <div className='flex comment-content'>
-                                            {content};
+                                            {content}
                                         </div>
                                     </div>
                                 );
