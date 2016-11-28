@@ -81,6 +81,7 @@ class RemoteConnection:
     
     def post_to_remote(self, url, data, auth):
         print '\nSending post request to: ' + self.check_url_slash(url)
+        print data
         r = None
         
         if auth == None:
