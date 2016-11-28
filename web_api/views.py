@@ -313,7 +313,7 @@ class ForeignPostView(generics.ListAPIView):
         res = []
         for node in Node.objects.all():
             try:
-                r = self.rc.get_from_remote(node.node_url+"author/posts?size=100", auth = self.rc.get_node_auth(node.node_url))
+                r = self.rc.get_from_remote(node.node_url+"author/posts?size=1000/", auth = self.rc.get_node_auth(node.node_url))
                 # print 'testing:' + r.text
             except:
                 continue
@@ -369,17 +369,22 @@ class ForeignPostView(generics.ListAPIView):
         #     print "hi"
         queryset = ForeignPost.objects.all()
         pubqueryset = queryset.filter(visibility="PUBLIC")
+        # Get a list of remote friends for FOAF
+        remote_friends = []
+
         # Get friend posts
         for friend in Author.objects.get(user=user).friends.all():  
-            # if friend is not local
             if not friend.host[-1] == "/":
                 friend.host = friend.host + "/"
 
+            # If friend is not local
             if not friend.host == source:
-                print friend
+                # Put friend in remote_friends to be later used for FOAF
+                # remote_friends.push(friend.id)
                 friend_node = Node.objects.get(node_url = friend.host)
-                url = "%sfriends/%s/%s" % (friend_node.node_url, author.id, friend.id)
+                url = "%sfriends/%s/%s/" % (friend_node.node_url, author.id, friend.id)
                 print friend.id
+                print url
                 # check node's server if currently friends
                 r = self.rc.get_from_remote(url, auth = self.rc.get_node_auth(friend_node.node_url))
                 response = json.loads(r.text)
@@ -390,6 +395,7 @@ class ForeignPostView(generics.ListAPIView):
                     foaf_queryset = queryset.filter(author=friend, visibility="FOAF")
                     pubqueryset = pubqueryset | friend_queryset | foaf_queryset
 
+        
         serializer = ForeignPostSerializer(pubqueryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
