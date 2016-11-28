@@ -67,6 +67,8 @@ class ForeignPostSerializer(serializers.ModelSerializer):
             print foreign_user.get('username')
             author = Author.objects.get(url = url)
         except ObjectDoesNotExist:
+            if User.objects.all().filter(username = foreign_author.get('host') + "__" + foreign_user.get('username')).exists():
+                User.objects.get(username = foreign_author.get('host') + "__" + foreign_user.get('username')).delete()
             user = User.objects.create(username = foreign_author.get('host') + "__" + foreign_user.get('username'))
             author = Author.objects.create(user = user, **foreign_author)
             user.save()
