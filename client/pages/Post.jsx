@@ -37,8 +37,6 @@ export class Post extends React.Component
             );
         } else if (!this.props.resolved) {
             return (<ProgressBar active now={100}/>);
-        } else {
-            return (<div>{this.props.error}</div>);
         }
     }
 }
@@ -47,8 +45,7 @@ export class Post extends React.Component
 function mapStateToProps(state) {
     return {
         post: state.posts.list || [],
-        resolved: state.posts.resolved || false,
-        error: state.posts.error || "503"
+        resolved: state.posts.resolved || false
     };
 }
 export default connect(mapStateToProps)(Post);
