@@ -86,10 +86,10 @@ class RemoteConnection:
         
         if auth == None:
             print "\nNo auth information."
-            r = requests.post(self.check_url_slash(url), json=data)
+            r = requests.post(url, json=data)
         else:
             print "\nSever access auth: {" + auth[0] + " : " + auth[1] + "}"
-            r = requests.post(self.check_url_slash(url), json=data, auth=auth)
+            r = requests.post(url, json=data, auth=auth)
         
         print '\nGetting ' + str(r.status_code)+' from the remote server.'
         return r
