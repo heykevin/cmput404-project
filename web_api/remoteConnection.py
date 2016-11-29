@@ -29,7 +29,7 @@ class RemoteConnection:
     
     def remove_url_slash(self, url):
         if url[-1] == '/':
-            return str(url)[:-1]       
+            return url[:-1]       
 
     def makesure_host_with_slash(self, host):
         if host[-1]!='/':
