@@ -531,19 +531,7 @@ class PostPermissionTestCase(APITestCase):
 		user2 = User.objects.create_user(is_active=True, **(USER_LIST[1]))
 		self.author1 = Author.objects.create(user=user1, **(AUTHOR_LIST[0]))
 		self.author2 = Author.objects.create(user=user2, **(AUTHOR_LIST[1]))
-		
-		'''
-		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
-		response = self.client.put('/author/%s/' % self.author2.id, {
-	    	"displayName": "CoolBears",
-	    	"first_name": "Cool",
-	    	"last_name": "Bears",
-	    	"email": "cool.bears@ualberta.ca",
-	    	"bio": "I am a cool bear!",
-	    	"github_username": "https://github.com/coolbear",
-	    	"password": "a1b2c3d4"
-		}, format='json')
-		'''
+
 		# Ahindle created a post
 		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
 		response = self.client.post('/posts/', {
@@ -555,7 +543,7 @@ class PostPermissionTestCase(APITestCase):
 				'category': 'compsci',
 				'visibility_choice': 'Public',
 				'contentType': 'text/markdown'
-			}, format='json'
+			}, format='multipart'
 		)
 		self.postId = response.data['id']
 		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
@@ -574,3 +562,4 @@ class PostPermissionTestCase(APITestCase):
 		# trying to delete other author's post
 		response = self.client.delete('/posts/%s/' % self.postId, {}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, response)
+
