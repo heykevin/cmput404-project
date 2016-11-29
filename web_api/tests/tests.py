@@ -562,8 +562,6 @@ class PostPermissionTestCase(APITestCase):
 
 		# trying to update other author's post
 		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Joshua:coolcats'))
-		response = self.client.get('/posts/%s/' % self.postId, {}, format='json')
-		self.assertEqual(response.status_code, status.HTTP_200_OK, response)
 		response = self.client.put('/posts/%s/' % self.postId, {
 			'title': 'new title',
 			'content': 'new post content from Joshua to Ahindle post',
@@ -576,5 +574,3 @@ class PostPermissionTestCase(APITestCase):
 		# trying to delete other author's post
 		response = self.client.delete('/posts/%s/' % self.postId, {}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, response)
-
-		
