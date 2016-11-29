@@ -29,7 +29,7 @@ export class CommentForm extends React.Component
     onSubmit(event) {
         console.log("Submitting comment");
         event.preventDefault();
-        console.log("Form content type --> " + this.props.contentType);
+        this.props.dispatch({type: "comments.submittingComment"});
         this.props.dispatch({
             type: "commentsAddComment",
             content: this.state.content,
@@ -74,7 +74,7 @@ export class CommentForm extends React.Component
 function mapStateToProps(state, own_props) {
 
     return {
-        postId: own_props.postId,
+        postId: own_props.postId
     }
 }
 export default connect(mapStateToProps)(CommentForm);

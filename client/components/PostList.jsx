@@ -115,7 +115,33 @@ export class PostList extends React.Component
                 </div>
             );
         }
+
     }
+
+    componentDidUpdate()
+    {
+        if (!this.props.sending && this.props.commentSuccess) {
+            this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: Utils.getAuthor().id});
+            this.props.dispatch({type: 'posts.reloadList'});
+            if (this.props.foreign) {
+                this.props.dispatch({
+                    type: 'postsGetForeignPosts',
+                    method: this.props.method,
+                    page: this.props.page || ""
+                });
+            } else {
+                this.props.dispatch({
+                    type: 'postsGetPosts',
+                    method: this.props.method,
+                    authorId: this.props.authorId,
+                    page: this.props.page || "",
+                    size: 99999
+                });
+            }
+            this.props.dispatch({type: 'comments.clearState'});
+        }
+    }
+
 }
 
 // export the connected class
@@ -127,7 +153,8 @@ function mapStateToProps(state, own_props) {
         foreignResolved: state.posts.foreignResolved || false,
         count: state.posts.count,
         foreignCount: state.posts.foreignCount,
-        sending: state.users.sending,
+        sending: state.comments.sending,
+        commentSuccess: state.comments.success,
         method: own_props.method,
         authorId: own_props.authorId,
         foreign: own_props.foreign,
