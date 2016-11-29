@@ -440,13 +440,13 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
         if queryset.visibility == "PRIVATE":
             if not (queryset.author.user==request.user):
                 return Response("The post id does not exist", status=status.HTTP_400_BAD_REQUEST)
-
+        print "GETTING ID POST"
         serializer = PostSerializer(queryset)
         res = dict()
         res["posts"] = serializer.data
         res["count"] = 1
         res["size"] = 10
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(res, status=status.HTTP_200_OK)
 
 class ImageView(generics.ListCreateAPIView):
     authentication_classes = (BasicAuthentication, )
@@ -536,10 +536,33 @@ class CommentView(generics.ListCreateAPIView):
         return queryset
 
     def post(self, request, pk):
-        post = get_object_or_404(Post, id=pk)
+        post = None
+        foreignpost = None
+        try: #look for local post
+            post = Post.objects.get(id=pk)
+        except: # else look for remote post
+            try:
+                foreignpost = ForeignPost.objects.get(id=pk)
+            except:
+                # Post doesn't exist
+                return Response("Post doesn't exist'", status=status.HTTP_404_NOT_FOUND)
+            
+        if (foreignpost): # if post is foreign
+            print "HEY FOREIGN POSTS"
+            remote_host = self.rc.makesure_host_with_slash(foreignpost.author.host)
+            url = "%sposts/%s/comments" % (remote_host, foreignpost.id)
+            # try:
+            r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
+            print r.text
+            return Response(r.text, status=status.HTTP_404_NOT_FOUND)
+            # except:
+            #     print r.text
+            #     return Response("Sending comment to remote post failed", status=status.HTTP_400_BAD_REQUEST)
+
         user = request.user
         data = request.data
         data_author = data.pop("author")
+        
         print data
         print data_author
         source = "http://" + self.request.get_host() + "/"
@@ -567,26 +590,8 @@ class CommentView(generics.ListCreateAPIView):
                 print "NOT AUTHOR"
                 user = User.objects.create(username = author_host[0:-1] + "__" + data_author.pop("displayName"))
                 author = Author.objects.create(user=user, url=author_host+"author/"+author_id+"/", **data_author)
-                return Response("Author does not exist yet in our db", status=status.HTTP_400_BAD_REQUEST)
             comment = Comment.objects.create(author=author, post=post, **request.data)
         
-        
-        # if request.get)host
-        # try:
-        #     author = Author.objects.get(user__username=json_author.get("displayName"))
-
-        # except:
-        #     # If user not found, probably remote user so we create
-        #     print "USER NOT FOUND"
-        
-        # if user is found
-        # if (user.host_name == "")
-        # Posting to our own posts
-        # author = Author.objects.get(user=user)
-        # try:
-        #     comment = Comment.objects.create(author=author,post=post, **request.data)
-        # except:
-        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer = CommentSerializer(comment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

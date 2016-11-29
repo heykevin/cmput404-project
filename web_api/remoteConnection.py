@@ -99,7 +99,7 @@ class RemoteConnection:
             
             print 'Getting ' + str(r.status_code)+' from the remote server.'
             print 'Message: ' + r.text     
-        except:
+        except r:
             print 'Connection failed with '+ str(r.status_code) 
             print 'Message: ' + r.text     
 
@@ -118,7 +118,7 @@ class RemoteConnection:
             
             print 'Getting ' + str(r.status_code)+' from the remote server.'  
             print 'Message: ' + r.text     
-        except:
+        except r:
             print 'Connection failed with '+ str(r.status_code) 
             print 'Message: ' + r.text     
 
