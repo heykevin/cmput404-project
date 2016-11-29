@@ -34,6 +34,7 @@ export class CommentForm extends React.Component
             type: "commentsAddComment",
             content: this.state.content,
             postId: this.props.postId,
+            postOrigin: this.props.postOrigin,
             contentType: "text/x-markdown"
         });
         this.setState({content: ''});

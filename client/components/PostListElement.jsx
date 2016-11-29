@@ -77,7 +77,7 @@ export class PostListElement extends React.Component
                             {content}
                         </div>
                         <CommentList postId={post.id} foreign={this.props.foreign}/>
-                        <CommentForm postId={post.id} foreign={this.props.foreign}/>
+                        <CommentForm postId={post.id} postOrigin={post.origin}/>
                     </div>
                     <PostDelete/>
                 </ListGroupItem>
