@@ -318,7 +318,7 @@ class ForeignPostView(generics.ListAPIView):
                 print json.loads(r.text)
             except:
                 continue
-            if 'posts' in r.text:
+            if 'posts' in json.loads(r.text):
                 print "POSTS"
                 serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
                 if serializer.is_valid():
@@ -592,7 +592,7 @@ class CommentView(generics.ListCreateAPIView):
 
 
     def __unicode__(self):
-         return "Parent post:"+ str(self.parent_post.id) + ", Author:" + self.author.displayName + ": " + self.content
+        return "Parent post:"+ str(self.parent_post.id) + ", Author:" + self.author.displayName + ": " + self.content
     
     # def comment_to_remote_post(self, post, request):
     #     author = Author.objects.get(user=request.user)
