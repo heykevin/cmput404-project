@@ -31,6 +31,7 @@ class AuthorInfoSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name', allow_blank=True, required=False)
     last_name = serializers.CharField(source='user.last_name', allow_blank=True, required=False)
     email = serializers.CharField(source='user.email', allow_blank=True, required=False)
+    id = serializers.CharField(required=True)
 
     class Meta:
         model = Author
@@ -42,14 +43,90 @@ class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
     pass
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    author = AuthorInfoSerializer(many=False)
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'comment', 'author', 'published', 'post', 'foreign_post')
+
+    def create(self, validated_data):
+        foreign_posts = False
+        try: # if posting directly to /post/id/comments, there is id inside the url
+            print "GETTING PK FROM REQUEST"
+            postId = self.context['request'].parser_context.get('kwargs').get('pk')
+        except:
+            print "NO PUBLID ID FOUND FOR COMMENTS POST"
+            try: # If coming from /foreignposts, there is no id inside pk
+                postId = self.context['foreign_id']
+                print postId
+                foreign_post = True
+            except:
+                print "NO FOREIGN ID FOR COMMENTS POST"
+                return None
+
+        post = None
+        foreign_post = None
+        try:
+            # Case where we are making local post
+            post = Post.objects.get(id=postId)
+        except:
+            try:
+                # Case where we are making comments for a foreign post
+                print "TRYING TO GET FOREIGN POST FOR COMMENT"
+                print postId
+                foreign_post = ForeignPost.objects.get(id=postId)
+            except:
+                print "POST FOR COMMENT NOT FOUND"
+                return None
+
+        if foreign_post:
+            try: # if coming from /foreignposts, there will be no user inside
+                postId = self.context['foreign_id']
+                print "Creating post from /foreignposts"
+                author = validated_data.pop('author')
+                author_url = author.get('url')
+                try: # Get author
+                    author = Author.objects.get(url=author_url)
+                except: # in the case where the author wasn't created because they haven't posted yet
+                    user = author.pop('user')
+                    author_id = author.pop('id')
+                    user = User.objects.create(username=author.get('url') + "__" + user.get('username'))
+                    author = Author.objects.create(id=author_id, user=user, **author)
+                # make comment
+                comment = Comment.objects.create(author=author, foreign_post=foreign_post, **validated_data)
+                comment.save()
+                return comment
+            except: 
+                print "NOT COMING FROM /foreignposts"
+                pass
+
+            print "COMING FROM /POST/ID/COMMENTS"
+            author = Author.objects.get(user=self.context.get('request').user)
+            comment = Comment.objects.create(author=author, foreign_post=foreign_post, **validated_data)
+            comment.save()
+            return comment
+            
+        print "POSTING LOCAL COMMENT"
+        author = Author.objects.get(user=self.context.get('request').user)
+        comment = Comment.objects.create(author=author, post=post, **validated_data)
+        comment.save()
+        return comment
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('url', 'name')
+
 class ForeignPostSerializer(serializers.ModelSerializer):
     author = ForeignAuthorInfoSerializer(required=True, read_only=False)
     id = serializers.CharField(required=True)
+    comments = serializers.SerializerMethodField('getComments')
 
     class Meta:
         model = ForeignPost
         fields = ('id', 'title', 'source', 'author', 'origin', 'description', 'content',
-            'category', 'visibility', 'published', 'contentType')
+            'category', 'visibility', 'published','comments', 'contentType')
 
     def create(self, validated_data):
         # print "CREATING FOREIGN POST..."
@@ -67,9 +144,9 @@ class ForeignPostSerializer(serializers.ModelSerializer):
             print foreign_user.get('username')
             author = Author.objects.get(url = url)
         except ObjectDoesNotExist:
-            if User.objects.all().filter(username = foreign_author.get('host') + "__" + foreign_user.get('username')).exists():
-                User.objects.get(username = foreign_author.get('host') + "__" + foreign_user.get('username')).delete()
-            user = User.objects.create(username = foreign_author.get('host') + "__" + foreign_user.get('username'))
+            if User.objects.all().filter(username = foreign_author.get('url') + "__" + foreign_user.get('username')).exists():
+                User.objects.get(username = foreign_author.get('url') + "__" + foreign_user.get('username')).delete()
+            user = User.objects.create(username = foreign_author.get('url') + "__" + foreign_user.get('username'))
             author = Author.objects.create(user = user, **foreign_author)
             user.save()
             author.save()
@@ -86,25 +163,12 @@ class ForeignPostSerializer(serializers.ModelSerializer):
         
         return post
 
-class CommentSerializer(serializers.ModelSerializer):
-    author = AuthorInfoSerializer(many=False)
+    # Returns a list of comments
+    def getComments(self, obj):
+        commentsQuerySet = Comment.objects.all().filter(foreign_post__id=obj.id).order_by('published')[:5]
 
-    class Meta:
-        model = Comment
-        fields = ('id', 'comment', 'author', 'published', 'post')
-
-    def create(self, validated_data):
-        postId = self.context['request'].parser_context.get('kwargs').get('pk')
-        post = Post.objects.get(id = postId)
-        author = Author.objects.get(user=self.context.get('request').user)
-        comment = Comment.objects.create(author=author, post=post, **validated_data)
-        comment.save()
-        return comment
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('url', 'name')
+        serializer = CommentSerializer(commentsQuerySet, many=True)
+        return serializer.data
 
 class PostSerializer(serializers.ModelSerializer):
 

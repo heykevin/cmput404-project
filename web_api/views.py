@@ -309,7 +309,7 @@ class ForeignPostView(generics.ListAPIView):
     serializer_class = ForeignPostSerializer
 
     rc = RemoteConnection()
-    def createForeignPosts(self):
+    def createForeignPosts(self, request):
         res = []
         for node in Node.objects.all():
             try:
@@ -321,9 +321,20 @@ class ForeignPostView(generics.ListAPIView):
             if 'posts' in json.loads(r.text):
                 print "POSTS"
                 serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
+                
                 if serializer.is_valid():
                     serializer.save()
                     res.extend(serializer.data)
+
+            for post in json.loads(r.text).get('posts'):
+                if post.get('comments'):
+                    print "WORKING ON POST ----------------"
+                    print post.get('id')
+                    print post.get('title')
+                    comment_serializer = CommentSerializer(data=post.get('comments'), context={'foreign_id': post.get('id')}, many=True)
+                    if comment_serializer.is_valid():
+                        comment_serializer.save()
+
                 else:                    
                     print "SAVING FOREIGN POSTS FAILED IN VIEWS"
                     print serializer.errors
@@ -345,7 +356,7 @@ class ForeignPostView(generics.ListAPIView):
         # Delete everything.
         ForeignPost.objects.all().delete()
         # Get and create remote public posts
-        self.createForeignPosts()
+        self.createForeignPosts(request)
         queryset = ForeignPost.objects.all()
         pubqueryset = queryset.filter(visibility="PUBLIC")
         # Get a list of remote friends for FOAF
@@ -550,7 +561,7 @@ class CommentView(generics.ListCreateAPIView):
         if (foreignpost): # if post is foreign
             print "HEY FOREIGN POSTS"
             remote_host = self.rc.makesure_host_with_slash(foreignpost.author.host)
-            url = "%sposts/%s/comments" % (remote_host, foreignpost.id)
+            url = "%sposts/%s/comments/" % (remote_host, foreignpost.id)
             # try:
             r = self.rc.post_to_remote(url, request.data, self.rc.get_node_auth(remote_host))
             print r.text
