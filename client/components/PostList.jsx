@@ -36,6 +36,7 @@ export class PostList extends React.Component
 
         this.onChange = this.onChange.bind(this);
         this.getUniqueAuthors = this.getUniqueAuthors.bind(this);
+        this.isFriendWith = this.isFriendWith.bind(this);
     }
 
     getUniqueAuthors(posts)
@@ -88,6 +89,7 @@ export class PostList extends React.Component
                             <ControlLabel>View Posts From</ControlLabel>
                             <FormControl componentClass="select" placeholder="select" value={this.state.selectedAuthor} onChange={this.onChange}>
                                 <option value="all">all authors</option>
+                                <option value="friends">friends only</option>
                                 {
                                     authors.map(function(author) {
                                         var  displayName = isForeign ? Utils.extractUsername(author.displayName) : author.displayName;
@@ -97,7 +99,12 @@ export class PostList extends React.Component
                           </FormControl>
                         </FormGroup>
                         {posts.map((post, index) => {
-                            const show = selectedAuthor === JSON.stringify(post.author) ? true : selectedAuthor === "all" ? true : false;
+                            let show = false;
+                            if (selectedAuthor === JSON.stringify(post.author) || selectedAuthor === "all") {
+                                show = true;
+                            } else if (selectedAuthor === "friends" && this.isFriendWith(post.author)) {
+                                show = true;
+                            }
                             if (index >= 0 && index < posts.length && show) {
                                 return (<PostListElement key={post.id} id={post.id} preview={true} foreign={isForeign} canEdit={this.props.canEdit}/>);
                             }
@@ -116,6 +123,13 @@ export class PostList extends React.Component
             );
         }
 
+    }
+
+    isFriendWith(authorObj) {
+        const friends = Utils.getAuthor().friends;
+        return friends.some((friend) => {
+            return friend.id === authorObj.id;
+        });
     }
 
     componentDidUpdate()

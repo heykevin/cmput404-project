@@ -16,7 +16,6 @@ export class CommentList extends React.Component
     render()
     {
         const posts = this.props.foreign ? this.props.foreignPosts : this.props.posts;
-        console.log('commentlist l35', posts);
         let comments;
         for (const post of posts) {
             if (post.id === this.props.postId) {
@@ -24,7 +23,6 @@ export class CommentList extends React.Component
                 break;
             }
         }
-        console.log(comments);
 
         if (comments && comments.length)
         {
@@ -35,7 +33,6 @@ export class CommentList extends React.Component
                         {comments.map((comment, index) => {
                             if (index >= 0 && index < comments.length) {
                                 const content = comment.contentType && comment.contentType.toLowerCase().includes('markdown') ? <ReactMarkdown source={comment.comment} /> : comment.comment;
-                                console.log(content);
                                 return (
                                     <div key={comment.id} className='comment'>
                                         <div className='flex comment-author'>
