@@ -1,5 +1,5 @@
 const HOST = "http://localhost:8000/"
-const API = "https://api-bloggyblog404.herokuapp.com/"
+const API = "https://api-returnoftheblog.herokuapp.com/"
 
 
 export function getApi() {
