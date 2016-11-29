@@ -318,28 +318,30 @@ class ForeignPostView(generics.ListAPIView):
                 print json.loads(r.text)
             except:
                 continue
-            if 'posts' in json.loads(r.text):
-                print "POSTS"
-                serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
-                
-                if serializer.is_valid():
-                    serializer.save()
-                    res.extend(serializer.data)
+            try:
+                if 'posts' in json.loads(r.text):
+                    print "POSTS"
+                    serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
+                    
+                    if serializer.is_valid():
+                        serializer.save()
+                        res.extend(serializer.data)
 
-            for post in json.loads(r.text).get('posts'):
-                if post.get('comments'):
-                    print "WORKING ON POST ----------------"
-                    print post.get('id')
-                    print post.get('title')
-                    comment_serializer = CommentSerializer(data=post.get('comments'), context={'foreign_id': post.get('id')}, many=True)
-                    if comment_serializer.is_valid():
-                        comment_serializer.save()
+                for post in json.loads(r.text).get('posts'):
+                    if post.get('comments'):
+                        print "WORKING ON POST ----------------"
+                        print post.get('id')
+                        print post.get('title')
+                        comment_serializer = CommentSerializer(data=post.get('comments'), context={'foreign_id': post.get('id')}, many=True)
+                        if comment_serializer.is_valid():
+                            comment_serializer.save()
 
-                else:                    
-                    print "SAVING FOREIGN POSTS FAILED IN VIEWS"
-                    print serializer.errors
-                    res.extend(serializer.errors)
-
+                    else:                    
+                        print "SAVING FOREIGN POSTS FAILED IN VIEWS"
+                        print serializer.errors
+                        res.extend(serializer.errors)
+            except:
+                return
 
     def createFriendRequest(self, authorId, friends):
         req = dict()
@@ -572,24 +574,28 @@ class CommentView(generics.ListCreateAPIView):
 
         user = request.user
         data = request.data
-        data_author = data.pop("author")
+        comment_data = request.data.pop("comment")
+        data_author = comment_data.pop("author")
         
         print data
         print data_author
         source = "http://" + self.request.get_host() + "/"
         author_host = data_author.get("host")
         author_id = data_author.get("id")
+        post_url = request.data.pop("post")
         if not author_host[-1] == "/":
             author_host = author_host + "/"
         # this is for local posts
         # Check if user is local
         print source
         print author_host
+        print source == author_host
         if (source == author_host):
             # user is local
-            print "LOCAL COMMENT"
+            print "LOCAL COMMENT AT " + source
             author = Author.objects.get(user=user)
-            comment = Comment.objects.create(author=author, post=post, **request.data)
+            print request.data
+            comment = Comment.objects.create(author=author, post=post, **comment_data)
         else: # make sure author is from a node
             try:
                 author_node = Node.objects.get(node_url = author_host)
@@ -601,7 +607,7 @@ class CommentView(generics.ListCreateAPIView):
                 print "NOT AUTHOR"
                 user = User.objects.create(username = author_host[0:-1] + "__" + data_author.pop("displayName"))
                 author = Author.objects.create(user=user, url=author_host+"author/"+author_id+"/", **data_author)
-            comment = Comment.objects.create(author=author, post=post, **request.data)
+            comment = Comment.objects.create(author=author, post=post, **comment_data)
         
         serializer = CommentSerializer(comment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -610,50 +616,6 @@ class CommentView(generics.ListCreateAPIView):
     def __unicode__(self):
         return "Parent post:"+ str(self.parent_post.id) + ", Author:" + self.author.displayName + ": " + self.content
     
-    # def comment_to_remote_post(self, post, request):
-    #     author = Author.objects.get(user=request.user)
-    #     serializer = RemoteCommentSerializer
-        
-    #     try:
-    #         comment = RemoteComment.objects.create(author=author, post=post, **request.data)
-    #         serializer = RemoteCommentSerializer(comment)
-    #     except:
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED) 
-             
-    
-    # def comment_to_local_post(self, post, request):
-    #     author = Author.objects.get(user=request.user)
-    #     serializer = CommentSerializer
-        
-    #     try:
-    #         comment = Comment.objects.create(author=author, post=post, **request.data)
-    #         serializer = CommentSerializer(comment)
-    #     except:
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)        
-    
-    # def get_post_by_id(self, pk):
-    #     post = None
-    #     is_foreign = False
-        
-    #     try:
-    #         post = Post.objects.get(id=pk)
-    #     except ObjectDoesNotExist:
-            
-    #         try:
-    #             post = ForeignPost.objects.get(id=pk)
-    #             is_foreign = True
-    #         except ObjectDoesNotExist:
-    #             return None
-        
-    #     res=dict()
-    #     res["postObj"] = post
-    #     res["is_foreign"] = is_foreign
-    #     return res
-
 class FriendsWith(APIView):
     """
     GET /friends/<authorID>
