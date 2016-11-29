@@ -122,7 +122,6 @@ class FriendRequestTestCase(APITestCase):
 	
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
 	self.assertTrue(FriendRequest.objects.filter(sender=self.sender, receiver=self.receiver).exists())
-
 	response = self.client.post('/friendrequest/', {
 	    "query" : "friendrequest",
 	    "author" : {
