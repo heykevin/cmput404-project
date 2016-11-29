@@ -595,7 +595,15 @@ class CommentView(generics.ListCreateAPIView):
             print "LOCAL COMMENT AT " + source
             author = Author.objects.get(user=user)
             print request.data
-            comment = Comment.objects.create(author=author, post=post, **comment_data)
+            try: 
+                id = comment_data.pop('id')
+            except:
+                try:
+                    id = comment_data.pop('guid')
+                except:
+                    Response("No Id found", status=status.HTTP_400_BAD_REQUEST)
+
+            comment = Comment.objects.create(id=id, author=author, post=post, **comment_data)
         else: # make sure author is from a node
             try:
                 author_node = Node.objects.get(node_url = author_host)
