@@ -187,7 +187,7 @@ class PostSerializer(serializers.ModelSerializer):
         source = validated_data.pop('source')
         if not source:
             source = self.context.get('request').build_absolute_uri() + str(id)
-        origin = self.context.get('request').build_absolute_uri() + str(id)
+        origin = self.context.get('request').build_absolute_uri() +"/"+ str(id)
         author = Author.objects.get(user=self.context.get('request').user)
         post = Post.objects.create(id=id, origin=origin, source=source, author=author, **validated_data)
         post.save()
