@@ -138,11 +138,12 @@ class PersonalAuthorStream(generics.ListAPIView):
 
         publicPosts = authorPosts.all().filter(visibility="PUBLIC")
         privatePosts = authorPosts.all().filter(visibility="PRIVATE").filter(author__user=user)
-        querySet = publicPosts | privatePosts
+        foafPosts = authorPosts.all().filter(visibility="FOAF").filter(author__user=user)
+        querySet = publicPosts | privatePosts | foafPosts
         if (Author.objects.get(user=user) in author.friends.all().filter(user=user) or Author.objects.get(user=user) == author):
             friendQuerySet = authorPosts.filter(visibility="FRIENDS")
             serverQuerySet = authorPosts.filter(visibility="SERVERONLY")
-            querySet = querySet | friendQuerySet | serverQuerySet
+            querySet = querySet | friendQuerySet | serverQuerySet 
 
         return querySet
 
@@ -405,6 +406,8 @@ class ForeignPostView(generics.ListAPIView):
                 print "Remote author node not found"
             url = "%sfriends/%s/" % (author_node.node_url, authorId)
             print url
+            # extend with list of local friends
+            print friends
             data = self.createFriendRequest(authorId, friends)
 
             # send a list of my friends to author
