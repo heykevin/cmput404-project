@@ -45,12 +45,12 @@ class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = AuthorInfoSerializer(many=False)
-    guid = serializers.CharField(source='id')
-    pubDate = serializers.DateTimeField(source='published')
-    
+    guid = serializers.CharField(source='id', required=False)
+    pubDate = serializers.DateTimeField(source='published', required=False)
+
     class Meta:
         model = Comment
-        fields = ('id', 'guid', 'comment', 'author', 'pubDate', 'published', 'post', 'foreign_post')
+        fields = ('id', 'guid', 'comment', 'author', 'pubDate', 'published', 'post', 'contentType', 'foreign_post')
 
     def create(self, validated_data):
         foreign_posts = False
