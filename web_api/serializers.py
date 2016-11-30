@@ -27,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
 class AuthorInfoSerializer(serializers.ModelSerializer):
-    displayName = serializers.SerializerMethodField('get_display')
+    displayName = serializers.CharField(source='user.username')
     first_name = serializers.CharField(source='user.first_name', allow_blank=True, required=False)
     last_name = serializers.CharField(source='user.last_name', allow_blank=True, required=False)
     email = serializers.CharField(source='user.email', allow_blank=True, required=False)
@@ -37,9 +37,6 @@ class AuthorInfoSerializer(serializers.ModelSerializer):
         model = Author
         fields = ('id', 'displayName', 'first_name', 'last_name',
                   'email', 'bio', 'host', 'github', 'url')
-
-    def get_display(self, obj):
-        return obj.user.username.split("__", 1)[-1]
 
 class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
     id = serializers.CharField(required=True)
