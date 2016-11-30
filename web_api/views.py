@@ -462,6 +462,8 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
         return Response(res, status=status.HTTP_200_OK)
 
 class ImageView(generics.ListCreateAPIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthenticated, )    
     serializer_class = ImageSerializer
     '''
     APIView for service/images/
@@ -491,8 +493,6 @@ class ImageView(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ImageIDView(generics.CreateAPIView):
-    authentication_classes = (BasicAuthentication, )
-    permission_classes = (IsAuthenticated, )
     serializer_class = ImageSerializer
 
     def get(self, request, pk, format=None):
