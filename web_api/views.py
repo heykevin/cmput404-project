@@ -462,8 +462,6 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
         return Response(res, status=status.HTTP_200_OK)
 
 class ImageView(generics.ListCreateAPIView):
-    authentication_classes = (BasicAuthentication, )
-    permission_classes = (IsAuthenticated, )
     serializer_class = ImageSerializer
     '''
     APIView for service/images/
