@@ -32,11 +32,12 @@ export class CommentList extends React.Component
                     <ListGroup className = "comment-group">
                         {comments.map((comment, index) => {
                             if (index >= 0 && index < comments.length) {
-                                const content = comment.contentType && comment.contentType.toLowerCase().includes('markdown') ? <ReactMarkdown source={comment.comment} /> : comment.comment;
+                                const content = comment.contentType && comment.contentType.toLowerCase().includes('markdown') ? <ReactMarkdown source={comment.comment} /> : comment.comment,
+                                 displayName = this.props.foreign ? Utils.extractUsername(comment.author.displayName) : comment.author.displayName;
                                 return (
                                     <div key={comment.id} className='comment'>
                                         <div className='flex comment-author'>
-                                            <div><Glyphicon glyph="comment"/><strong>{comment.author.displayName}:</strong></div><div>{new Date(comment.published).toLocaleString()}</div>
+                                            <div><Glyphicon glyph="comment"/><strong>{displayName}:</strong></div><div>{new Date(comment.published).toLocaleString()}</div>
                                         </div>
                                         <div className='flex comment-content'>
                                             {content}
