@@ -606,11 +606,14 @@ class CommentView(generics.ListCreateAPIView):
             comment = Comment.objects.create(id=id, author=author, post=post, **comment_data)
         else: # make sure author is from a node
             try:
+                print "GETTING NODE"
+                print author_node
                 author_node = Node.objects.get(node_url = author_host)
             except:
                 return Response("Author not from approved node", status=status.HTTP_400_BAD_REQUEST)
             try:
                 author = Author.objects.get(id=author_id)
+                print "GETTING AUTHOR"
             except: # author not yet in database so we should create them
                 print "NOT AUTHOR"
                 user = User.objects.create(username = author_host[0:-1] + "__" + data_author.pop("displayName"))
