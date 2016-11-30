@@ -323,16 +323,21 @@ class ForeignPostView(generics.ListAPIView):
                 continue
             try:
                 if 'posts' in json.loads(r.text):
-                    print "POSTS"
+                    print "WORKING ON POST ----------------"
+                    print json.loads(r.text).get('posts')
                     serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
 
                     if serializer.is_valid():
                         serializer.save()
                         res.extend(serializer.data)
+                    else:
+                        print "WORKING ON POST ---------------- FAILED"
+                        print serializer.errors
+
 
                 for post in json.loads(r.text).get('posts'):
                     if post.get('comments'):
-                        print "WORKING ON POST ----------------"
+                        print "WORKING ON COMMENT ----------------"
                         print post.get('id')
                         print post.get('title')
                         comment_serializer = CommentSerializer(data=post.get('comments'), context={'foreign_id': post.get('id')}, many=True)
@@ -340,11 +345,13 @@ class ForeignPostView(generics.ListAPIView):
                             comment_serializer.save()
 
                     else:
-                        print "SAVING FOREIGN POSTS FAILED IN VIEWS"
+                        print "SAVING COMMENTS FOR FOREIGN POST FAILED IN VIEWS"
+                        print post
                         print serializer.errors
                         res.extend(serializer.errors)
             except:
-                return
+                continue
+        return
 
     def createFriendRequest(self, authorId, friends):
         req = dict()
@@ -407,7 +414,7 @@ class ForeignPostView(generics.ListAPIView):
             url = "%sfriends/%s/" % (author_node.node_url, authorId)
             print url
             # extend with list of local friends
-            
+            print friends
             data = self.createFriendRequest(authorId, friends)
 
             # send a list of my friends to author
@@ -417,6 +424,8 @@ class ForeignPostView(generics.ListAPIView):
             true_friends = json.loads(r.text).get("authors")
 
             # if any friends are the same, add post
+            print "FOAAAAAAAAF"
+            print true_friends
             if len(true_friends) > 0:
                 pubqueryset = pubqueryset | notfriend_foaf_queryset.filter(id=post.id)
 
