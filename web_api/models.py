@@ -8,7 +8,7 @@ import uuid
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    github = models.CharField(max_length=35, blank=True, null=True)
+    github = models.CharField(max_length=100, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     url = models.URLField(default="http://127.0.0.1:8000")
     host = models.URLField(default="http://127.0.0.1:8000")
