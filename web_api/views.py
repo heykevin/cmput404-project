@@ -147,6 +147,8 @@ class PersonalAuthorStream(generics.ListAPIView):
         return querySet
 
 class AuthorViewSet(APIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthorOrReadOnly,)
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
 
@@ -605,7 +607,7 @@ class CommentView(generics.ListCreateAPIView):
         else: # make sure author is from a node
             try:
                 print "GETTING NODE"
-                print author_node
+                print author_host
                 author_node = Node.objects.get(node_url = author_host)
             except:
                 return Response("Author not from approved node", status=status.HTTP_400_BAD_REQUEST)
