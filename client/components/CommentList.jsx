@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import {Glyphicon, ListGroupItem, ListGroup} from 'react-bootstrap';
 import Utils from '../utils/utils.js';
+import {getApi} from '../config.js';
 
 export class CommentList extends React.Component
 {
@@ -33,7 +34,7 @@ export class CommentList extends React.Component
                         {comments.map((comment, index) => {
                             if (index >= 0 && index < comments.length) {
                                 const content = comment.contentType && comment.contentType.toLowerCase().includes('markdown') ? <ReactMarkdown source={comment.comment} /> : comment.comment,
-                                 displayName = this.props.foreign ? Utils.extractUsername(comment.author.displayName) : comment.author.displayName;
+                                      displayName = [getApi(), "http://localhost:8000", "http://127.0.0.1:8000"].indexOf(comment.author.host) > -1 ? comment.author.displayName : Utils.extractUsername(comment.author.displayName);
                                 return (
                                     <div key={comment.id} className='comment'>
                                         <div className='flex comment-author'>
