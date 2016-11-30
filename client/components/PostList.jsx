@@ -137,21 +137,18 @@ export class PostList extends React.Component
         if (!this.props.sending && this.props.commentSuccess) {
             this.props.dispatch({type: 'usersFetchAuthorProfile', authorId: Utils.getAuthor().id});
             this.props.dispatch({type: 'posts.reloadList'});
-            if (this.props.foreign) {
-                this.props.dispatch({
-                    type: 'postsGetForeignPosts',
-                    method: this.props.method,
-                    page: this.props.page || ""
-                });
-            } else {
-                this.props.dispatch({
-                    type: 'postsGetPosts',
-                    method: this.props.method,
-                    authorId: this.props.authorId,
-                    page: this.props.page || "",
-                    size: 99999
-                });
-            }
+            this.props.dispatch({
+                type: 'postsGetForeignPosts',
+                method: this.props.method,
+                page: this.props.page || ""
+            });
+            this.props.dispatch({
+                type: 'postsGetPosts',
+                method: this.props.method,
+                authorId: this.props.authorId,
+                page: this.props.page || "",
+                size: 99999
+            });
             this.props.dispatch({type: 'comments.clearState'});
         }
     }

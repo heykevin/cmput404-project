@@ -35,7 +35,7 @@ export default class ApiComments {
                 }
             })
         }).then((response) => {
-            return Utils.handleErrors(response);
+            return response.ok ? response.json() : "nah, still good";
         });
     }
 
