@@ -20,15 +20,15 @@ export class GithubStream extends React.Component
     {
         super(props);
 		let author = Utils.getAuthor();
-		if (author.github_username) {
-			this.props.dispatch({type: 'gitGetEvents', username: author.github_username});
-            this.props.dispatch({type: 'gitGetUser', username: author.github_username});
+		if (author.github) {
+			this.props.dispatch({type: 'gitGetEvents', username: author.github});
+            this.props.dispatch({type: 'gitGetUser', username: author.github});
 		}
 
 		this.state = {
 			events: [],
 			unresolved: false,
-			hasGitStream: Boolean(author.github_username)
+			hasGitStream: Boolean(author.github)
 		}
     }
 
@@ -36,7 +36,7 @@ export class GithubStream extends React.Component
     {
         const author = Utils.getAuthor();
         // render
-		if (!Boolean(author.github_username)) {
+		if (!Boolean(author.github)) {
             return (
                 <div>
                     <div className="gha-header">
