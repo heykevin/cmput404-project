@@ -599,6 +599,7 @@ class CommentView(generics.ListCreateAPIView):
             author = Author.objects.get(user=user)
             print request.data
             print comment_data
+            id = None
             try:
                 print "getting id"
                 id = comment_data.pop('id')
