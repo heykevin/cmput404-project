@@ -36,7 +36,7 @@ class AuthorInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ('id', 'displayName', 'first_name', 'last_name',
-                  'email', 'bio', 'host', 'github_username', 'url')
+                  'email', 'bio', 'host', 'github', 'url')
 
 class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
     id = serializers.CharField(required=True)

@@ -614,8 +614,19 @@ class CommentView(generics.ListCreateAPIView):
             except: # author not yet in database so we should create them
                 print "NOT AUTHOR"
                 user = User.objects.create(username = author_host[0:-1] + "__" + data_author.pop("displayName"))
+                try:
+                    data_author.pop('url')
+                except:
+                    pass
                 author = Author.objects.create(user=user, url=author_host+"author/"+author_id+"/", **data_author)
-            comment = Comment.objects.create(author=author, post=post, **comment_data)
+            try: 
+                id = comment_data.pop('id')
+            except:
+                try:
+                    id = comment_data.pop('guid')
+                except:
+                    Response("No Id found", status=status.HTTP_400_BAD_REQUEST)
+            comment = Comment.objects.create(author=author, id=id, post=post, **comment_data)
         
         serializer = CommentSerializer(comment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
