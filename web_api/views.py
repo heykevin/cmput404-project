@@ -84,7 +84,7 @@ class AuthorStream(generics.ListAPIView):
         if user.is_staff:
             for node in Node.objects.all():
                 if node.user == user:
-                    return Post.objects.all().exclude(visibility="SERVERONLY")            
+                    return Post.objects.all().exclude(visibility="SERVERONLY")
             return Post.objects.all()
 
         # could refactor to use permissions but whatevs
@@ -131,11 +131,11 @@ class PersonalAuthorStream(generics.ListAPIView):
         # could refactor to use permissions but whatevs
         authorPosts = Post.objects.all().filter(author=author)
 
-        #if admin show everything            
+        #if admin show everything
         if (self.request.user.is_staff and not self.request.user == author.user):
             return authorPosts.exclude(visibility="PRIVATE")
 
-            
+
         publicPosts = authorPosts.all().filter(visibility="PUBLIC")
         privatePosts = authorPosts.all().filter(visibility="PRIVATE").filter(author__user=user)
         querySet = publicPosts | privatePosts
@@ -160,7 +160,7 @@ class AuthorViewSet(APIView):
         email (string)
         bio (string)
         host (string)
-        github_username (string)
+        github (string)
         friends (list)
         id (UUID)
     """
@@ -180,7 +180,7 @@ class AuthorViewSet(APIView):
         email (string)
         bio (string)
         host (string)
-        github_username (string)
+        github (string)
         friends (list)
     Response:
         displayname (string)
@@ -190,7 +190,7 @@ class AuthorViewSet(APIView):
         email (string)
         bio (string)
         host (string)
-        github_username (string)
+        github (string)
         friends (list)
         id (UUID)
     """
@@ -214,7 +214,7 @@ class AuthorProfileUpdateView(APIView):
         email (string)
         bio (string)
         host (string)
-        github_username (string)
+        github (string)
         friends (list)
     Response (author object):
         displayname (string)
@@ -224,7 +224,7 @@ class AuthorProfileUpdateView(APIView):
         email (string)
         bio (string)
         host (string)
-        github_username (string)
+        github (string)
         friends (list)
     '''
     def put(self, request, pk):
@@ -322,7 +322,7 @@ class ForeignPostView(generics.ListAPIView):
                 if 'posts' in json.loads(r.text):
                     print "POSTS"
                     serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
-                    
+
                     if serializer.is_valid():
                         serializer.save()
                         res.extend(serializer.data)
@@ -336,7 +336,7 @@ class ForeignPostView(generics.ListAPIView):
                         if comment_serializer.is_valid():
                             comment_serializer.save()
 
-                    else:                    
+                    else:
                         print "SAVING FOREIGN POSTS FAILED IN VIEWS"
                         print serializer.errors
                         res.extend(serializer.errors)
@@ -367,7 +367,7 @@ class ForeignPostView(generics.ListAPIView):
         # query set of foaf but NOT friends
         notfriend_foaf_queryset = ForeignPost.objects.none()
         # Get friend posts
-        for friend in Author.objects.get(user=user).friends.all():  
+        for friend in Author.objects.get(user=user).friends.all():
             if not friend.host[-1] == "/":
                 friend.host = friend.host + "/"
             friends.append(str(friend.id))
@@ -390,14 +390,14 @@ class ForeignPostView(generics.ListAPIView):
         # authors who are foaf
         foaf = []
         for post in notfriend_foaf_queryset:
-            # POST list of friends 
+            # POST list of friends
             authorId = post.author.id
             author_host =  post.author.host
 
             if not author_host[-1] == "/":
                 author_host = author_host + "/"
-            
-            try: 
+
+            try:
                 author_node = Node.objects.get(node_url = author_host)
             except:
                 print "Remote author node not found"
@@ -407,7 +407,7 @@ class ForeignPostView(generics.ListAPIView):
 
             # send a list of my friends to author
             r = self.rc.post_to_remote(url, data, self.rc.get_node_auth(author_node.node_url))
-            
+
             # get list of friends that they have in common
             true_friends = json.loads(r.text).get("authors")
 
@@ -418,7 +418,7 @@ class ForeignPostView(generics.ListAPIView):
         serializer = ForeignPostSerializer(pubqueryset, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def get_queryset(self):
         return ForeignPost.objects.all()
 
@@ -540,7 +540,7 @@ class CommentView(generics.ListCreateAPIView):
     authentication_classes = (BasicAuthentication, )
     permission_classes = (IsAuthenticated, )
     pagination_class = CommentResultsSetPagination
-    
+
     rc = RemoteConnection()
 
     def get_queryset(self):
@@ -559,7 +559,7 @@ class CommentView(generics.ListCreateAPIView):
             except:
                 # Post doesn't exist
                 return Response("Post doesn't exist'", status=status.HTTP_404_NOT_FOUND)
-            
+
         if (foreignpost): # if post is foreign
             print "HEY FOREIGN POSTS"
             remote_host = self.rc.makesure_host_with_slash(foreignpost.author.host)
@@ -576,7 +576,7 @@ class CommentView(generics.ListCreateAPIView):
         data = request.data
         comment_data = request.data.pop("comment")
         data_author = comment_data.pop("author")
-        
+
         print data
         print data_author
         source = "http://" + self.request.get_host() + "/"
@@ -595,7 +595,7 @@ class CommentView(generics.ListCreateAPIView):
             print "LOCAL COMMENT AT " + source
             author = Author.objects.get(user=user)
             print request.data
-            try: 
+            try:
                 id = comment_data.pop('id')
             except:
                 try:
@@ -619,7 +619,7 @@ class CommentView(generics.ListCreateAPIView):
                 except:
                     pass
                 author = Author.objects.create(user=user, url=author_host+"author/"+author_id+"/", **data_author)
-            try: 
+            try:
                 id = comment_data.pop('id')
             except:
                 try:
@@ -627,14 +627,14 @@ class CommentView(generics.ListCreateAPIView):
                 except:
                     Response("No Id found", status=status.HTTP_400_BAD_REQUEST)
             comment = Comment.objects.create(author=author, id=id, post=post, **comment_data)
-        
+
         serializer = CommentSerializer(comment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
     def __unicode__(self):
         return "Parent post:"+ str(self.parent_post.id) + ", Author:" + self.author.displayName + ": " + self.content
-    
+
 class FriendsWith(APIView):
     """
     GET /friends/<authorID>
@@ -644,7 +644,7 @@ class FriendsWith(APIView):
     def get(self, request, pk, format=None):
         sf = SyncFriend()
         sf.syncfriend(request)
-        
+
         queryset = Author.objects.get(id=pk)
         serializer = FriendsWithSerializer(queryset)
         res=serializer.data
@@ -665,7 +665,7 @@ class FriendsWith(APIView):
     def post(self, request, pk, format=None):
         sf = SyncFriend()
         sf.syncfriend(request)
-        
+
         if request.data['query'] != 'friends':
             return Response("Incorrect request field: 'query' field should be 'friends'.", status.HTTP_400_BAD_REQUEST)
 
@@ -730,14 +730,14 @@ class FriendRequestView(APIView):
 
         if sender["obj"] in receiver["obj"].get_request_received():
             return Response("Friend request already sent.", status.HTTP_200_OK)
-        
+
         # If sender already send a request then just add friend.
         # Add friend first, if not getting 200 is only their bad.
-        if receiver["obj"] in sender["obj"].get_request_received(): 
+        if receiver["obj"] in sender["obj"].get_request_received():
             sender['obj'].friends.add(receiver['obj'])
             FriendRequest.objects.filter(sender=receiver['obj'], receiver=sender['obj']).delete()
-            
-            return Response("Friend added.", status.HTTP_200_OK)        
+
+            return Response("Friend added.", status.HTTP_200_OK)
 
         # This is the communicating process to other nodes.
         if (sender["is_local"]) and (not receiver["is_local"]):
@@ -749,7 +749,7 @@ class FriendRequestView(APIView):
             if r.status_code != 200 and r.status_code != 201:
                 return Response("Not getting 200 or 201 from the remote.", status.HTTP_400_BAD_REQUEST)
         # -------------------------------------------------
-        
+
         # Otherwise get the request object created.
         friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
         friend_request.save()
@@ -784,9 +784,9 @@ class FriendRequestView(APIView):
         # With or withour slash.
         self.myNode = self.rc.sync_hostname_if_local('http://'+request.get_host()+'/')
         self.myNode2 = self.rc.sync_hostname_if_local('http://'+request.get_host())
-        
+
         sf = SyncFriend()
-        sf.syncfriend(request)        
+        sf.syncfriend(request)
 
         if not self.rc.check_node_valid(request):
             return Response("What's this node?", status.HTTP_401_UNAUTHORIZED)
@@ -804,11 +804,11 @@ class FriendRequestView(APIView):
             return Response("Bad request header.", status.HTTP_400_BAD_REQUEST)
 
 class FriendSyncView(APIView):
-    
+
     def get(self, request):
         sf = SyncFriend()
         return sf.syncfriend(request, is_from_client=True)
-            
+
 
 class FriendCheck(APIView):
     """
@@ -818,22 +818,22 @@ class FriendCheck(APIView):
         authors (string): ids of checked authors
         friends (bool): true iff friends
     """
-    
+
     rc = RemoteConnection()
-    
-    
+
+
     def get(self, request, id1, id2, format=None):
         # sf = SyncFriend()
         # sf.syncfriend(request)
-        
+
         res = dict()
         res['authors'] = [id1, id2]
-        res['query'] = "friends"        
+        res['query'] = "friends"
         try:
             queryset1 = Author.objects.get(id=id1)
             queryset2 = Author.objects.get(id=id2)
         except Author.DoesNotExist:
-            res['friends'] = False           
+            res['friends'] = False
             return Response(res)
 
         list1 = [str(id['id']) for id in queryset1.friends.all().values('id')]

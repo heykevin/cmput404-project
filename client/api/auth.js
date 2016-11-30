@@ -63,7 +63,7 @@ export default class ApiAuth {
         body.append('first_name', action.first_name);
         body.append('last_name', action.last_name);
         body.append('email', action.email);
-        body.append('github_username', action.github_username);
+        body.append('github', action.github);
         body.append('bio', action.bio);
         body.append('host', host);
         body.append('password', author.password);
