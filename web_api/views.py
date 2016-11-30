@@ -407,7 +407,7 @@ class ForeignPostView(generics.ListAPIView):
             url = "%sfriends/%s/" % (author_node.node_url, authorId)
             print url
             # extend with list of local friends
-            print friends
+            
             data = self.createFriendRequest(authorId, friends)
 
             # send a list of my friends to author
@@ -598,10 +598,13 @@ class CommentView(generics.ListCreateAPIView):
             print "LOCAL COMMENT AT " + source
             author = Author.objects.get(user=user)
             print request.data
+            print comment_data
             try:
+                print "getting id"
                 id = comment_data.pop('id')
             except:
                 try:
+                    print "nope getting uuid"
                     id = comment_data.pop('guid')
                 except:
                     Response("No Id found", status=status.HTTP_400_BAD_REQUEST)
