@@ -122,7 +122,6 @@ class FriendRequestTestCase(APITestCase):
 	
 	self.assertEqual(response.status_code, status.HTTP_200_OK, response)
 	self.assertTrue(FriendRequest.objects.filter(sender=self.sender, receiver=self.receiver).exists())
-
 	response = self.client.post('/friendrequest/', {
 	    "query" : "friendrequest",
 	    "author" : {
@@ -523,3 +522,43 @@ class CommentTestCase(APITestCase):
 		self.assertEqual(response.status_code, status.HTTP_200_OK, response)
 		comment = response.data['comments']
 		self.assertTrue(comment[0]['id'] != None)
+
+class PostPermissionTestCase(APITestCase):
+
+	def test_post_permission(self):
+		user1 = User.objects.create_user(is_active=True, **(USER_LIST[0]))
+		user2 = User.objects.create_user(is_active=True, **(USER_LIST[1]))
+		self.author1 = Author.objects.create(user=user1, **(AUTHOR_LIST[0]))
+		self.author2 = Author.objects.create(user=user2, **(AUTHOR_LIST[1]))
+
+		# Ahindle created a post
+		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Ahindle:coolbears'))
+		response = self.client.post('/posts/', {
+				'title': 'comp sci 404',
+				'source': 'http://127.0.0.1:8000',
+				'origin': 'http://127.0.0.1:8000',
+				'description': 'This post is about comp sci 404',
+				'content': 'comp sci 404 project, blah blah blah',
+				'category': 'compsci',
+				'visibility_choice': 'Public',
+				'contentType': 'text/markdown'
+			}, format='multipart'
+		)
+		self.postId = response.data['id']
+		self.assertEqual(response.status_code, status.HTTP_201_CREATED, response)
+
+		# trying to update other author's post
+		self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64.b64encode('Joshua:coolcats'))
+		response = self.client.put('/posts/%s/' % self.postId, {
+			'title': 'new title',
+			'content': 'new post content from Joshua to Ahindle post',
+			'source': 'http://127.0.0.1:8000/ualberta',
+			'description': 'Joshua trying to update hindle post'
+			}, format='json')
+
+		self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, response)
+
+		# trying to delete other author's post
+		response = self.client.delete('/posts/%s/' % self.postId, {}, format='json')
+		self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, response)
+

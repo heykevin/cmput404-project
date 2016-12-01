@@ -84,7 +84,7 @@ class AuthorStream(generics.ListAPIView):
         if user.is_staff:
             for node in Node.objects.all():
                 if node.user == user:
-                    return Post.objects.all().exclude(visibility="SERVERONLY")            
+                    return Post.objects.all().exclude(visibility="SERVERONLY")
             return Post.objects.all()
 
         # could refactor to use permissions but whatevs
@@ -131,22 +131,25 @@ class PersonalAuthorStream(generics.ListAPIView):
         # could refactor to use permissions but whatevs
         authorPosts = Post.objects.all().filter(author=author)
 
-        #if admin show everything            
+        #if admin show everything
         if (self.request.user.is_staff and not self.request.user == author.user):
             return authorPosts.exclude(visibility="PRIVATE")
 
-            
+
         publicPosts = authorPosts.all().filter(visibility="PUBLIC")
         privatePosts = authorPosts.all().filter(visibility="PRIVATE").filter(author__user=user)
-        querySet = publicPosts | privatePosts
+        foafPosts = authorPosts.all().filter(visibility="FOAF").filter(author__user=user)
+        querySet = publicPosts | privatePosts | foafPosts
         if (Author.objects.get(user=user) in author.friends.all().filter(user=user) or Author.objects.get(user=user) == author):
             friendQuerySet = authorPosts.filter(visibility="FRIENDS")
             serverQuerySet = authorPosts.filter(visibility="SERVERONLY")
-            querySet = querySet | friendQuerySet | serverQuerySet
+            querySet = querySet | friendQuerySet | serverQuerySet 
 
         return querySet
 
 class AuthorViewSet(APIView):
+    authentication_classes = (BasicAuthentication, )
+    permission_classes = (IsAuthorOrReadOnly,)
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
 
@@ -160,7 +163,7 @@ class AuthorViewSet(APIView):
         email (string)
         bio (string)
         host (string)
-        github_username (string)
+        github (string)
         friends (list)
         id (UUID)
     """
@@ -180,7 +183,7 @@ class AuthorViewSet(APIView):
         email (string)
         bio (string)
         host (string)
-        github_username (string)
+        github (string)
         friends (list)
     Response:
         displayname (string)
@@ -190,7 +193,7 @@ class AuthorViewSet(APIView):
         email (string)
         bio (string)
         host (string)
-        github_username (string)
+        github (string)
         friends (list)
         id (UUID)
     """
@@ -214,7 +217,7 @@ class AuthorProfileUpdateView(APIView):
         email (string)
         bio (string)
         host (string)
-        github_username (string)
+        github (string)
         friends (list)
     Response (author object):
         displayname (string)
@@ -224,7 +227,7 @@ class AuthorProfileUpdateView(APIView):
         email (string)
         bio (string)
         host (string)
-        github_username (string)
+        github (string)
         friends (list)
     '''
     def put(self, request, pk):
@@ -318,28 +321,39 @@ class ForeignPostView(generics.ListAPIView):
                 print json.loads(r.text)
             except:
                 continue
-            if 'posts' in json.loads(r.text):
-                print "POSTS"
-                serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
-                
-                if serializer.is_valid():
-                    serializer.save()
-                    res.extend(serializer.data)
-
-            for post in json.loads(r.text).get('posts'):
-                if post.get('comments'):
+            try:
+                if 'posts' in json.loads(r.text):
                     print "WORKING ON POST ----------------"
-                    print post.get('id')
-                    print post.get('title')
-                    comment_serializer = CommentSerializer(data=post.get('comments'), context={'foreign_id': post.get('id')}, many=True)
-                    if comment_serializer.is_valid():
-                        comment_serializer.save()
+                    print json.loads(r.text).get('posts')
+                    serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
 
-                else:                    
-                    print "SAVING FOREIGN POSTS FAILED IN VIEWS"
-                    print serializer.errors
-                    res.extend(serializer.errors)
+                    if serializer.is_valid():
+                        print "SAVING POST----------------------"
+                        serializer.save()
+                        print "post saved"
+                        res.extend(serializer.data)
+                    else:
+                        print "WORKING ON POST ---------------- FAILED"
+                        print serializer.errors
 
+
+                for post in json.loads(r.text).get('posts'):
+                    if post.get('comments'):
+                        print "WORKING ON COMMENT ----------------"
+                        print post.get('id')
+                        print post.get('title')
+                        comment_serializer = CommentSerializer(data=post.get('comments'), context={'foreign_id': post.get('id')}, many=True)
+                        if comment_serializer.is_valid():
+                            comment_serializer.save()
+
+                    else:
+                        print "SAVING COMMENTS FOR FOREIGN POST FAILED IN VIEWS"
+                        print post
+                        print serializer.errors
+                        res.extend(serializer.errors)
+            except:
+                continue
+        return
 
     def createFriendRequest(self, authorId, friends):
         req = dict()
@@ -365,7 +379,7 @@ class ForeignPostView(generics.ListAPIView):
         # query set of foaf but NOT friends
         notfriend_foaf_queryset = ForeignPost.objects.none()
         # Get friend posts
-        for friend in Author.objects.get(user=user).friends.all():  
+        for friend in Author.objects.get(user=user).friends.all():
             if not friend.host[-1] == "/":
                 friend.host = friend.host + "/"
             friends.append(str(friend.id))
@@ -388,35 +402,39 @@ class ForeignPostView(generics.ListAPIView):
         # authors who are foaf
         foaf = []
         for post in notfriend_foaf_queryset:
-            # POST list of friends 
+            # POST list of friends
             authorId = post.author.id
             author_host =  post.author.host
 
             if not author_host[-1] == "/":
                 author_host = author_host + "/"
-            
-            try: 
+
+            try:
                 author_node = Node.objects.get(node_url = author_host)
             except:
                 print "Remote author node not found"
             url = "%sfriends/%s/" % (author_node.node_url, authorId)
             print url
+            # extend with list of local friends
+            print friends
             data = self.createFriendRequest(authorId, friends)
 
             # send a list of my friends to author
             r = self.rc.post_to_remote(url, data, self.rc.get_node_auth(author_node.node_url))
-            
+
             # get list of friends that they have in common
             true_friends = json.loads(r.text).get("authors")
 
             # if any friends are the same, add post
+            print "FOAAAAAAAAF"
+            print true_friends
             if len(true_friends) > 0:
                 pubqueryset = pubqueryset | notfriend_foaf_queryset.filter(id=post.id)
 
         serializer = ForeignPostSerializer(pubqueryset, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def get_queryset(self):
         return ForeignPost.objects.all()
 
@@ -461,7 +479,7 @@ class PostIDView(generics.RetrieveUpdateDestroyAPIView):
 
 class ImageView(generics.ListCreateAPIView):
     authentication_classes = (BasicAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, )    
     serializer_class = ImageSerializer
     '''
     APIView for service/images/
@@ -491,8 +509,6 @@ class ImageView(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ImageIDView(generics.CreateAPIView):
-    authentication_classes = (BasicAuthentication, )
-    permission_classes = (IsAuthenticated, )
     serializer_class = ImageSerializer
 
     def get(self, request, pk, format=None):
@@ -538,7 +554,7 @@ class CommentView(generics.ListCreateAPIView):
     authentication_classes = (BasicAuthentication, )
     permission_classes = (IsAuthenticated, )
     pagination_class = CommentResultsSetPagination
-    
+
     rc = RemoteConnection()
 
     def get_queryset(self):
@@ -557,7 +573,7 @@ class CommentView(generics.ListCreateAPIView):
             except:
                 # Post doesn't exist
                 return Response("Post doesn't exist'", status=status.HTTP_404_NOT_FOUND)
-            
+
         if (foreignpost): # if post is foreign
             print "HEY FOREIGN POSTS"
             remote_host = self.rc.makesure_host_with_slash(foreignpost.author.host)
@@ -572,87 +588,73 @@ class CommentView(generics.ListCreateAPIView):
 
         user = request.user
         data = request.data
-        data_author = data.pop("author")
-        
+        comment_data = request.data.pop("comment")
+        data_author = comment_data.pop("author")
+
         print data
         print data_author
         source = "http://" + self.request.get_host() + "/"
         author_host = data_author.get("host")
         author_id = data_author.get("id")
+        post_url = request.data.pop("post")
         if not author_host[-1] == "/":
             author_host = author_host + "/"
         # this is for local posts
         # Check if user is local
         print source
         print author_host
+        print source == author_host
         if (source == author_host):
             # user is local
-            print "LOCAL COMMENT"
+            print "LOCAL COMMENT AT " + source
             author = Author.objects.get(user=user)
-            comment = Comment.objects.create(author=author, post=post, **request.data)
+            print request.data
+            print comment_data
+            id = None
+            try:
+                print "getting id"
+                id = comment_data.pop('id')
+            except:
+                try:
+                    print "nope getting uuid"
+                    id = comment_data.pop('guid')
+                except:
+                    Response("No Id found", status=status.HTTP_400_BAD_REQUEST)
+
+            comment = Comment.objects.create(id=id, author=author, post=post, **comment_data)
         else: # make sure author is from a node
             try:
+                print "GETTING NODE"
+                print author_host
                 author_node = Node.objects.get(node_url = author_host)
             except:
                 return Response("Author not from approved node", status=status.HTTP_400_BAD_REQUEST)
             try:
                 author = Author.objects.get(id=author_id)
+                print "GETTING AUTHOR"
             except: # author not yet in database so we should create them
                 print "NOT AUTHOR"
                 user = User.objects.create(username = author_host[0:-1] + "__" + data_author.pop("displayName"))
+                try:
+                    data_author.pop('url')
+                except:
+                    pass
                 author = Author.objects.create(user=user, url=author_host+"author/"+author_id+"/", **data_author)
-            comment = Comment.objects.create(author=author, post=post, **request.data)
-        
+            try:
+                id = comment_data.pop('id')
+            except:
+                try:
+                    id = comment_data.pop('guid')
+                except:
+                    Response("No Id found", status=status.HTTP_400_BAD_REQUEST)
+            comment = Comment.objects.create(author=author, id=id, post=post, **comment_data)
+
         serializer = CommentSerializer(comment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
     def __unicode__(self):
         return "Parent post:"+ str(self.parent_post.id) + ", Author:" + self.author.displayName + ": " + self.content
-    
-    # def comment_to_remote_post(self, post, request):
-    #     author = Author.objects.get(user=request.user)
-    #     serializer = RemoteCommentSerializer
-        
-    #     try:
-    #         comment = RemoteComment.objects.create(author=author, post=post, **request.data)
-    #         serializer = RemoteCommentSerializer(comment)
-    #     except:
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED) 
-             
-    
-    # def comment_to_local_post(self, post, request):
-    #     author = Author.objects.get(user=request.user)
-    #     serializer = CommentSerializer
-        
-    #     try:
-    #         comment = Comment.objects.create(author=author, post=post, **request.data)
-    #         serializer = CommentSerializer(comment)
-    #     except:
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)        
-    
-    # def get_post_by_id(self, pk):
-    #     post = None
-    #     is_foreign = False
-        
-    #     try:
-    #         post = Post.objects.get(id=pk)
-    #     except ObjectDoesNotExist:
-            
-    #         try:
-    #             post = ForeignPost.objects.get(id=pk)
-    #             is_foreign = True
-    #         except ObjectDoesNotExist:
-    #             return None
-        
-    #     res=dict()
-    #     res["postObj"] = post
-    #     res["is_foreign"] = is_foreign
-    #     return res
 
 class FriendsWith(APIView):
     """
@@ -663,7 +665,7 @@ class FriendsWith(APIView):
     def get(self, request, pk, format=None):
         sf = SyncFriend()
         sf.syncfriend(request)
-        
+
         queryset = Author.objects.get(id=pk)
         serializer = FriendsWithSerializer(queryset)
         res=serializer.data
@@ -684,7 +686,7 @@ class FriendsWith(APIView):
     def post(self, request, pk, format=None):
         sf = SyncFriend()
         sf.syncfriend(request)
-        
+
         if request.data['query'] != 'friends':
             return Response("Incorrect request field: 'query' field should be 'friends'.", status.HTTP_400_BAD_REQUEST)
 
@@ -749,14 +751,14 @@ class FriendRequestView(APIView):
 
         if sender["obj"] in receiver["obj"].get_request_received():
             return Response("Friend request already sent.", status.HTTP_200_OK)
-        
+
         # If sender already send a request then just add friend.
         # Add friend first, if not getting 200 is only their bad.
-        if receiver["obj"] in sender["obj"].get_request_received(): 
+        if receiver["obj"] in sender["obj"].get_request_received():
             sender['obj'].friends.add(receiver['obj'])
             FriendRequest.objects.filter(sender=receiver['obj'], receiver=sender['obj']).delete()
-            
-            return Response("Friend added.", status.HTTP_200_OK)        
+
+            return Response("Friend added.", status.HTTP_200_OK)
 
         # This is the communicating process to other nodes.
         if (sender["is_local"]) and (not receiver["is_local"]):
@@ -768,7 +770,7 @@ class FriendRequestView(APIView):
             if r.status_code != 200 and r.status_code != 201:
                 return Response("Not getting 200 or 201 from the remote.", status.HTTP_400_BAD_REQUEST)
         # -------------------------------------------------
-        
+
         # Otherwise get the request object created.
         friend_request = FriendRequest.objects.create(sender=sender["obj"], receiver=receiver["obj"])
         friend_request.save()
@@ -803,9 +805,9 @@ class FriendRequestView(APIView):
         # With or withour slash.
         self.myNode = self.rc.sync_hostname_if_local('http://'+request.get_host()+'/')
         self.myNode2 = self.rc.sync_hostname_if_local('http://'+request.get_host())
-        
+
         sf = SyncFriend()
-        sf.syncfriend(request)        
+        sf.syncfriend(request)
 
         if not self.rc.check_node_valid(request):
             return Response("What's this node?", status.HTTP_401_UNAUTHORIZED)
@@ -823,11 +825,11 @@ class FriendRequestView(APIView):
             return Response("Bad request header.", status.HTTP_400_BAD_REQUEST)
 
 class FriendSyncView(APIView):
-    
+
     def get(self, request):
         sf = SyncFriend()
         return sf.syncfriend(request, is_from_client=True)
-            
+
 
 class FriendCheck(APIView):
     """
@@ -837,22 +839,22 @@ class FriendCheck(APIView):
         authors (string): ids of checked authors
         friends (bool): true iff friends
     """
-    
+
     rc = RemoteConnection()
-    
-    
+
+
     def get(self, request, id1, id2, format=None):
         # sf = SyncFriend()
         # sf.syncfriend(request)
-        
+
         res = dict()
         res['authors'] = [id1, id2]
-        res['query'] = "friends"        
+        res['query'] = "friends"
         try:
             queryset1 = Author.objects.get(id=id1)
             queryset2 = Author.objects.get(id=id2)
         except Author.DoesNotExist:
-            res['friends'] = False           
+            res['friends'] = False
             return Response(res)
 
         list1 = [str(id['id']) for id in queryset1.friends.all().values('id')]

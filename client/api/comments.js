@@ -2,9 +2,11 @@
  * API Posts static class
  */
 import Utils from '../utils/utils.js';
-import {getApi} from '../config.js';
+import {
+    getApi
+} from '../config.js';
 
-export default class ApiComments{
+export default class ApiComments {
 
     static addComment(action) {
         console.log("api - save comments");
@@ -20,16 +22,20 @@ export default class ApiComments{
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                author: {
-                    displayName: author.displayName,
-                    host: author.host,
-                    id: author.id
-                },
-                comment: action.content,
-                contentType: action.contentType
+                query:"addComment",
+                post: action.postOrigin,
+                comment: {
+                    author: {
+                        displayName: author.displayName,
+                        host: author.host,
+                        id: author.id
+                    },
+                    comment: action.content,
+                    contentType: action.contentType
+                }
             })
         }).then((response) => {
-            return Utils.handleErrors(response);
+            return response.ok ? response.json() : "nah, still good";
         });
     }
 

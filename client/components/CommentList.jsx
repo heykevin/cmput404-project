@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import {Glyphicon, ListGroupItem, ListGroup} from 'react-bootstrap';
 import Utils from '../utils/utils.js';
+import {getApi} from '../config.js';
 
 export class CommentList extends React.Component
 {
@@ -16,7 +17,6 @@ export class CommentList extends React.Component
     render()
     {
         const posts = this.props.foreign ? this.props.foreignPosts : this.props.posts;
-        console.log('commentlist l35', posts);
         let comments;
         for (const post of posts) {
             if (post.id === this.props.postId) {
@@ -24,7 +24,6 @@ export class CommentList extends React.Component
                 break;
             }
         }
-        console.log(comments);
 
         if (comments && comments.length)
         {
@@ -34,12 +33,12 @@ export class CommentList extends React.Component
                     <ListGroup className = "comment-group">
                         {comments.map((comment, index) => {
                             if (index >= 0 && index < comments.length) {
-                                const content = comment.contentType && comment.contentType.toLowerCase().includes('markdown') ? <ReactMarkdown source={comment.comment} /> : comment.comment;
-                                console.log(content);
+                                const content = comment.contentType && comment.contentType.toLowerCase().includes('markdown') ? <ReactMarkdown source={comment.comment} /> : comment.comment,
+                                      displayName = [getApi(), "http://localhost:8000", "http://127.0.0.1:8000"].indexOf(comment.author.host) > -1 ? comment.author.displayName : Utils.extractUsername(comment.author.displayName);
                                 return (
                                     <div key={comment.id} className='comment'>
                                         <div className='flex comment-author'>
-                                            <div><Glyphicon glyph="comment"/><strong>{comment.author.displayName}:</strong></div><div>{new Date(comment.published).toLocaleString()}</div>
+                                            <div><Glyphicon glyph="comment"/><strong>{displayName}:</strong></div><div>{new Date(comment.published).toLocaleString()}</div>
                                         </div>
                                         <div className='flex comment-content'>
                                             {content}

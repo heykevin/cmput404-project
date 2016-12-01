@@ -26,7 +26,7 @@ export class AuthorEditForm extends React.Component {
     }
 
     onSubmit(event) {
-        console.log("AuthorEditForm onSubmit", this.state.first_name, this.state.last_name, this.state.email, this.state.github_username, this.state.bio);
+        console.log("AuthorEditForm onSubmit", this.state.first_name, this.state.last_name, this.state.email, this.state.github, this.state.bio);
         console.log("dispatch action authEdit");
         event.preventDefault();
         this.props.dispatch({
@@ -34,7 +34,7 @@ export class AuthorEditForm extends React.Component {
             first_name: this.state.first_name,
             last_name: this.state.last_name,
             email: this.state.email,
-            github_username: this.state.github_username,
+            github: this.state.github,
             bio: this.state.bio
         });
     }
@@ -55,8 +55,8 @@ export class AuthorEditForm extends React.Component {
     }
 
     handleGithubChange(event) {
-        let github_username = event.target.value;
-        this.setState({github_username: github_username});
+        let github = event.target.value;
+        this.setState({github: github});
     }
 
     handleBioChange(event) {
@@ -92,9 +92,9 @@ export class AuthorEditForm extends React.Component {
                     <ControlLabel> Github account </ControlLabel>
                     <FormControl
                         onChange = {this.handleGithubChange}
-                        id="github_usernameEdit"
+                        id="githubEdit"
                         type="text"
-                        defaultValue={this.props.author.github_username}
+                        defaultValue={this.props.author.github}
                         />
                     <ControlLabel> Bios </ControlLabel>
                     <FormControl

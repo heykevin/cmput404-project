@@ -19,7 +19,7 @@ export class ProfileInfo extends React.Component {
                 <Panel bsStyle="primary" header="First Name">{this.props.author.first_name}</Panel>
                 <Panel bsStyle="primary" header="Last name">{this.props.author.last_name}</Panel>
                 <Panel bsStyle="primary" header="Email">{this.props.author.email}</Panel>
-                <Panel bsStyle="primary" header="Github username">{this.props.author.github_username}</Panel>
+                <Panel bsStyle="primary" header="Github username">{this.props.author.github}</Panel>
                 <Panel bsStyle="primary" header="Bios">{this.props.author.bio}</Panel>
             </div>
         );

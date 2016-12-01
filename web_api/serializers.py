@@ -9,7 +9,7 @@ import json
 class NodeSerializer(serializers.ModelSerializer):
     nodeName = serializers.CharField(source='user.username')
     nodePassword = serializers.CharField(source='user.password', write_only=True)
-    
+
     class Meta:
         mode = Node
         # password is the text form of nodePassword which can only be in hash form.
@@ -36,7 +36,7 @@ class AuthorInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ('id', 'displayName', 'first_name', 'last_name',
-                  'email', 'bio', 'host', 'github_username', 'url')
+                  'email', 'bio', 'host', 'github', 'url')
 
 class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
     id = serializers.CharField(required=True)
@@ -45,10 +45,12 @@ class ForeignAuthorInfoSerializer(AuthorInfoSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = AuthorInfoSerializer(many=False)
+    guid = serializers.CharField(source='id', required=False)
+    pubDate = serializers.DateTimeField(source='published', required=False)
 
     class Meta:
         model = Comment
-        fields = ('id', 'comment', 'author', 'published', 'post', 'foreign_post')
+        fields = ('id', 'guid', 'comment', 'author', 'pubDate', 'published', 'post', 'contentType', 'foreign_post')
 
     def create(self, validated_data):
         foreign_posts = False
@@ -97,7 +99,7 @@ class CommentSerializer(serializers.ModelSerializer):
                 comment = Comment.objects.create(author=author, foreign_post=foreign_post, **validated_data)
                 comment.save()
                 return comment
-            except: 
+            except:
                 print "NOT COMING FROM /foreignposts"
                 pass
 
@@ -106,7 +108,7 @@ class CommentSerializer(serializers.ModelSerializer):
             comment = Comment.objects.create(author=author, foreign_post=foreign_post, **validated_data)
             comment.save()
             return comment
-            
+
         print "POSTING LOCAL COMMENT"
         author = Author.objects.get(user=self.context.get('request').user)
         comment = Comment.objects.create(author=author, post=post, **validated_data)
@@ -137,7 +139,7 @@ class ForeignPostSerializer(serializers.ModelSerializer):
 
         url = foreign_author.get('url')
         author = None
-        
+
         postId = validated_data.pop('id')
         try:
             print url
@@ -153,14 +155,14 @@ class ForeignPostSerializer(serializers.ModelSerializer):
 
         if content_type == "type/x-markdown":
             content_type = "type/markdown"
- 
+
         # print "SAVING FOREIGN POST..."
         try:
             post = ForeignPost.objects.get(id=postId)
-        except: 
+        except:
             post = ForeignPost.objects.create(id=postId, author=author, contentType=content_type, **validated_data)
             post.save()
-        
+
         return post
 
     # Returns a list of comments
@@ -185,7 +187,7 @@ class PostSerializer(serializers.ModelSerializer):
         source = validated_data.pop('source')
         if not source:
             source = self.context.get('request').build_absolute_uri() + str(id)
-        origin = self.context.get('request').build_absolute_uri() + str(id)
+        origin = self.context.get('request').build_absolute_uri() +"/"+ str(id)
         author = Author.objects.get(user=self.context.get('request').user)
         post = Post.objects.create(id=id, origin=origin, source=source, author=author, **validated_data)
         post.save()
@@ -237,7 +239,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ('id', 'displayName', 'password', 'first_name', 'last_name',
-                  'email', 'bio', 'host', 'url', 'github_username', 'friends', 'request_sent', 'request_received', 'is_active')
+                  'email', 'bio', 'host', 'url', 'github', 'friends', 'request_sent', 'request_received', 'is_active')
 
     # # Need to be created as User is a nest object of Author.
     # # Returns an author object with user object as an field after extracting data from json.
@@ -264,7 +266,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         user.save()
 
         author.bio = validated_data.get('bio', author.bio)
-        author.github_username = validated_data.get('github_username', author.github_username)
+        author.github = validated_data.get('github', author.github)
         author.save()
 
         return author
