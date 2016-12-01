@@ -328,7 +328,9 @@ class ForeignPostView(generics.ListAPIView):
                     serializer = ForeignPostSerializer(data=json.loads(r.text).get('posts'), many=True)
 
                     if serializer.is_valid():
+                        print "SAVING POST----------------------"
                         serializer.save()
+                        print "post saved"
                         res.extend(serializer.data)
                     else:
                         print "WORKING ON POST ---------------- FAILED"
